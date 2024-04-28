@@ -8,7 +8,7 @@
 #include "client.hpp"
 #include "Tetris.hpp"
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
     tetriq::Tetris tetris(10, 20);
     return EXIT_SUCCESS;

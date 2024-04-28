@@ -7,22 +7,21 @@
 
 #include "Tetris.hpp"
 
-tetriq::Block::Block(Tetris &tetris, BlockType type) : _tetris(tetris), _type(type)
-{
-}
+tetriq::Block::Block(Tetris &tetris, BlockType type) : _tetris(tetris),
+    _type(type), _isDestructible(false)
+{}
 
-void tetriq::Block::fromString(const std::string& string)
-{
-}
+void tetriq::Block::fromString(const std::string &string)
+{}
 
 std::string tetriq::Block::toString()
 {
     return std::to_string(_type);
 }
 
-tetriq::StandardBlock::StandardBlock(Tetris& _tetris, BlockType type) : Block(_tetris, type)
-{
-}
+tetriq::StandardBlock::StandardBlock(Tetris &_tetris, BlockType type) : Block(
+    _tetris, type)
+{}
 
 tetriq::StandardBlock::~StandardBlock()
 = default;
@@ -35,9 +34,9 @@ bool tetriq::StandardBlock::isDestructible()
 void tetriq::StandardBlock::onDestruction()
 {}
 
-tetriq::IndestructibleBlock::IndestructibleBlock(Tetris& _tetris) : Block(_tetris, BlockType::INDESTRUCTIBLE)
-{
-}
+tetriq::IndestructibleBlock::IndestructibleBlock(Tetris &_tetris) : Block(
+    _tetris, BlockType::INDESTRUCTIBLE)
+{}
 
 tetriq::IndestructibleBlock::~IndestructibleBlock()
 = default;
@@ -50,9 +49,9 @@ bool tetriq::IndestructibleBlock::isDestructible()
 void tetriq::IndestructibleBlock::onDestruction()
 {}
 
-tetriq::SpecialBlock::SpecialBlock(Tetris& _tetris, BlockType type) : Block(_tetris, type)
-{
-}
+tetriq::SpecialBlock::SpecialBlock(Tetris &_tetris, BlockType type) : Block(
+    _tetris, type)
+{}
 
 tetriq::SpecialBlock::~SpecialBlock()
 = default;
@@ -89,7 +88,7 @@ std::string tetriq::Tetris::toString()
     return "";
 }
 
-void tetriq::Tetris::fromString(const std::string& string)
+void tetriq::Tetris::fromString(const std::string &string)
 {
     ;
 }
