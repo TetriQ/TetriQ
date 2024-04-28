@@ -26,7 +26,7 @@ namespace tetriq
         GREEN,
         PURPLE,
         INDESTRUCTIBLE,
-        SPECIAL
+        SPECIAL // not used for now
     };
 
     class Block : public NetworkObject {
@@ -34,6 +34,7 @@ namespace tetriq
             explicit Block(Tetris &tetris, BlockType type);
             ~Block() override = default;
             virtual bool isDestructible() = 0;
+            virtual void onDestruction() = 0;
             void fromString(const std::string& string) override;
             std::string toString() override;
         private:
@@ -41,11 +42,14 @@ namespace tetriq
             BlockType _type;
     };
 
+
+
     class StandardBlock final : public Block {
         public:
             explicit StandardBlock(Tetris& _tetris, BlockType type);
             ~StandardBlock() override;
             bool isDestructible() override;
+            void onDestruction() override;
     };
 
     class IndestructibleBlock final: public Block {
@@ -53,6 +57,7 @@ namespace tetriq
             explicit IndestructibleBlock(Tetris& _tetris);
             ~IndestructibleBlock() override;
             bool isDestructible() override;
+            void onDestruction() override;
     };
 
     class SpecialBlock : public Block {
@@ -60,6 +65,7 @@ namespace tetriq
             explicit SpecialBlock(Tetris& _tetris, BlockType type);
             ~SpecialBlock() override;
             bool isDestructible() override;
+            void onDestruction() override;
     };
 
     class Tetris final: public NetworkObject {

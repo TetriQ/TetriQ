@@ -32,6 +32,9 @@ bool tetriq::StandardBlock::isDestructible()
     return true;
 }
 
+void tetriq::StandardBlock::onDestruction()
+{}
+
 tetriq::IndestructibleBlock::IndestructibleBlock(Tetris& _tetris) : Block(_tetris, BlockType::INDESTRUCTIBLE)
 {
 }
@@ -43,6 +46,9 @@ bool tetriq::IndestructibleBlock::isDestructible()
 {
     return false;
 }
+
+void tetriq::IndestructibleBlock::onDestruction()
+{}
 
 tetriq::SpecialBlock::SpecialBlock(Tetris& _tetris, BlockType type) : Block(_tetris, type)
 {
@@ -56,6 +62,9 @@ bool tetriq::SpecialBlock::isDestructible()
     return true;
 }
 
+void tetriq::SpecialBlock::onDestruction()
+{}
+
 tetriq::Tetris::Tetris(size_t width, size_t height)
 {
     _width = width;
@@ -66,7 +75,8 @@ tetriq::Tetris::Tetris(size_t width, size_t height)
     //fill blocks with standard blocks
     for (size_t i = 0; i < _height; i++)
         for (size_t j = 0; j < _width; j++)
-            _blocks[i][j] = std::make_shared<StandardBlock>(*this, BlockType::EMPTY);
+            _blocks[i][j] = std::make_shared<StandardBlock>(*this,
+                BlockType::EMPTY);
 }
 
 tetriq::Tetris::~Tetris()
