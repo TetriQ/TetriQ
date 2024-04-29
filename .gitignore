@@ -37,3 +37,7 @@ cmake-build-debug
 vgcore.*
 tetriq_client
 tetriq_server
+
+doxygen.conf
+html
+latex
