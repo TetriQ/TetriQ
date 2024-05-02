@@ -86,7 +86,7 @@ namespace tetriq {
             void fromString(const std::string &string) override;
 
         private:
-            std::vector<std::vector<std::shared_ptr<Block>>> _blocks;
+            std::vector<std::vector<std::unique_ptr<Block>>> _blocks;
             size_t _width;
             size_t _height;
     };
