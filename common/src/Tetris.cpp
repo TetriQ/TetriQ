@@ -85,7 +85,7 @@ tetriq::Tetris::Tetris(size_t width, size_t height)
     //fill blocks with standard blocks
     for (size_t i = 0; i < _height; i++)
         for (size_t j = 0; j < _width; j++)
-            _blocks[i][j] = std::make_shared<StandardBlock>(*this,
+            _blocks[i][j] = std::make_unique<StandardBlock>(*this,
                 BlockType::EMPTY);
 }
 
