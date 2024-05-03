@@ -1,0 +1,6 @@
+[book]
+authors = ["Noé Lopez", "Elwann Guillemot", "Sébastien Lucas"]
+language = "en"
+multilingual = false
+src = "src"
+title = "The TetriQ manual"
