@@ -16,16 +16,23 @@
 ## along with TetriQ. If not, see <https://www.gnu.org/licenses/>.
 ##
 
-cmake_minimum_required(VERSION 3.12)
+file(GLOB_RECURSE CLIENT_SRC CONFIGURE_DEPENDS "${TetriQ_SOURCE_DIR}/client/src/*.cpp")
 
-project(TetriQ LANGUAGES CXX)
+find_package(SFML 2.5 REQUIRED COMPONENTS graphics)
+find_package(Curses REQUIRED)
+find_package(ENet REQUIRED)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
+add_executable(tetriq_client ${CLIENT_SRC})
 
-set(CMAKE_CXX_STANDARD 20)
-add_compile_options("-Wall" "-Wextra")
+target_include_directories(tetriq_client
+    PRIVATE "${TetriQ_SOURCE_DIR}/client/include"
+    PRIVATE ${CURSES_INCLUDE_DIRS}
+    PRIVATE ${ENET_INCLUDE_DIRS}
+)
 
-add_subdirectory(common)
-add_subdirectory(client)
-add_subdirectory(server)
+target_link_libraries(tetriq_client
+    PRIVATE tetriq_common
+    PRIVATE sfml-graphics
+    PRIVATE ${CURSES_LIBRARIES}
+    PRIVATE ${ENET_LIBRARIES}
+)
