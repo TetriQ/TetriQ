@@ -56,7 +56,7 @@ add_executable(tetriq_server ${SERVER_SRCS})
 target_link_libraries(tetriq_server
     ${ENET_LIBRARIES}
     ${CURSES_LIBRARIES}
-    ${LIBCONFIG_LIBRARIES}
+    ${LIBCONFIG_LIBRARIES}++
 )
 
 add_custom_target(tetriq-server
@@ -80,7 +80,7 @@ target_link_libraries(tetriq_client
     ${SFML_LIBRARIES}
     ${ENET_LIBRARIES}
     ${CURSES_LIBRARIES}
-    ${LIBCONFIG_LIBRARIES}
+    ${LIBCONFIG_LIBRARIES}++
 )
 
 add_custom_target(tetriq-client
