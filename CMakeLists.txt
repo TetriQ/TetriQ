@@ -28,7 +28,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
 project(tetriq)
 
-find_package(SFML 2.6 COMPONENTS system window graphics network audio REQUIRED)
+find_package(SFML 2.5 COMPONENTS system window graphics network audio REQUIRED)
 find_package(ENet REQUIRED)
 find_package(Curses REQUIRED)
 find_package(libconfig REQUIRED)
