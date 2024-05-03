@@ -16,16 +16,8 @@
 ## along with TetriQ. If not, see <https://www.gnu.org/licenses/>.
 ##
 
-cmake_minimum_required(VERSION 3.12)
+file(GLOB_RECURSE COMMON_SRC CONFIGURE_DEPENDS "${TetriQ_SOURCE_DIR}/common/src/*.cpp")
 
-project(TetriQ LANGUAGES CXX)
-
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
-
-set(CMAKE_CXX_STANDARD 20)
-add_compile_options("-Wall" "-Wextra")
-
-add_subdirectory(common)
-add_subdirectory(client)
-add_subdirectory(server)
+add_library(tetriq_common ${COMMON_SRC})
+target_include_directories(tetriq_common
+    PUBLIC "${TetriQ_SOURCE_DIR}/common/include")
