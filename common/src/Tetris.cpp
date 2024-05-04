@@ -22,14 +22,9 @@ tetriq::Block::Block(Tetris &tetris, BlockType type) : _tetris(tetris),
     _type(type), _isDestructible(false)
 {}
 
-void tetriq::Block::fromString(const std::string &string)
+tetriq::BlockType tetriq::Block::getType() const
 {
-    (void) string;
-}
-
-std::string tetriq::Block::toString()
-{
-    return std::to_string(_type);
+    return _type;
 }
 
 tetriq::StandardBlock::StandardBlock(Tetris &_tetris, BlockType type) : Block(
@@ -78,9 +73,9 @@ void tetriq::SpecialBlock::onDestruction()
 {}
 
 tetriq::Tetris::Tetris(size_t width, size_t height)
+    : _width(width)
+    , _height(height)
 {
-    _width = width;
-    _height = height;
     _blocks.resize(_height);
     for (size_t i = 0; i < _height; i++)
         _blocks[i].resize(_width);
@@ -93,15 +88,19 @@ tetriq::Tetris::Tetris(size_t width, size_t height)
 
 tetriq::Tetris::~Tetris()
 {
-    ;
 }
 
-std::string tetriq::Tetris::toString()
+uint64_t tetriq::Tetris::getWidth() const
 {
-    return "";
+    return _width;
 }
 
-void tetriq::Tetris::fromString(const std::string &string)
+uint64_t tetriq::Tetris::getHeight() const
 {
-    (void) string;
+    return _height;
+}
+
+const std::unique_ptr<tetriq::Block> &tetriq::Tetris::getBlockAt(uint64_t x, uint64_t y) const
+{
+    return _blocks[y][x];
 }

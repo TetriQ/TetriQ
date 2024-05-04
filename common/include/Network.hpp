@@ -26,10 +26,7 @@ namespace tetriq
     class NetworkObject {
         public:
             virtual ~NetworkObject() = default;
-            // toString return a string representation of the object
-            virtual std::string toString() = 0;
-            // fromString set the object from a string representation
-            virtual void fromString(const std::string &string) = 0;
+            // TODO
     };
 }
 
