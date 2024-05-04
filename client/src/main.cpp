@@ -16,13 +16,18 @@
 * along with TetriQ. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "client.hpp"
 #include "Tetris.hpp"
+#include "SFMLDisplay.hpp"
 
 int main(int argc, char *argv[])
 {
     (void) argc;
     (void) argv;
     tetriq::Tetris tetris(10, 20);
+    tetriq::SFMLDisplay display;
+
+    if (!display.loadGame(tetris))
+        return EXIT_FAILURE;
+    while (display.draw(tetris));
     return EXIT_SUCCESS;
 }
