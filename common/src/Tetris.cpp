@@ -23,7 +23,9 @@ tetriq::Block::Block(Tetris &tetris, BlockType type) : _tetris(tetris),
 {}
 
 void tetriq::Block::fromString(const std::string &string)
-{}
+{
+    (void) string;
+}
 
 std::string tetriq::Block::toString()
 {
@@ -101,5 +103,5 @@ std::string tetriq::Tetris::toString()
 
 void tetriq::Tetris::fromString(const std::string &string)
 {
-    ;
+    (void) string;
 }
