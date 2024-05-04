@@ -29,3 +29,6 @@ add_compile_options("-Wall" "-Wextra")
 add_subdirectory(common)
 add_subdirectory(client)
 add_subdirectory(server)
+
+add_custom_target(TetriQ ALL
+    DEPENDS tetriq_client tetriq_server)
