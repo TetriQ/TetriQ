@@ -21,6 +21,8 @@
 
 int main(int argc, char *argv[])
 {
+    (void) argc;
+    (void) argv;
     tetriq::Tetris tetris(10, 20);
     return EXIT_SUCCESS;
 }
