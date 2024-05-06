@@ -16,67 +16,16 @@
 * along with TetriQ. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef TETRIS_H
-#define TETRIS_H
+#pragma once
 
+#include <map>
+
+#include "Block.hpp"
 #include "Network.hpp"
 #include <vector>
 #include <memory>
 
 namespace tetriq {
-    class Tetris;
-
-    enum BlockType {
-        EMPTY,
-        RED,
-        BLUE,
-        DARK_BLUE,
-        ORANGE,
-        YELLOW,
-        GREEN,
-        PURPLE,
-        INDESTRUCTIBLE,
-        SPECIAL // not used for now
-    };
-
-    class Block: public NetworkObject {
-        public:
-            explicit Block(Tetris &tetris, BlockType type);
-            ~Block() override = default;
-            virtual bool isDestructible() = 0;
-            virtual void onDestruction() = 0;
-            [[nodiscard]] BlockType getType() const;
-
-        private:
-            Tetris &_tetris;
-            BlockType _type;
-            bool _isDestructible;
-    };
-
-    class StandardBlock final: public Block {
-        public:
-            explicit StandardBlock(Tetris &_tetris, BlockType type);
-            ~StandardBlock() override;
-            bool isDestructible() override;
-            void onDestruction() override;
-    };
-
-    class IndestructibleBlock final: public Block {
-        public:
-            explicit IndestructibleBlock(Tetris &_tetris);
-            ~IndestructibleBlock() override;
-            bool isDestructible() override;
-            void onDestruction() override;
-    };
-
-    class SpecialBlock: public Block {
-        public:
-            explicit SpecialBlock(Tetris &_tetris, BlockType type);
-            ~SpecialBlock() override;
-            bool isDestructible() override;
-            void onDestruction() override;
-    };
-
     class Tetris final: public NetworkObject {
         public:
             Tetris(size_t width, size_t height);
@@ -93,5 +42,3 @@ namespace tetriq {
             uint64_t _height;
     };
 }
-
-#endif //TETRIS_H
