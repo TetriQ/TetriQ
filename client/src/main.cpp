@@ -23,6 +23,10 @@ int main(int argc, char *argv[])
 {
     (void) argc;
     (void) argv;
+
+    // Seed the random number generator
+    srand(time(nullptr));
+
     tetriq::Tetris tetris(10, 20);
     tetriq::SFMLDisplay display;
 
