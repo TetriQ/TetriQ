@@ -16,9 +16,6 @@
 * along with TetriQ. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef SERVER_HPP
-#define SERVER_HPP
+#pragma once
 
 #include <iostream>
-
-#endif //SERVER_HPP

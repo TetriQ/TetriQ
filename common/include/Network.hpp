@@ -16,8 +16,7 @@
 * along with TetriQ. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef NETWORK_HPP
-#define NETWORK_HPP
+#pragma once
 
 #include <iostream>
 
@@ -29,5 +28,3 @@ namespace tetriq
             // TODO
     };
 }
-
-#endif //NETWORK_HPP
