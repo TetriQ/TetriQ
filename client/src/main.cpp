@@ -28,6 +28,6 @@ int main(int argc, char *argv[])
 
     if (!display.loadGame(tetris))
         return EXIT_FAILURE;
-    while (display.draw(tetris));
+    while (display.draw(tetris) && display.handleEvents(tetris));
     return EXIT_SUCCESS;
 }
