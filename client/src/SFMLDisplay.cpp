@@ -94,7 +94,7 @@ void tetriq::SFMLDisplay::drawBlock(sf::Vector2u pos, BlockType block)
             rec.setFillColor(sf::Color::Blue);
             break;
         case DARK_BLUE:
-            rec.setFillColor(sf::Color::Blue);
+            rec.setFillColor(sf::Color(0, 0, 139));
             break;
         case ORANGE:
             rec.setFillColor(sf::Color(255, 165, 0));
