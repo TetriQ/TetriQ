@@ -22,8 +22,11 @@
 
 #include "Block.hpp"
 #include "Network.hpp"
+#include "Tetromino.hpp"
+
 #include <vector>
 #include <memory>
+#include <queue>
 
 namespace tetriq {
     class Tetris final: public NetworkObject {
@@ -38,6 +41,7 @@ namespace tetriq {
 
         private:
             std::vector<std::vector<std::unique_ptr<Block>>> _blocks;
+            std::queue<Tetromino> _nextPieces; //TODO: Show next pieces in graphics
             uint64_t _width;
             uint64_t _height;
     };
