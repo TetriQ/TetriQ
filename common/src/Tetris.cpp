@@ -18,60 +18,6 @@
 
 #include "Tetris.hpp"
 
-tetriq::Block::Block(Tetris &tetris, BlockType type)
-: _tetris(tetris), _type(type), _isDestructible(false)
-{}
-
-tetriq::BlockType tetriq::Block::getType() const
-{
-    return _type;
-}
-
-tetriq::StandardBlock::StandardBlock(Tetris &_tetris, BlockType type)
-: Block(_tetris, type)
-{}
-
-tetriq::StandardBlock::~StandardBlock()
-= default;
-
-bool tetriq::StandardBlock::isDestructible()
-{
-    return true;
-}
-
-void tetriq::StandardBlock::onDestruction()
-{}
-
-tetriq::IndestructibleBlock::IndestructibleBlock(Tetris &_tetris)
-: Block(_tetris, BlockType::INDESTRUCTIBLE)
-{}
-
-tetriq::IndestructibleBlock::~IndestructibleBlock()
-= default;
-
-bool tetriq::IndestructibleBlock::isDestructible()
-{
-    return false;
-}
-
-void tetriq::IndestructibleBlock::onDestruction()
-{}
-
-tetriq::SpecialBlock::SpecialBlock(Tetris &_tetris, BlockType type) : Block(
-    _tetris, type)
-{}
-
-tetriq::SpecialBlock::~SpecialBlock()
-= default;
-
-bool tetriq::SpecialBlock::isDestructible()
-{
-    return true;
-}
-
-void tetriq::SpecialBlock::onDestruction()
-{}
-
 tetriq::Tetris::Tetris(size_t width, size_t height)
 : _width(width), _height(height)
 {
