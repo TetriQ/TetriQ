@@ -18,13 +18,19 @@
 
 #include "Tetromino.hpp"
 
-tetriq::Tetromino::Tetromino() : _position({0, 0})
-{}
-
-tetriq::Tetromino::Tetromino(const pos &position) : _position(position)
-{}
+// create a tetromino at x=5 y=0 && with a random shape
+tetriq::Tetromino::Tetromino(): _position({5, 0}),
+_type(static_cast<BlockType>(rand() % 7 + 1))
+{
+}
 
 tetriq::Tetromino::~Tetromino() = default;
+
+// return the type of the tetromino
+tetriq::BlockType tetriq::Tetromino::getType() const
+{
+    return _type;
+}
 
 tetriq::pos tetriq::Tetromino::getPosition() const
 {
