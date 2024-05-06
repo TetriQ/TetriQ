@@ -18,8 +18,8 @@
 
 #include "Tetris.hpp"
 
-tetriq::Block::Block(Tetris &tetris, BlockType type) : _tetris(tetris),
-    _type(type), _isDestructible(false)
+tetriq::Block::Block(Tetris &tetris, BlockType type)
+: _tetris(tetris), _type(type), _isDestructible(false)
 {}
 
 tetriq::BlockType tetriq::Block::getType() const
@@ -27,8 +27,8 @@ tetriq::BlockType tetriq::Block::getType() const
     return _type;
 }
 
-tetriq::StandardBlock::StandardBlock(Tetris &_tetris, BlockType type) : Block(
-    _tetris, type)
+tetriq::StandardBlock::StandardBlock(Tetris &_tetris, BlockType type)
+: Block(_tetris, type)
 {}
 
 tetriq::StandardBlock::~StandardBlock()
@@ -42,8 +42,8 @@ bool tetriq::StandardBlock::isDestructible()
 void tetriq::StandardBlock::onDestruction()
 {}
 
-tetriq::IndestructibleBlock::IndestructibleBlock(Tetris &_tetris) : Block(
-    _tetris, BlockType::INDESTRUCTIBLE)
+tetriq::IndestructibleBlock::IndestructibleBlock(Tetris &_tetris)
+: Block(_tetris, BlockType::INDESTRUCTIBLE)
 {}
 
 tetriq::IndestructibleBlock::~IndestructibleBlock()
@@ -73,26 +73,25 @@ void tetriq::SpecialBlock::onDestruction()
 {}
 
 tetriq::Tetris::Tetris(size_t width, size_t height)
-    : _width(width)
-    , _height(height)
+: _width(width), _height(height)
 {
     _blocks.resize(_height);
     for (size_t i = 0; i < _height; i++)
         _blocks[i].resize(_width);
-    //fill blocks with standard blocks
+
     for (size_t i = 0; i < _height; i++) {
         for (size_t j = 0; j < _width; j++) {
             if (j == 0 || j == _width - 1 || i == _height - 1)
                 _blocks[i][j] = std::make_unique<IndestructibleBlock>(*this);
             else
-                _blocks[i][j] = std::make_unique<StandardBlock>(*this, BlockType::EMPTY);
+                _blocks[i][j] = std::make_unique<StandardBlock>(*this,
+                    BlockType::EMPTY);
         }
     }
 }
 
 tetriq::Tetris::~Tetris()
-{
-}
+{}
 
 uint64_t tetriq::Tetris::getWidth() const
 {
@@ -104,7 +103,8 @@ uint64_t tetriq::Tetris::getHeight() const
     return _height;
 }
 
-const std::unique_ptr<tetriq::Block> &tetriq::Tetris::getBlockAt(uint64_t x, uint64_t y) const
+const std::unique_ptr<tetriq::Block> &tetriq::Tetris::getBlockAt(uint64_t x,
+    uint64_t y) const
 {
     return _blocks[y][x];
 }
