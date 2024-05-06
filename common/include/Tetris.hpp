@@ -45,7 +45,7 @@ namespace tetriq {
             ~Block() override = default;
             virtual bool isDestructible() = 0;
             virtual void onDestruction() = 0;
-            BlockType getType() const;
+            [[nodiscard]] BlockType getType() const;
 
         private:
             Tetris &_tetris;
@@ -82,9 +82,11 @@ namespace tetriq {
             Tetris(size_t width, size_t height);
             ~Tetris() override;
 
-            uint64_t getWidth() const;
-            uint64_t getHeight() const;
-            const std::unique_ptr<Block> &getBlockAt(uint64_t x, uint64_t y) const;
+            [[nodiscard]] uint64_t getWidth() const;
+            [[nodiscard]] uint64_t getHeight() const;
+            [[nodiscard]] const std::unique_ptr<Block> &getBlockAt(uint64_t x,
+                uint64_t y) const;
+
         private:
             std::vector<std::vector<std::unique_ptr<Block>>> _blocks;
             uint64_t _width;
