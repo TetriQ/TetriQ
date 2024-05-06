@@ -21,6 +21,10 @@
 tetriq::Tetris::Tetris(size_t width, size_t height)
 : _width(width), _height(height)
 {
+    for (int i = 0; i < 3; i++) {
+        _nextPieces.emplace();
+    }
+
     _blocks.resize(_height);
     for (size_t i = 0; i < _height; i++)
         _blocks[i].resize(_width);
