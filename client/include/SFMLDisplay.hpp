@@ -23,17 +23,19 @@
 #include <SFML/Graphics.hpp>
 
 namespace tetriq {
-    class SFMLDisplay : public IDisplay {
+    class SFMLDisplay: public IDisplay {
         public:
             SFMLDisplay();
-            ~SFMLDisplay();
+            ~SFMLDisplay() override;
 
             bool loadGame(const Tetris &game) override;
             bool draw(const Tetris &game) override;
+            bool handleEvents(const Tetris &game) override;
             void drawBlock(sf::Vector2u pos, BlockType block);
         private:
-            const uint64_t BLOCK_SIZE = 24;
+            const uint64_t BLOCK_SIZE = 32;
 
             sf::RenderWindow _window;
+            sf::Event _event;
     };
 }
