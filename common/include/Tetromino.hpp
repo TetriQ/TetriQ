@@ -19,18 +19,23 @@
 #pragma once
 
 #include "Utils.hpp"
+#include "Block.hpp"
 
 namespace tetriq {
     class Tetromino {
         public:
             Tetromino();
-            explicit Tetromino(const pos &position);
             ~Tetromino();
+
+            //TODO: Implement rotation and movement
+
+            [[nodiscard]] BlockType getType() const;
 
             [[nodiscard]] pos getPosition() const;
             void setPosition(pos position);
 
         private:
             pos _position;
+            BlockType _type;
     };
 }
