@@ -30,7 +30,7 @@ namespace tetriq {
 
             bool loadGame(const Tetris &game) override;
             bool draw(const Tetris &game) override;
-            bool handleEvents(const Tetris &game) override;
+            bool handleEvents(Tetris &game) override;
             void drawBlock(sf::Vector2u pos, BlockType block);
             void drawTetromino(const Tetromino &tetromino);
         private:

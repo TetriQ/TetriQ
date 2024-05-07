@@ -17,9 +17,13 @@
 */
 
 #include "Tetris.hpp"
+#include "Block.hpp"
 
 tetriq::Tetris::Tetris(size_t width, size_t height)
-: _width(width), _height(height)
+    : _grace_ticks(0)
+    , _game_over(false)
+    , _width(width)
+    , _height(height)
 {
     for (int i = 0; i < 3; i++) {
         _nextPieces.emplace_back();
@@ -64,53 +68,64 @@ const tetriq::Tetromino &tetriq::Tetris::getCurrentPiece() const
     return _nextPieces.front();
 }
 
+tetriq::Tetromino &tetriq::Tetris::getCurrentPiece()
+{
+    return _nextPieces.front();
+}
+
 bool tetriq::Tetris::moveCurrentPiece(int xOffset, int yOffset)
 {
-    Tetromino currentPiece = _nextPieces[0];
-    currentPiece.setPosition({currentPiece.getPosition().x + xOffset,
-        currentPiece.getPosition().y + yOffset});
-    for (int i = 0; i < 4; i++) {
-        std::tuple<char, char> local_pos =
-            BlockRotations.at(currentPiece.getType()).at(currentPiece.getRotation()).at(i);
-        int x = currentPiece.getPosition().x + std::get<0>(local_pos);
-        int y = currentPiece.getPosition().y + std::get<1>(local_pos);
-        if (x < 0 || x >= static_cast<int> (_width) || y >= static_cast<int>(_height))
-            return false;
-        if (_blocks[y][x]->getType() != EMPTY)
-            return false;
-    }
-    _nextPieces[0].setPosition(currentPiece.getPosition());
-    return true;
+    return getCurrentPiece().move(xOffset, yOffset, *this);
 }
 
 bool tetriq::Tetris::rotateCurrentPiece()
 {
-    Tetromino currentPiece = _nextPieces[0];
+    return getCurrentPiece().rotate(*this);
+}
 
-    currentPiece.setRotation((currentPiece.getRotation() + 1) %
-        static_cast<int>(BlockRotations.at(currentPiece.getType()).size()));
+void tetriq::Tetris::dropCurrentPiece()
+{
+    getCurrentPiece().drop(*this);
+}
 
-    for (int i = 0; i < 4; i++) {
-        std::tuple<char, char> local_pos =
-            BlockRotations.at(currentPiece.getType()).at(currentPiece.getRotation()).at(i);
-        int x = currentPiece.getPosition().x + std::get<0>(local_pos);
-        int y = currentPiece.getPosition().y + std::get<1>(local_pos);
-        if (x < 0 || x >= static_cast<int>(_width) || y >= static_cast<int>(_height))
-            return false;
-        if (_blocks[y][x]->getType() != EMPTY)
-            return false;
+void tetriq::Tetris::tick()
+{
+    if (_game_over)
+        return;
+    if (_grace_ticks != 0) {
+        _grace_ticks--;
+        return;
     }
-    _nextPieces[0].setRotation(currentPiece.getRotation());
-    return true;
+
+    if (!moveCurrentPiece(0, 1))
+        placeTetromino();
+}
+
+void tetriq::Tetris::addGraceTicks(uint64_t n)
+{
+    _grace_ticks += n;
+}
+
+bool tetriq::Tetris::isOver()
+{
+    return false;
 }
 
 // Place the current piece on the board and generate a new one
 void tetriq::Tetris::placeTetromino()
 {
     Tetromino &currentPiece = _nextPieces[0];
+    const Rotation &shape = currentPiece.getBlockRotation();
 
-    _blocks[currentPiece.getPosition().y][currentPiece.getPosition().x] =
-        std::make_unique<StandardBlock>(*this, currentPiece.getType());
+    for (int i = 0; i < 4; i++) {
+        auto pos = shape.at(i);
+        int x = currentPiece.getPosition().x + std::get<0>(pos);
+        int y = currentPiece.getPosition().y + std::get<1>(pos);
+
+        _blocks[y][x] = std::make_unique<StandardBlock>(*this, currentPiece.getType());
+    }
     _nextPieces.erase(_nextPieces.begin());
     _nextPieces.emplace_back();
+    if (_nextPieces.back().collides(*this))
+        _game_over = true;
 }

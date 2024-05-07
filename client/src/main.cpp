@@ -29,9 +29,19 @@ int main(int argc, char *argv[])
 
     tetriq::Tetris tetris(12, 22);
     tetriq::SFMLDisplay display;
+    sf::Clock clock;
 
     if (!display.loadGame(tetris))
         return EXIT_FAILURE;
-    while (display.draw(tetris) && display.handleEvents(tetris));
+    while (true) {
+        if (!display.draw(tetris))
+            break;
+        if (!display.handleEvents(tetris))
+            break;
+        if (clock.getElapsedTime() > sf::seconds(1.0 / 5.0)) {
+            clock.restart();
+            tetris.tick();
+        }
+    }
     return EXIT_SUCCESS;
 }

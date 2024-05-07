@@ -18,15 +18,13 @@
 
 #pragma once
 
-#include <map>
-
 #include "Block.hpp"
 #include "Network.hpp"
 #include "Tetromino.hpp"
 
+#include <cstdint>
 #include <vector>
 #include <memory>
-#include <queue>
 
 namespace tetriq {
     class Tetris final: public NetworkObject {
@@ -38,11 +36,32 @@ namespace tetriq {
             [[nodiscard]] uint64_t getHeight() const;
             [[nodiscard]] const std::unique_ptr<Block> &getBlockAt(uint64_t x,
                 uint64_t y) const;
-            [[nodiscard]] const Tetromino &getCurrentPiece() const;
+            const Tetromino &getCurrentPiece() const;
+            Tetromino &getCurrentPiece();
             [[nodiscard]] bool moveCurrentPiece(int xOffset, int yOffset);
             [[nodiscard]] bool rotateCurrentPiece();
+            void dropCurrentPiece();
+
+            /**
+             * Advances the game by one tick.
+             */
+            void tick();
+            void addGraceTicks(uint64_t n);
+
+            /**
+             * Returns true if the game is over.
+             */
+            bool isOver();
         private:
             void placeTetromino();
+
+            /**
+             * Prevents the block from being placed on the next n ticks. This is
+             * used by dropCurrentPiece().
+             */
+            uint64_t _grace_ticks;
+            bool _game_over;
+            
             std::vector<std::vector<std::unique_ptr<Block>>> _blocks;
             std::vector<Tetromino> _nextPieces;
             uint64_t _width;

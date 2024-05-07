@@ -18,8 +18,6 @@
 
 #pragma once
 
-#include <memory>
-
 namespace tetriq {
     struct Position {
         int x;

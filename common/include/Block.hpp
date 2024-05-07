@@ -42,7 +42,7 @@ namespace tetriq {
     using BlockShape = std::pair<BlockType, std::vector<std::vector<int>>>;
     using Rotation = std::vector<std::tuple<char, char>>;
 
-    extern const std::map<BlockType, std::vector<Rotation>> BlockRotations;
+    extern const std::map<BlockType, std::vector<Rotation>> BLOCK_ROTATIONS;
 
     class Block: public NetworkObject {
         public:

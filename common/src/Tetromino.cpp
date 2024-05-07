@@ -17,8 +17,10 @@
 */
 
 #include "Tetromino.hpp"
-
-#include <utility>
+#include "Block.hpp"
+#include "Utils.hpp"
+#include "Tetris.hpp"
+#include <tuple>
 
 // create a tetromino at x=4 y=0 && with a random shape
 tetriq::Tetromino::Tetromino()
@@ -33,7 +35,6 @@ _type(type)
 
 tetriq::Tetromino::~Tetromino() = default;
 
-// return the type of the tetromino
 tetriq::BlockType tetriq::Tetromino::getType() const
 {
     return _type;
@@ -59,4 +60,53 @@ void tetriq::Tetromino::setRotation(int rotation)
 void tetriq::Tetromino::setPosition(pos position)
 {
     _position = position;
+}
+
+const tetriq::Rotation &tetriq::Tetromino::getBlockRotation() const
+{
+    return BLOCK_ROTATIONS.at(getType()).at(getRotation());
+}
+
+bool tetriq::Tetromino::move(int xOffset, int yOffset, const Tetris &game)
+{
+    Tetromino next = *this;
+    next._position.x += xOffset;
+    next._position.y += yOffset;
+    if (next.collides(game))
+        return false;
+
+    _position = next._position;
+    return true;
+}
+
+bool tetriq::Tetromino::rotate(const Tetris &game)
+{
+    Tetromino next = *this;
+    next._rotation = (_rotation + 1) % BLOCK_ROTATIONS.at(_type).size();
+    if (next.collides(game))
+        return false;
+
+    _rotation = next._rotation;
+    return true;
+}
+
+void tetriq::Tetromino::drop(Tetris &game)
+{
+    while (move(0, 1, game));
+    game.addGraceTicks(1);
+}
+
+bool tetriq::Tetromino::collides(const Tetris &game)
+{
+    const Rotation &shape = getBlockRotation();
+    for (int i = 0; i < 4; i++) {
+        const std::tuple<char, char> &local_pos = shape.at(i);
+        int x = _position.x + std::get<0>(local_pos);
+        int y = _position.y + std::get<1>(local_pos);
+        if (x < 0 || x >= static_cast<int> (game.getWidth()) || y >= static_cast<int>(game.getHeight()))
+            return true;
+        if (game.getBlockAt(x, y)->getType() != EMPTY)
+            return true;
+    }
+    return false;
 }

@@ -71,7 +71,7 @@ void tetriq::SpecialBlock::onDestruction()
 {}
 
 namespace tetriq {
-    const std::map<BlockType, std::vector<Rotation>> BlockRotations = {
+    const std::map<BlockType, std::vector<Rotation>> BLOCK_ROTATIONS = {
         {
             YELLOW, {
                 {{0, 0}, {1, 0}, {0, 1}, {1, 1}},
