@@ -27,6 +27,6 @@ namespace tetriq {
 
             [[nodiscard]] virtual bool loadGame(const Tetris &game) = 0;
             [[nodiscard]] virtual bool draw(const Tetris &game) = 0;
-            [[nodiscard]] virtual bool handleEvents(const Tetris &game) = 0;
+            [[nodiscard]] virtual bool handleEvents(Tetris &game) = 0;
     };
 }

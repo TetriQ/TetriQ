@@ -51,6 +51,7 @@ bool tetriq::SFMLDisplay::draw(const Tetris &game)
     BlockType blockType;
     sf::Vector2u pos;
 
+    _window.setFramerateLimit(60);
     _window.clear(sf::Color::Black);
     for (uint64_t x = 0; x < game.getWidth(); x++) {
         for (uint64_t y = 0; y < game.getHeight(); y++) {
@@ -64,22 +65,39 @@ bool tetriq::SFMLDisplay::draw(const Tetris &game)
     return true;
 }
 
-bool tetriq::SFMLDisplay::handleEvents(const Tetris &game)
+bool tetriq::SFMLDisplay::handleEvents(Tetris &game)
 {
-    (void) game; // silence unused parameter warning
     while (_window.pollEvent(_event)) {
-        if (_event.type == sf::Event::Closed) {
-            _window.close();
-            return false;
-        }
+        if (_event.type == sf::Event::Closed)
+            goto exit_window;
         if (_event.type == sf::Event::KeyPressed) {
-            if (_event.key.code == sf::Keyboard::Escape) {
-                _window.close();
-                return false;
+            switch (_event.key.code) {
+            case sf::Keyboard::Escape:
+                goto exit_window;
+            case sf::Keyboard::Left:
+                (void) game.moveCurrentPiece(-1, 0);
+                continue;
+            case sf::Keyboard::Right:
+                (void) game.moveCurrentPiece(1, 0);
+                continue;
+            case sf::Keyboard::Up:
+                (void) game.rotateCurrentPiece();
+                continue;
+            case sf::Keyboard::Down:
+                (void) game.moveCurrentPiece(0, 1);
+                continue;
+            case sf::Keyboard::Space:
+                (void) game.dropCurrentPiece();
+                continue;
+            default:
+                continue;
             }
         }
     }
     return true;
+exit_window:
+    _window.close();
+    return false;
 }
 
 void tetriq::SFMLDisplay::drawBlock(sf::Vector2u pos, BlockType block)
@@ -110,7 +128,7 @@ void tetriq::SFMLDisplay::drawBlock(sf::Vector2u pos, BlockType block)
             rec.setFillColor(sf::Color::Magenta);
             break;
         case INDESTRUCTIBLE:
-            rec.setFillColor(sf::Color(128, 128, 128));
+            rec.setFillColor(sf::Color(59, 59, 59));
             break;
         case EMPTY:
             rec.setFillColor(sf::Color::Black);
@@ -129,10 +147,10 @@ void tetriq::SFMLDisplay::drawTetromino(const Tetromino &tetromino)
 
     for (int i = 0; i < 4; i++) {
         BlockType block = tetromino.getType();
-        std::tuple<char, char> local_pos = BlockRotations.at(block).at(tetromino.getRotation()).at(i);
+        std::tuple<char, char> local_pos = BLOCK_ROTATIONS.at(block).at(tetromino.getRotation()).at(i);
         int x = position.x + std::get<0>(local_pos);
         int y = position.y + std::get<1>(local_pos);
-        drawBlock(sf::Vector2u(x * BLOCK_SIZE, y * BLOCK_SIZE), tetromino.getType());
+        drawBlock(sf::Vector2u(x * BLOCK_SIZE, y * BLOCK_SIZE), block);
 
     }
 }

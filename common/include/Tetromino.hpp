@@ -28,19 +28,20 @@ namespace tetriq {
             explicit Tetromino(BlockType &&type);
             ~Tetromino();
 
-            //TODO: Implement rotation and movement
-
             [[nodiscard]] BlockType getType() const;
 
             [[nodiscard]] pos getPosition() const;
             [[nodiscard]] int getRotation() const;
             void setRotation(int rotation);
             void setPosition(pos position);
-
+            const Rotation &getBlockRotation() const;
+            [[nodiscard]] bool move(int x, int y, const Tetris &game);
+            [[nodiscard]] bool rotate(const Tetris &game);
+            void drop(Tetris &game);
+            bool collides(const Tetris &game);
         private:
             pos _position;
             BlockType _type;
-            int _rotation = 0;
-
+            uint64_t _rotation = 0;
     };
 }
