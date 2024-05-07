@@ -32,6 +32,7 @@ namespace tetriq {
             bool draw(const Tetris &game) override;
             bool handleEvents(const Tetris &game) override;
             void drawBlock(sf::Vector2u pos, BlockType block);
+            void drawTetromino(const Tetromino &tetromino);
         private:
             const uint64_t BLOCK_SIZE = 32;
 
