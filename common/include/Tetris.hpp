@@ -34,10 +34,12 @@ namespace tetriq {
 
             [[nodiscard]] uint64_t getWidth() const;
             [[nodiscard]] uint64_t getHeight() const;
-            [[nodiscard]] const std::unique_ptr<Block> &getBlockAt(uint64_t x,
-                uint64_t y) const;
+
+            const std::unique_ptr<Block> &getBlockAt(uint64_t x, uint64_t y) const;
             const Tetromino &getCurrentPiece() const;
             Tetromino &getCurrentPiece();
+            const Tetromino &getNextPiece() const;
+
             [[nodiscard]] bool moveCurrentPiece(int xOffset, int yOffset);
             [[nodiscard]] bool rotateCurrentPiece();
             void dropCurrentPiece();
@@ -51,7 +53,7 @@ namespace tetriq {
             /**
              * Returns true if the game is over.
              */
-            bool isOver();
+            bool isOver() const;
         private:
             void placeTetromino();
 

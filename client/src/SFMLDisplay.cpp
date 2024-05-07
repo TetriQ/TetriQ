@@ -17,7 +17,9 @@
  */
 
 #include "SFMLDisplay.hpp"
+#include "Block.hpp"
 #include "Tetris.hpp"
+#include "Utils.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <cstdint>
@@ -37,7 +39,7 @@ tetriq::SFMLDisplay::~SFMLDisplay()
 
 bool tetriq::SFMLDisplay::loadGame(const Tetris &game)
 {
-    uint64_t width = game.getWidth() * BLOCK_SIZE;
+    uint64_t width = (game.getWidth() + SIDEBAR_SIZE) * BLOCK_SIZE;
     uint64_t height = game.getHeight() * BLOCK_SIZE;
     sf::View new_view(sf::FloatRect(0, 0, width, height));
 
@@ -60,7 +62,8 @@ bool tetriq::SFMLDisplay::draw(const Tetris &game)
             drawBlock(pos, blockType);
         }
     }
-    drawTetromino(game.getCurrentPiece());
+    drawCurrentTetromino(game);
+    drawNextTetromino(game);
     _window.display();
     return true;
 }
@@ -141,16 +144,29 @@ void tetriq::SFMLDisplay::drawBlock(sf::Vector2u pos, BlockType block)
     _window.draw(rec);
 }
 
-void tetriq::SFMLDisplay::drawTetromino(const Tetromino &tetromino)
+void tetriq::SFMLDisplay::drawTetromino(const Tetromino &tetromino, Position position)
 {
-    pos position = tetromino.getPosition();
+    const Rotation &shape = tetromino.getBlockRotation();
 
     for (int i = 0; i < 4; i++) {
-        BlockType block = tetromino.getType();
-        std::tuple<char, char> local_pos = BLOCK_ROTATIONS.at(block).at(tetromino.getRotation()).at(i);
+        std::tuple<char, char> local_pos = shape.at(i);
         int x = position.x + std::get<0>(local_pos);
         int y = position.y + std::get<1>(local_pos);
-        drawBlock(sf::Vector2u(x * BLOCK_SIZE, y * BLOCK_SIZE), block);
-
+        drawBlock(sf::Vector2u(x * BLOCK_SIZE, y * BLOCK_SIZE), tetromino.getType());
     }
+}
+
+void tetriq::SFMLDisplay::drawCurrentTetromino(const Tetris &game)
+{
+    drawTetromino(game.getCurrentPiece(), game.getCurrentPiece().getPosition());
+}
+
+void tetriq::SFMLDisplay::drawNextTetromino(const Tetris &game)
+{
+    Position pos = {
+        (int) (game.getWidth() + SIDEBAR_SIZE / 2) - 2,
+        1
+    };
+
+    drawTetromino(game.getNextPiece(), pos);
 }

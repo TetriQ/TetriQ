@@ -18,6 +18,7 @@
 
 #include "Tetris.hpp"
 #include "Block.hpp"
+#include "Tetromino.hpp"
 
 tetriq::Tetris::Tetris(size_t width, size_t height)
     : _grace_ticks(0)
@@ -73,6 +74,11 @@ tetriq::Tetromino &tetriq::Tetris::getCurrentPiece()
     return _nextPieces.front();
 }
 
+const tetriq::Tetromino &tetriq::Tetris::getNextPiece() const
+{
+    return _nextPieces.at(1);
+}
+
 bool tetriq::Tetris::moveCurrentPiece(int xOffset, int yOffset)
 {
     return getCurrentPiece().move(xOffset, yOffset, *this);
@@ -106,9 +112,9 @@ void tetriq::Tetris::addGraceTicks(uint64_t n)
     _grace_ticks += n;
 }
 
-bool tetriq::Tetris::isOver()
+bool tetriq::Tetris::isOver() const
 {
-    return false;
+    return _game_over;
 }
 
 // Place the current piece on the board and generate a new one
