@@ -18,9 +18,16 @@
 
 #include "Tetromino.hpp"
 
-// create a tetromino at x=5 y=0 && with a random shape
-tetriq::Tetromino::Tetromino(): _position({5, 0}),
-_type(static_cast<BlockType>(rand() % 7 + 1))
+#include <utility>
+
+// create a tetromino at x=4 y=0 && with a random shape
+tetriq::Tetromino::Tetromino()
+: _position({4, 0}), _type(static_cast<BlockType>(rand() % 7 + 1))
+{
+}
+
+tetriq::Tetromino::Tetromino(BlockType &&type) : _position({5, 0}),
+_type(type)
 {
 }
 
@@ -32,11 +39,23 @@ tetriq::BlockType tetriq::Tetromino::getType() const
     return _type;
 }
 
+// return the position of the tetromino
 tetriq::pos tetriq::Tetromino::getPosition() const
 {
     return _position;
 }
 
+int tetriq::Tetromino::getRotation() const
+{
+    return _rotation;
+}
+
+void tetriq::Tetromino::setRotation(int rotation)
+{
+    _rotation = rotation;
+}
+
+// set the position of the tetromino
 void tetriq::Tetromino::setPosition(pos position)
 {
     _position = position;
