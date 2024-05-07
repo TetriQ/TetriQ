@@ -25,6 +25,7 @@ namespace tetriq {
     class Tetromino {
         public:
             Tetromino();
+            explicit Tetromino(BlockType &&type);
             ~Tetromino();
 
             //TODO: Implement rotation and movement
@@ -32,10 +33,14 @@ namespace tetriq {
             [[nodiscard]] BlockType getType() const;
 
             [[nodiscard]] pos getPosition() const;
+            [[nodiscard]] int getRotation() const;
+            void setRotation(int rotation);
             void setPosition(pos position);
 
         private:
             pos _position;
             BlockType _type;
+            int _rotation = 0;
+
     };
 }
