@@ -74,7 +74,7 @@ bool tetriq::Tetris::moveCurrentPiece(int xOffset, int yOffset)
             BlockRotations.at(currentPiece.getType()).at(currentPiece.getRotation()).at(i);
         int x = currentPiece.getPosition().x + std::get<0>(local_pos);
         int y = currentPiece.getPosition().y + std::get<1>(local_pos);
-        if (x < 0 || x >= _width || y >= _height)
+        if (x < 0 || x >= static_cast<int> (_width) || y >= static_cast<int>(_height))
             return false;
         if (_blocks[y][x]->getType() != EMPTY)
             return false;
@@ -95,11 +95,22 @@ bool tetriq::Tetris::rotateCurrentPiece()
             BlockRotations.at(currentPiece.getType()).at(currentPiece.getRotation()).at(i);
         int x = currentPiece.getPosition().x + std::get<0>(local_pos);
         int y = currentPiece.getPosition().y + std::get<1>(local_pos);
-        if (x < 0 || x >= _width || y >= _height)
+        if (x < 0 || x >= static_cast<int>(_width) || y >= static_cast<int>(_height))
             return false;
         if (_blocks[y][x]->getType() != EMPTY)
             return false;
     }
     _nextPieces[0].setRotation(currentPiece.getRotation());
     return true;
+}
+
+// Place the current piece on the board and generate a new one
+void tetriq::Tetris::placeTetromino()
+{
+    Tetromino &currentPiece = _nextPieces[0];
+
+    _blocks[currentPiece.getPosition().y][currentPiece.getPosition().x] =
+        std::make_unique<StandardBlock>(*this, currentPiece.getType());
+    _nextPieces.erase(_nextPieces.begin());
+    _nextPieces.emplace_back();
 }

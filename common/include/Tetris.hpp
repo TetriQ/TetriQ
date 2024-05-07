@@ -41,8 +41,8 @@ namespace tetriq {
             [[nodiscard]] const Tetromino &getCurrentPiece() const;
             [[nodiscard]] bool moveCurrentPiece(int xOffset, int yOffset);
             [[nodiscard]] bool rotateCurrentPiece();
-
         private:
+            void placeTetromino();
             std::vector<std::vector<std::unique_ptr<Block>>> _blocks;
             std::vector<Tetromino> _nextPieces;
             uint64_t _width;
