@@ -22,11 +22,11 @@
 
 // create a tetromino at x=4 y=0 && with a random shape
 tetriq::Tetromino::Tetromino()
-: _position({4, 0}), _type(static_cast<BlockType>(rand() % 7 + 1))
+: _position({4, 1}), _type(static_cast<BlockType>(rand() % 7 + 1))
 {
 }
 
-tetriq::Tetromino::Tetromino(BlockType &&type) : _position({5, 0}),
+tetriq::Tetromino::Tetromino(BlockType &&type) : _position({4, 1}),
 _type(type)
 {
 }
