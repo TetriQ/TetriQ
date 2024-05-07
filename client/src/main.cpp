@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     // Seed the random number generator
     srand(time(nullptr));
 
-    tetriq::Tetris tetris(12, 20);
+    tetriq::Tetris tetris(12, 22);
     tetriq::SFMLDisplay display;
 
     if (!display.loadGame(tetris))

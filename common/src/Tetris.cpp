@@ -31,7 +31,7 @@ tetriq::Tetris::Tetris(size_t width, size_t height)
 
     for (size_t i = 0; i < _height; i++) {
         for (size_t j = 0; j < _width; j++) {
-            if (j == 0 || j == _width - 1 || i == _height - 1)
+            if (j == 0 || j == _width - 1 || i == _height - 1 || i == 0)
                 _blocks[i][j] = std::make_unique<IndestructibleBlock>(*this);
             else
                 _blocks[i][j] = std::make_unique<StandardBlock>(*this,
