@@ -43,7 +43,7 @@ void tetriq::StandardBlock::onDestruction()
 {}
 
 tetriq::IndestructibleBlock::IndestructibleBlock(Tetris &_tetris)
-: Block(_tetris, BlockType::INDESTRUCTIBLE)
+: Block(_tetris, INDESTRUCTIBLE)
 {}
 
 tetriq::IndestructibleBlock::~IndestructibleBlock() = default;
@@ -69,3 +69,55 @@ bool tetriq::SpecialBlock::isDestructible()
 
 void tetriq::SpecialBlock::onDestruction()
 {}
+
+namespace tetriq {
+    const std::map<BlockType, std::vector<Rotation>> BlockRotations = {
+        {
+            YELLOW, {
+                {{0, 0}, {1, 0}, {0, 1}, {1, 1}},
+            }
+        },
+        {
+            DARK_BLUE, {
+                {{0, 0}, {1, 0}, {2, 0}, {2, 1}},
+                {{1, -1}, {1, 0}, {1, 1}, {0, 1}},
+                {{0, -1}, {0, 0}, {1, 0}, {2, 0}},
+                {{1, -1}, {2, -1}, {1, 0}, {1, 1}}
+            }
+        },
+        {
+            ORANGE, {
+                {{0, 0}, {1, 0}, {2, 0}, {0, 1}},
+                {{0, -1}, {1, -1}, {1, 0}, {1, 1}},
+                {{2, -1}, {0, 0}, {1, 0}, {2, 0}},
+                {{1, -1}, {1, 0}, {1, 1}, {2, 1}}
+            }
+        },
+        {
+            RED, {
+                {{0, 0}, {1, 0}, {1, 1}, {2, 1}},
+                {{1, 0}, {0, 1}, {1, 1}, {0, 2}}
+            }
+        },
+        {
+            GREEN, {
+                {{1, 0}, {2, 0}, {0, 1}, {1, 1}},
+                {{0, 0}, {0, 1}, {1, 1}, {1, 2}}
+            }
+        },
+        {
+            PURPLE, {
+                {{1, 0}, {0, 1}, {1, 1}, {2, 1}},
+                {{1, 0}, {1, 1}, {2, 1}, {1, 2}},
+                {{0, 1}, {1, 1}, {2, 1}, {1, 2}},
+                {{1, 0}, {0, 1}, {1, 1}, {1, 2}}
+            }
+        },
+        {
+            BLUE, {
+                {{0, 0}, {1, 0}, {2, 0}, {3, 0}},
+                {{1, -1}, {1, 0}, {1, 1}, {1, 2}}
+            }
+        },
+    };
+}
