@@ -22,8 +22,8 @@
 
 namespace tetriq {
     struct Position {
-        uint64_t x;
-        uint64_t y;
+        int x;
+        int y;
     };
     using pos = Position;
 }
