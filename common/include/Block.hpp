@@ -39,49 +39,10 @@ namespace tetriq {
         SPECIAL // not used for now
     };
 
-    inline std::map<BlockType, std::vector<std::vector<int>>> blockShapes = {
-        {
-            YELLOW, {
-                {1, 1},
-                {1, 1}
-            }
-        },
-        {
-            ORANGE, {
-                {1, 1, 1},
-                {1, 0, 0}
-            }
-        },
-        {
-            DARK_BLUE, {
-                {1, 1, 1},
-                {0, 0, 1}
-            }
-        },
-        {
-            PURPLE, {
-                {1, 1, 1},
-                {0, 1, 0}
-            }
-        },
-        {
-            BLUE, {
-                {1, 1, 1, 1}
-            }
-        },
-        {
-            RED, {
-                {1, 1, 0},
-                {0, 1, 1}
-            }
-        },
-        {
-            GREEN, {
-                {0, 1, 1},
-                {1, 1, 0}
-            }
-        }
-    };
+    using BlockShape = std::pair<BlockType, std::vector<std::vector<int>>>;
+    using Rotation = std::vector<std::tuple<char, char>>;
+
+    extern const std::map<BlockType, std::vector<Rotation>> BlockRotations;
 
     class Block: public NetworkObject {
         public:
