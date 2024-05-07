@@ -59,6 +59,7 @@ bool tetriq::SFMLDisplay::draw(const Tetris &game)
             drawBlock(pos, blockType);
         }
     }
+    drawTetromino(game.getCurrentPiece());
     _window.display();
     return true;
 }
@@ -120,4 +121,18 @@ void tetriq::SFMLDisplay::drawBlock(sf::Vector2u pos, BlockType block)
     }
 
     _window.draw(rec);
+}
+
+void tetriq::SFMLDisplay::drawTetromino(const Tetromino &tetromino)
+{
+    pos position = tetromino.getPosition();
+
+    for (int i = 0; i < 4; i++) {
+        BlockType block = tetromino.getType();
+        std::tuple<char, char> local_pos = BlockRotations.at(block).at(tetromino.getRotation()).at(i);
+        int x = position.x + std::get<0>(local_pos);
+        int y = position.y + std::get<1>(local_pos);
+        drawBlock(sf::Vector2u(x * BLOCK_SIZE, y * BLOCK_SIZE), tetromino.getType());
+
+    }
 }
