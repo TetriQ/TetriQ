@@ -18,37 +18,37 @@
 
 #include "Logger.hpp"
 
-tetriq::Logger::Logger(const std::string &name)
+tetriq::Logger::Logger(std::ostream &out, std::ostream &err) :
+    _logStream(out), _errStream(err)
 {
-    _logFile.open(name + ".log", std::ios::out | std::ios::app);
-    if (!_logFile.is_open())
-        throw std::runtime_error("Failed to open log file / create log file");
+    if (!_logStream.good() || !_errStream.good())
+        throw std::runtime_error("Failed to access log streams");
     std::ifstream ansiFile("tetriq.ansi");
     if (ansiFile.is_open()) {
         std::string line;
-        while (std::getline(ansiFile, line)) {
-            _logFile << line << std::endl;
-        }
+        while (std::getline(ansiFile, line))
+            _logStream << line << std::endl;
         ansiFile.close();
     } else {
-        _logFile << "Failed to open tetriq.ansi :(" << std::endl;
+        _logStream << "Failed to open tetriq.ansi :(" << std::endl;
     }
 }
 
-tetriq::Logger::~Logger()
-{
-    if (_logFile.is_open())
-        _logFile.close();
-}
+tetriq::Logger::~Logger() = default;
 
-void tetriq::Logger::log(const LogLevel level, const std::string &message)
+void tetriq::Logger::log(const LogLevel level, const std::string &message) const
 {
-    if (!_logFile.is_open())
+    if (!_logStream.good() || !_errStream.good())
         return;
-    _logFile << getTimestamp()
-            << " [" << levelToString(level)
-            << "] " << message << std::endl;
-    _logFile << std::flush;
+    const std::string logMessage = getTimestamp()
+        + " [" + levelToString(level) + "] " + message;
+    if (level == LogLevel::ERROR || level == LogLevel::CRITICAL) {
+        _errStream << logMessage << std::endl;
+        _errStream.flush();
+    } else {
+        _logStream << logMessage << std::endl;
+        _logStream.flush();
+    }
 }
 
 std::string tetriq::Logger::levelToString(const LogLevel level)

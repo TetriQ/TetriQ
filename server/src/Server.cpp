@@ -17,14 +17,13 @@
 */
 
 #include "Server.hpp"
-
 #include <utility>
 
 namespace tetriq {
     Server::Server(std::string ip, std::string port,
-        const std::string &logfile_name)
+        std::ostream &out, std::ostream &err)
         : _ip(std::move(ip)), _port(std::move(port)),
-        _logger(logfile_name), _address(), _server(nullptr)
+        _logger(out, err), _address(), _server(nullptr)
     {
         if (init() == false)
             throw ServerInitException();

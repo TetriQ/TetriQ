@@ -34,6 +34,9 @@ int main(int argc, char* argv[])
     } catch (const tetriq::Server::ServerException &e) {
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
+    } catch (const std::exception &e) {
+        std::cerr << "An error occurred: " << e.what() << std::endl;
+        return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;
 }

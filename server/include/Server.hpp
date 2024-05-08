@@ -55,11 +55,12 @@ namespace tetriq {
              * @brief Server constructor
              * @param ip IP address to bind the server to
              * @param port Port to bind the server to
-             * @param logfile_name Name of the log file default is "tetriq_server"
+             * @param out Output stream for normal logs, defaults to std::cout
+             * @param err Output stream for error logs, defaults to std::cerr
              * @exception ServerInitException if the server failed to initialize
              */
             Server(std::string ip, std::string port,
-                const std::string &logfile_name = "tetriq_server");
+                std::ostream &out = std::cout, std::ostream &err = std::cerr);
             /**
              * @brief Server destructor
              */
