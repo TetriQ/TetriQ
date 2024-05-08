@@ -19,6 +19,7 @@
 #pragma once
 
 #include <fstream>
+#include <iostream>
 #include <string>
 
 namespace tetriq {
@@ -34,21 +35,25 @@ namespace tetriq {
         public:
             /**
              * @brief Logger constructor
-             * @param name Name of the log file, .log will be appended
+             * @param out Output stream for normal logs
+             * @param err Output stream for error logs
              * @exception std::runtime_error if the log file could not be opened
              * @todo change exception type to a custom exception
              */
-            explicit Logger(const std::string &name);
+            explicit Logger(std::ostream &out = std::cout,
+                std::ostream &err = std::cerr);
             /**
-             * @brief Logger destructor, closes the log file if it is open
+             * @brief Logger destructor, does nothing
              */
             ~Logger();
             /**
-             * @brief Log a message with a specific log level
+             * @brief Log a message with a specific log level, if
+             * the log level is ERROR or CRITICAL, the message will
+             * be logged to the error stream.
              * @param level Log level of the message, see LogLevel enum
              * @param message Message to log
              */
-            void log(LogLevel level, const std::string &message);
+            void log(LogLevel level, const std::string &message) const;
             /**
              * @brief Convert a log level to a string
              * @param level Log level to convert
@@ -62,6 +67,7 @@ namespace tetriq {
             static std::string getTimestamp();
 
         private:
-            std::ofstream _logFile;
+            std::ostream &_logStream;
+            std::ostream &_errStream;
     };
 }
