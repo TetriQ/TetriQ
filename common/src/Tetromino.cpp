@@ -96,7 +96,7 @@ void tetriq::Tetromino::drop(Tetris &game)
     game.addGraceTicks(1);
 }
 
-bool tetriq::Tetromino::collides(const Tetris &game)
+bool tetriq::Tetromino::collides(const Tetris &game) const
 {
     const Rotation &shape = getBlockRotation();
     for (int i = 0; i < 4; i++) {
