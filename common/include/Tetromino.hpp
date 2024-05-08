@@ -20,6 +20,7 @@
 
 #include "Utils.hpp"
 #include "Block.hpp"
+#include <cstdint>
 
 namespace tetriq {
     class Tetromino {
@@ -38,7 +39,7 @@ namespace tetriq {
             [[nodiscard]] bool move(int x, int y, const Tetris &game);
             [[nodiscard]] bool rotate(const Tetris &game);
             void drop(Tetris &game);
-            bool collides(const Tetris &game);
+            bool collides(const Tetris &game) const;
         private:
             pos _position;
             BlockType _type;
