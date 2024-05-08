@@ -18,13 +18,12 @@
 
 #include "Server.hpp"
 
-int main(int argc, char* argv[])
 /**
  * @brief Main function of the server
  *
  *@todo use a configuration file
  */
-int main(__attribute_used__ int argc, __attribute_used__ char* argv[])
+int main(int argc, char* argv[])
 {
     try {
         tetriq::Server server("0.0.0.0", "4242");

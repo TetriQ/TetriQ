@@ -21,6 +21,7 @@ file(GLOB_RECURSE CLIENT_SRC CONFIGURE_DEPENDS "${TetriQ_SOURCE_DIR}/client/src/
 find_package(SFML 2.5 REQUIRED COMPONENTS graphics)
 find_package(Curses REQUIRED)
 find_package(ENet REQUIRED)
+find_package(tomlplusplus REQUIRED)
 
 add_executable(tetriq_client ${CLIENT_SRC})
 
