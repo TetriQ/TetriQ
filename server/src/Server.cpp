@@ -22,7 +22,7 @@
 
 namespace tetriq {
     Server::Server(std::string ip, std::string port,
-                const std::string &logfile_name)
+        const std::string &logfile_name)
         : _ip(std::move(ip)), _port(std::move(port)),
         _logger(logfile_name), _address(), _server(nullptr)
     {
@@ -39,7 +39,7 @@ namespace tetriq {
             return false;
         }
         _logger.log(LogLevel::INFO, "ENet initialized");
-        if (setHost() == false)
+        if (not setHost() or not createHost())
             return false;
         return true;
     }
@@ -63,8 +63,91 @@ namespace tetriq {
         return true;
     }
 
+    bool Server::createHost()
+    {
+        _server = enet_host_create(&_address, _max_clients, _max_channels,
+            _max_incoming_bandwidth, _max_outgoing_bandwidth);
+        if (_server == nullptr) {
+            _logger.log(LogLevel::CRITICAL,
+                "An error occurred while creating the server.");
+            return false;
+        }
+        const std::string message =
+            "Server created with max clients: " + std::to_string(_max_clients)
+            + ", max channels: "
+            + std::to_string(_max_channels)
+            + ", max incoming bandwidth: "
+            + std::to_string(_max_incoming_bandwidth)
+            + ", max outgoing bandwidth: "
+            + std::to_string(_max_outgoing_bandwidth);
+        _logger.log(LogLevel::DEBUG, message);
+        return true;
+    }
+
+    void Server::listen()
+    {
+        ENetEvent event;
+        while (not should_exit && _running
+            && enet_host_service(_server, &event, _timeout) >= 0) {
+            switch (event.type) {
+                case ENET_EVENT_TYPE_CONNECT:
+                    handleNewClient(event);
+                    break;
+                case ENET_EVENT_TYPE_DISCONNECT:
+                    handleClientDisconnect(event);
+                    break;
+                case ENET_EVENT_TYPE_RECEIVE:
+                    handleClientPacket(event);
+                    enet_packet_destroy(event.packet);
+                    break;
+                case ENET_EVENT_TYPE_NONE:
+                    handleNone(event);
+                    break;
+            }
+        }
+        if (should_exit) {
+            std::string message = "SIGINT received,stopping server";
+            _logger.log(LogLevel::INFO, message);
+        }
+    }
+
+    bool Server::handleNewClient(ENetEvent &event)
+    {
+        std::string message = "New client connected from ";
+        message += std::to_string(event.peer->address.host);
+        message += ":";
+        message += std::to_string(event.peer->address.port);
+        _logger.log(LogLevel::INFO, message);
+        return true;
+    }
+
+    void Server::handleClientDisconnect(ENetEvent &event)
+    {
+        std::string message = "Client disconnected from ";
+        message += std::to_string(event.peer->address.host);
+        message += ":";
+        message += std::to_string(event.peer->address.port);
+        _logger.log(LogLevel::INFO, message);
+        event.peer->data = nullptr;
+    }
+
+    void Server::handleClientPacket(ENetEvent &event)
+    {
+        std::string message = "Packet received from ";
+        message += std::to_string(event.peer->address.host);
+        message += ":";
+        message += std::to_string(event.peer->address.port);
+        _logger.log(LogLevel::INFO, message);
+    }
+
+    void Server::handleNone(ENetEvent &event)
+    {
+        _logger.log(LogLevel::DEBUG, "No event occurred");
+    }
+
     Server::~Server()
     {
+        enet_host_destroy(_server);
         enet_deinitialize();
         _logger.log(LogLevel::INFO, "ENet deinitialized");
         _logger.log(LogLevel::INFO, "Server stopped");
