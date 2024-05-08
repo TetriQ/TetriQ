@@ -18,9 +18,12 @@
 
 #pragma once
 
+#include <csignal>
 #include <toml++/toml.hpp>
 #include "Network.hpp"
 #include "Logger.hpp"
+
+extern bool should_exit;
 
 namespace tetriq {
     class Server {
@@ -71,6 +74,37 @@ namespace tetriq {
              * @return true if the host address and port were successfully set, false otherwise
              */
             bool setHost();
+            /**
+             * @brief Create the server host
+             * @return true if the server host was successfully created, false otherwise
+             */
+            bool createHost();
+            /**
+             * @brief Listen for all enet events,
+             * stop when _running is false
+             */
+            void listen();
+            /**
+             * @brief Handle a new client connection
+             * @param event ENet event containing the new client connection
+             * @return true if the new client was successfully handled, false otherwise
+             */
+            bool handleNewClient(ENetEvent &event);
+            /**
+            * @brief Handle a client disconnection
+            * @param event ENet event containing the client disconnection
+            */
+            void handleClientDisconnect(ENetEvent &event);
+            /**
+            * @brief Handle a client packet
+            * @param event ENet event containing the client packet
+            */
+            void handleClientPacket(ENetEvent &event);
+            /**
+            * @brief Handle None event (timeout)
+            * @param event ENet event containing the None event
+            */
+            void handleNone(ENetEvent &event);
 
         private:
             std::string _ip;
@@ -78,5 +112,17 @@ namespace tetriq {
             Logger _logger;
             ENetAddress _address;
             ENetHost *_server;
+
+            bool _running {true};
+
+            /**
+             * @todo load these values from a configuration file
+             * @todo release 2.0
+             */
+            uint64_t _max_clients {5};
+            uint64_t _max_channels {2};
+            uint64_t _max_outgoing_bandwidth {0};
+            uint64_t _max_incoming_bandwidth {0};
+            uint32_t _timeout {1000};
     };
 }

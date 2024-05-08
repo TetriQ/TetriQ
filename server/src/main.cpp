@@ -18,6 +18,8 @@
 
 #include "Server.hpp"
 
+bool should_exit = false;
+
 /**
  * @brief Main function of the server
  *
@@ -25,8 +27,10 @@
  */
 int main(int argc, char* argv[])
 {
+    signal(SIGINT, [](int) { should_exit = true; });
     try {
         tetriq::Server server("0.0.0.0", "4242");
+        server.listen();
     } catch (const tetriq::Server::ServerException &e) {
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
