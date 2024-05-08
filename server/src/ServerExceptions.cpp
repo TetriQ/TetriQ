@@ -18,13 +18,17 @@
 
 #include "Server.hpp"
 
-int main(int argc, char* argv[])
-{
-    try {
-        tetriq::Server server("0.0.0.0", "4242");
-    } catch (const tetriq::Server::ServerException &e) {
-        std::cerr << e.what() << std::endl;
-        return EXIT_FAILURE;
+namespace tetriq {
+    Server::ServerException::ServerException(std::string message):
+        _message(std::move(message))
+    {}
+
+    const char *Server::ServerException::what() const noexcept
+    {
+        return _message.c_str();
     }
-    return EXIT_SUCCESS;
+
+    Server::ServerInitException::ServerInitException(): ServerException(
+        "Failed to initialize server")
+    {}
 }
