@@ -25,6 +25,9 @@ namespace tetriq {
     class Server {
         public:
             // Server exceptions
+            /**
+             * @brief Base exception class for the server
+             */
             class ServerException: public std::exception {
                 public:
                     explicit ServerException(std::string message);
@@ -35,6 +38,9 @@ namespace tetriq {
                     std::string _message;
             };
 
+            /**
+             * @brief Exception thrown when the server failed to initialize
+             */
             class ServerInitException final: public ServerException {
                 public:
                     explicit ServerInitException();
