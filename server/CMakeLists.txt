@@ -19,6 +19,7 @@
 file(GLOB_RECURSE SERVER_SRC CONFIGURE_DEPENDS "${TetriQ_SOURCE_DIR}/server/src/*.cpp")
 
 find_package(ENet REQUIRED)
+find_package(tomlplusplus REQUIRED)
 
 add_executable(tetriq_server ${SERVER_SRC})
 

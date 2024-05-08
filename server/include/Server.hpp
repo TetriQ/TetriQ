@@ -18,6 +18,7 @@
 
 #pragma once
 
+#include <toml++/toml.hpp>
 #include "Network.hpp"
 #include "Logger.hpp"
 
