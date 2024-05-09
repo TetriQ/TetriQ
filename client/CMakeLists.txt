@@ -20,20 +20,18 @@ file(GLOB_RECURSE CLIENT_SRC CONFIGURE_DEPENDS "${TetriQ_SOURCE_DIR}/client/src/
 
 find_package(SFML 2.5 REQUIRED COMPONENTS graphics)
 find_package(Curses REQUIRED)
-find_package(ENet REQUIRED)
 find_package(tomlplusplus REQUIRED)
+find_package(ENet 1.3.17 REQUIRED)
 
 add_executable(tetriq_client ${CLIENT_SRC})
 
 target_include_directories(tetriq_client
     PRIVATE "${TetriQ_SOURCE_DIR}/client/include"
-    PRIVATE ${CURSES_INCLUDE_DIRS}
-    PRIVATE ${ENET_INCLUDE_DIRS}
 )
 
 target_link_libraries(tetriq_client
     PRIVATE tetriq_common
     PRIVATE sfml-graphics
-    PRIVATE ${CURSES_LIBRARIES}
-    PRIVATE ${ENET_LIBRARIES}
+    PRIVATE ncurses
+    PRIVATE enet
 )
