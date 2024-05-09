@@ -2,6 +2,5 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-[CLIENT]
-MAX_INCOMING_BANDWIDTH=0
-MAX_OUTGOING_BANDWIDTH=0
+max_incoming_bandwidth=0
+max_outgoing_bandwidth=0

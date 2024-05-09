@@ -12,7 +12,7 @@ namespace tetriq {
     public:
         ClientConfig(const std::string &config_name = "client.toml");
 
-        uint64_t max_incoming_bandwidth = 0;
-        uint64_t max_outgoing_bandwidth = 0;
+        uint32_t max_incoming_bandwidth = 0;
+        uint32_t max_outgoing_bandwidth = 0;
     };
 }
