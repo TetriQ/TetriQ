@@ -18,8 +18,8 @@
 
 #include "Logger.hpp"
 
-tetriq::Logger::Logger(std::ostream &out, std::ostream &err) :
-    _logStream(out), _errStream(err)
+tetriq::Logger::Logger(std::ostream &out, std::ostream &err)
+    : _logStream(out), _errStream(err)
 {
     if (!_logStream.good() || !_errStream.good())
         throw std::runtime_error("Failed to access log streams");
@@ -41,7 +41,9 @@ void tetriq::Logger::log(const LogLevel level, const std::string &message) const
     if (!_logStream.good() || !_errStream.good())
         return;
     const std::string logMessage = getTimestamp()
-        + " [" + levelToString(level) + "] " + message;
+        + " [" + (_ansi ? levelToColor(level) : "")
+        + levelToString(level) + "\033[0m] "
+        + message;
     if (level == LogLevel::ERROR || level == LogLevel::CRITICAL) {
         _errStream << logMessage << std::endl;
         _errStream.flush();
@@ -75,4 +77,21 @@ std::string tetriq::Logger::getTimestamp()
     char timestamp[20];
     strftime(timestamp, 20, "%Y-%m-%d %H:%M:%S", ltm);
     return {timestamp};
+}
+
+std::string tetriq::Logger::levelToColor(LogLevel level)
+{
+    switch (level) {
+        case LogLevel::DEBUG:
+            return {"\033[38;5;244m"};
+        case LogLevel::INFO:
+            return {"\033[38;5;39m"};
+        case LogLevel::WARNING:
+            return {"\033[38;5;208m"};
+        case LogLevel::ERROR:
+            return {"\033[38;5;196m"};
+        case LogLevel::CRITICAL:
+            return {"\033[38;5;160m"};
+    }
+    return {"\033[38;5;255m"};
 }
