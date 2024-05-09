@@ -19,11 +19,10 @@ namespace tetriq {
     {
         _logger.log(LogLevel::INFO, "Server started");
         if (enet_initialize() != 0) {
-            _logger.log(LogLevel::CRITICAL,
-                "An error occurred while initializing ENet.");
+            _logger.log(LogLevel::CRITICAL, ENET_INIT_ERROR);
             return false;
         }
-        _logger.log(LogLevel::INFO, "ENet initialized");
+        _logger.log(LogLevel::INFO, ENET_INIT_SUCCESS);
         if (not setHost() or not createHost())
             return false;
         return true;
@@ -99,7 +98,11 @@ namespace tetriq {
     bool Server::handleNewClient(ENetEvent &event)
     {
         std::string message = "New client connected from ";
-        message += std::to_string(event.peer->address.host);
+
+        char ip[16] = {0};
+        enet_address_get_host_ip(&event.peer->address, ip, 16);
+
+        message += ip;
         message += ":";
         message += std::to_string(event.peer->address.port);
         _logger.log(LogLevel::INFO, message);
@@ -109,7 +112,11 @@ namespace tetriq {
     void Server::handleClientDisconnect(ENetEvent &event)
     {
         std::string message = "Client disconnected from ";
-        message += std::to_string(event.peer->address.host);
+
+        char ip[16] = {0};
+        enet_address_get_host_ip(&event.peer->address, ip, 16);
+
+        message += ip;
         message += ":";
         message += std::to_string(event.peer->address.port);
         _logger.log(LogLevel::INFO, message);
@@ -134,7 +141,7 @@ namespace tetriq {
     {
         enet_host_destroy(_server);
         enet_deinitialize();
-        _logger.log(LogLevel::INFO, "ENet deinitialized");
+        _logger.log(LogLevel::INFO, ENET_DEINIT_SUCCESS);
         _logger.log(LogLevel::INFO, "Server stopped");
     }
 }
