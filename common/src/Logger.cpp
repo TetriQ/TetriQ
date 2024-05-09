@@ -4,38 +4,20 @@
 
 #include "Logger.hpp"
 
-tetriq::Logger::Logger(std::ostream &out, std::ostream &err)
-    : _logStream(out), _errStream(err)
-{
-    if (!_logStream.good() || !_errStream.good())
-        throw std::runtime_error("Failed to access log streams");
-    std::ifstream ansiFile("etc/tetriq.ansi");
-    if (ansiFile.is_open()) {
-        std::string line;
-        while (std::getline(ansiFile, line))
-            _logStream << line << std::endl;
-        ansiFile.close();
-    } else {
-        _logStream << "Failed to open tetriq.ansi :(" << std::endl;
-    }
-}
+#include <iostream>
 
-tetriq::Logger::~Logger() = default;
-
-void tetriq::Logger::log(const LogLevel level, const std::string &message) const
+void tetriq::Logger::log(const LogLevel level, const std::string &message)
 {
-    if (!_logStream.good() || !_errStream.good())
+    if (!std::cout.good() || !std::cerr.good())
         return;
     const std::string logMessage = getTimestamp()
-        + " [" + (_ansi ? levelToColor(level) : "")
+        + " [" + (levelToColor(level))
         + levelToString(level) + "\033[0m] "
         + message;
     if (level == LogLevel::ERROR || level == LogLevel::CRITICAL) {
-        _errStream << logMessage << std::endl;
-        _errStream.flush();
+        std::cerr << logMessage << std::endl;
     } else {
-        _logStream << logMessage << std::endl;
-        _logStream.flush();
+        std::cout << logMessage << std::endl;
     }
 }
 

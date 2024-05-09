@@ -4,10 +4,11 @@
 
 #pragma once
 
+#include "Logger.hpp"
+
 #include <csignal>
 #include <toml++/toml.hpp>
-#include "Network.hpp"
-#include "Logger.hpp"
+#include <enet/enet.h>
 
 extern bool should_exit;
 
@@ -45,8 +46,7 @@ namespace tetriq {
              * @param err Output stream for error logs, defaults to std::cerr
              * @exception ServerInitException if the server failed to initialize
              */
-            Server(std::string ip, std::string port,
-                std::ostream &out = std::cout, std::ostream &err = std::cerr);
+            Server(std::string ip, std::string port);
             /**
              * @brief Server destructor
              */
@@ -96,7 +96,6 @@ namespace tetriq {
         private:
             std::string _ip;
             std::string _port;
-            Logger _logger;
             ENetAddress _address;
             ENetHost *_server;
 

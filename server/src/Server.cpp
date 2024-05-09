@@ -6,10 +6,11 @@
 #include <utility>
 
 namespace tetriq {
-    Server::Server(std::string ip, std::string port,
-        std::ostream &out, std::ostream &err)
-        : _ip(std::move(ip)), _port(std::move(port)),
-        _logger(out, err), _address(), _server(nullptr)
+    Server::Server(std::string ip, std::string port)
+        : _ip(std::move(ip))
+        , _port(std::move(port))
+        , _address()
+        , _server(nullptr)
     {
         if (init() == false)
             throw ServerInitException();
@@ -17,13 +18,13 @@ namespace tetriq {
 
     bool Server::init()
     {
-        _logger.log(LogLevel::INFO, "Server started");
+        Logger::log(LogLevel::INFO, "Server started");
         if (enet_initialize() != 0) {
-            _logger.log(LogLevel::CRITICAL,
+            Logger::log(LogLevel::CRITICAL,
                 "An error occurred while initializing ENet.");
             return false;
         }
-        _logger.log(LogLevel::INFO, "ENet initialized");
+        Logger::log(LogLevel::INFO, "ENet initialized");
         if (not setHost() or not createHost())
             return false;
         return true;
@@ -33,18 +34,18 @@ namespace tetriq {
     {
         if (enet_address_set_host(&_address, _ip.c_str()) != 0) {
             const std::string message = "Failed to set host address: " + _ip;
-            _logger.log(LogLevel::ERROR, message);
+            Logger::log(LogLevel::ERROR, message);
             return false;
         }
         try {
             _address.port = std::stoi(_port);
         } catch (const std::invalid_argument &e) {
             const std::string message = "Failed to set host port: " + _port;
-            _logger.log(LogLevel::ERROR, message);
+            Logger::log(LogLevel::ERROR, message);
             return false;
         }
         const std::string message = "Host set to " + _ip + ":" + _port;
-        _logger.log(LogLevel::INFO, message);
+        Logger::log(LogLevel::INFO, message);
         return true;
     }
 
@@ -53,7 +54,7 @@ namespace tetriq {
         _server = enet_host_create(&_address, _max_clients, _max_channels,
             _max_incoming_bandwidth, _max_outgoing_bandwidth);
         if (_server == nullptr) {
-            _logger.log(LogLevel::CRITICAL,
+            Logger::log(LogLevel::CRITICAL,
                 "An error occurred while creating the server.");
             return false;
         }
@@ -65,7 +66,7 @@ namespace tetriq {
             + std::to_string(_max_incoming_bandwidth)
             + ", max outgoing bandwidth: "
             + std::to_string(_max_outgoing_bandwidth);
-        _logger.log(LogLevel::DEBUG, message);
+        Logger::log(LogLevel::DEBUG, message);
         return true;
     }
 
@@ -92,7 +93,7 @@ namespace tetriq {
         }
         if (should_exit) {
             std::string message = "SIGINT received,stopping server";
-            _logger.log(LogLevel::INFO, message);
+            Logger::log(LogLevel::INFO, message);
         }
     }
 
@@ -102,7 +103,7 @@ namespace tetriq {
         message += std::to_string(event.peer->address.host);
         message += ":";
         message += std::to_string(event.peer->address.port);
-        _logger.log(LogLevel::INFO, message);
+        Logger::log(LogLevel::INFO, message);
         return true;
     }
 
@@ -112,7 +113,7 @@ namespace tetriq {
         message += std::to_string(event.peer->address.host);
         message += ":";
         message += std::to_string(event.peer->address.port);
-        _logger.log(LogLevel::INFO, message);
+        Logger::log(LogLevel::INFO, message);
         event.peer->data = nullptr;
     }
 
@@ -122,19 +123,19 @@ namespace tetriq {
         message += std::to_string(event.peer->address.host);
         message += ":";
         message += std::to_string(event.peer->address.port);
-        _logger.log(LogLevel::INFO, message);
+        Logger::log(LogLevel::INFO, message);
     }
 
-    void Server::handleNone(ENetEvent &event) const
+    void Server::handleNone([[maybe_unused]] ENetEvent &event) const
     {
-        //_logger.log(LogLevel::DEBUG, "No event occurred");
+        //Logger::log(LogLevel::DEBUG, "No event occurred");
     }
 
     Server::~Server()
     {
         enet_host_destroy(_server);
         enet_deinitialize();
-        _logger.log(LogLevel::INFO, "ENet deinitialized");
-        _logger.log(LogLevel::INFO, "Server stopped");
+        Logger::log(LogLevel::INFO, "ENet deinitialized");
+        Logger::log(LogLevel::INFO, "Server stopped");
     }
 }

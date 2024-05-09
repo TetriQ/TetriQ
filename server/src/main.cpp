@@ -4,6 +4,8 @@
 
 #include "Server.hpp"
 
+#include <iostream>
+
 bool should_exit = false;
 
 /**
