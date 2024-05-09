@@ -4,6 +4,7 @@
 
 #include "Tetris.hpp"
 #include "SFMLDisplay.hpp"
+#include "ClientConfig.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -16,6 +17,7 @@ int main(int argc, char *argv[])
     tetriq::Tetris tetris(12, 22);
     tetriq::SFMLDisplay display;
     sf::Clock clock;
+    tetriq::ClientConfig config;
 
     if (!display.loadGame(tetris))
         return EXIT_FAILURE;
