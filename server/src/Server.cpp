@@ -139,7 +139,7 @@ namespace tetriq {
         _logger.log(LogLevel::INFO, message);
     }
 
-    void Server::handleNone(ENetEvent &event)
+    void Server::handleNone(ENetEvent &event) const
     {
         _logger.log(LogLevel::DEBUG, "No event occurred");
     }

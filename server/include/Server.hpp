@@ -105,7 +105,7 @@ namespace tetriq {
             * @brief Handle None event (timeout)
             * @param event ENet event containing the None event
             */
-            void handleNone(ENetEvent &event);
+            void handleNone(ENetEvent &event) const;
 
         private:
             std::string _ip;
