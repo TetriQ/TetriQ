@@ -7,13 +7,13 @@
 
 namespace tetriq {
     class AConfig {
-    public:
-        AConfig(const std::string &config_name);
+        public:
+            AConfig(const std::string &config_name);
 
-        class ConfigNotFoundException : std::exception {};
-    protected:
-        toml::table _table;
-    private:
-        bool tryParse(const std::string &file_name);
+            class ConfigNotFoundException : std::exception {};
+        protected:
+            toml::table _table;
+        private:
+            bool tryParse(const std::string &file_name);
     };
 }
