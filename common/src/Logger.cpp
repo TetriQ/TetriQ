@@ -9,7 +9,7 @@ tetriq::Logger::Logger(std::ostream &out, std::ostream &err)
 {
     if (!_logStream.good() || !_errStream.good())
         throw std::runtime_error("Failed to access log streams");
-    std::ifstream ansiFile("tetriq.ansi");
+    std::ifstream ansiFile("etc/tetriq.ansi");
     if (ansiFile.is_open()) {
         std::string line;
         while (std::getline(ansiFile, line))
