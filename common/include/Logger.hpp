@@ -65,9 +65,20 @@ namespace tetriq {
              * @return Current timestamp as a string
              */
             static std::string getTimestamp();
+            /**
+             * @brief Convert a log level to a color
+             * @param level Log level to convert
+             * @return Log level as a color
+             */
+            static std::string levelToColor(LogLevel level);
 
         private:
             std::ostream &_logStream;
             std::ostream &_errStream;
+
+            /**
+             * @brief Whether to use ANSI colors or not
+             */
+            bool _ansi {true};
     };
 }
