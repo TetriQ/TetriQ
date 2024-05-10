@@ -50,21 +50,19 @@ namespace tetriq {
 
     bool Server::createHost()
     {
-        _server = enet_host_create(&_address, _max_clients, _max_channels,
-            _max_incoming_bandwidth, _max_outgoing_bandwidth);
+        _server = enet_host_create(&_address, _config.max_clients, 0,
+            _config.max_incoming_bandwidth, _config.max_outgoing_bandwidth);
         if (_server == nullptr) {
             Logger::log(LogLevel::CRITICAL,
                 "An error occurred while creating the server.");
             return false;
         }
         const std::string message =
-            "Server created with max clients: " + std::to_string(_max_clients)
-            + ", max channels: "
-            + std::to_string(_max_channels)
+            "Server created with max clients: " + std::to_string(_config.max_clients)
             + ", max incoming bandwidth: "
-            + std::to_string(_max_incoming_bandwidth)
+            + std::to_string(_config.max_incoming_bandwidth)
             + ", max outgoing bandwidth: "
-            + std::to_string(_max_outgoing_bandwidth);
+            + std::to_string(_config.max_outgoing_bandwidth);
         Logger::log(LogLevel::DEBUG, message);
         return true;
     }
@@ -73,7 +71,7 @@ namespace tetriq {
     {
         ENetEvent event;
         while (not should_exit && _running
-            && enet_host_service(_server, &event, _timeout) >= 0) {
+            && enet_host_service(_server, &event, _config.client_timeout) >= 0) {
             switch (event.type) {
                 case ENET_EVENT_TYPE_CONNECT:
                     handleNewClient(event);

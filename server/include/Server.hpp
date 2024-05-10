@@ -6,6 +6,7 @@
 
 #include "Logger.hpp"
 #include "Network.hpp"
+#include "ServerConfig.hpp"
 
 #include <csignal>
 #include <toml++/toml.hpp>
@@ -98,17 +99,9 @@ namespace tetriq {
             std::string _port;
             ENetAddress _address;
             ENetHost *_server;
+            const ServerConfig _config;
+
 
             bool _running {true};
-
-            /**
-             * @todo load these values from a configuration file
-             * @todo release 2.0
-             */
-            uint64_t _max_clients {5};
-            uint64_t _max_channels {2};
-            uint64_t _max_outgoing_bandwidth {0};
-            uint64_t _max_incoming_bandwidth {0};
-            uint32_t _timeout {1000};
     };
 }
