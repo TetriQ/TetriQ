@@ -34,15 +34,48 @@ namespace tetriq {
                     explicit ClientConnectionException();
             };
 
+            /**
+            * @brief Client constructor
+            * @param ip The server IP address
+            * @param port The server port
+            */
             Client(std::string ip, std::string port);
+
+            /**
+            * @brief Client destructor
+            */
             ~Client();
 
         private:
+            /**
+            * @brief Initialize the client
+            * @return True if the client was initialized successfully
+            */
             bool init() const;
+
+            /**
+            * @brief Log a message
+            * @param level The log level
+            * @param message The message to log
+            */
             void log(LogLevel level, const std::string &message) const;
+
+            /**
+            * @brief Set the server address
+            * @return True if the server address was set successfully
+            */
             bool setServer();
+
+            /**
+            * @brief Connect to the server
+            * @return True if the client connected to the server successfully
+            */
             bool connectToServer();
 
+            /**
+            * @brief The client username
+            * @todo not implemented yet
+            */
             std::string _username;
             const std::string _server_ip;
             const std::string _server_port;
@@ -52,14 +85,17 @@ namespace tetriq {
             ENetPeer *_server;
 
             /**
-             * @todo load these values from a configuration file
-             * @todo release 2.0
-             */
+            * @todo load these values from a configuration file
+            * @todo release 2.0
+            */
             uint64_t _max_channels{2};
             uint64_t _max_outgoing_bandwidth{0};
             uint64_t _max_incoming_bandwidth{0};
             uint32_t _timeout{1000};
 
+            /**
+            * @todo remove this and replace logs it with static methods calls
+            */
             bool _logging{true};
             Logger _logger;
 
