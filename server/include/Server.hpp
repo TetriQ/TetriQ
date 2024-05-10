@@ -7,8 +7,8 @@
 #include "Logger.hpp"
 
 #include <csignal>
+#include "Network.hpp"
 #include <toml++/toml.hpp>
-#include <enet/enet.h>
 
 extern bool should_exit;
 
@@ -17,8 +17,8 @@ namespace tetriq {
         public:
             // Server exceptions
             /**
-             * @brief Base exception class for the server
-             */
+            * @brief Base exception class for the server
+            */
             class ServerException: public std::exception {
                 public:
                     explicit ServerException(std::string message);
@@ -30,8 +30,8 @@ namespace tetriq {
             };
 
             /**
-             * @brief Exception thrown when the server failed to initialize
-             */
+            * @brief Exception thrown when the server failed to initialize
+            */
             class ServerInitException final: public ServerException {
                 public:
                     explicit ServerInitException();
@@ -39,43 +39,43 @@ namespace tetriq {
 
             // Server methods
             /**
-             * @brief Server constructor
-             * @param ip IP address to bind the server to
-             * @param port Port to bind the server to
-             * @param out Output stream for normal logs, defaults to std::cout
-             * @param err Output stream for error logs, defaults to std::cerr
-             * @exception ServerInitException if the server failed to initialize
-             */
+            * @brief Server constructor
+            * @param ip IP address to bind the server to
+            * @param port Port to bind the server to
+            * @param out Output stream for normal logs, defaults to std::cout
+            * @param err Output stream for error logs, defaults to std::cerr
+            * @exception ServerInitException if the server failed to initialize
+            */
             Server(std::string ip, std::string port);
             /**
-             * @brief Server destructor
-             */
+            * @brief Server destructor
+            */
             ~Server();
             /**
-             * @brief Initialize the server
-             * @return true if the server was successfully initialized, false otherwise
-             */
+            * @brief Initialize the server
+            * @return true if the server was successfully initialized, false otherwise
+            */
             bool init();
             /**
-             * @brief Set the host address and port
-             * @return true if the host address and port were successfully set, false otherwise
-             */
+            * @brief Set the host address and port
+            * @return true if the host address and port were successfully set, false otherwise
+            */
             bool setHost();
             /**
-             * @brief Create the server host
-             * @return true if the server host was successfully created, false otherwise
-             */
+            * @brief Create the server host
+            * @return true if the server host was successfully created, false otherwise
+            */
             bool createHost();
             /**
-             * @brief Listen for all enet events,
-             * stop when _running is false
-             */
+            * @brief Listen for all enet events,
+            * stop when _running is false
+            */
             void listen();
             /**
-             * @brief Handle a new client connection
-             * @param event ENet event containing the new client connection
-             * @return true if the new client was successfully handled, false otherwise
-             */
+            * @brief Handle a new client connection
+            * @param event ENet event containing the new client connection
+            * @return true if the new client was successfully handled, false otherwise
+            */
             bool handleNewClient(ENetEvent &event);
             /**
             * @brief Handle a client disconnection
