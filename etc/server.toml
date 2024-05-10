@@ -1,8 +1,8 @@
 # SPDX-FileCopyrightText: 2024 The TetriQ authors
 #
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: CC0-1.0
 
-[SERVER]
-IP = "0.0.0.0"
-PORT = 4242
-MAX_CLIENTS = 10
+max_clients=5
+max_incoming_bandwidth=0
+max_outgoing_bandwidth=0
+client_timeout=1000
