@@ -5,6 +5,7 @@
 #include "Client.hpp"
 #include "Tetris.hpp"
 #include "SFMLDisplay.hpp"
+#include "ClientConfig.hpp"
 
 int main(int argc, char *argv[])
 {
