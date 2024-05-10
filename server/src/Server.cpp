@@ -88,10 +88,6 @@ namespace tetriq {
                     break;
             }
         }
-        if (should_exit) {
-            std::string message = "SIGINT received,stopping server";
-            Logger::log(LogLevel::INFO, message);
-        }
     }
 
     bool Server::handleNewClient(ENetEvent &event)

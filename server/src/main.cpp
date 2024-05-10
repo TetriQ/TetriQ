@@ -15,7 +15,10 @@ bool should_exit = false;
  */
 int main(int argc, char* argv[])
 {
-    signal(SIGINT, [](int) { should_exit = true; });
+    signal(SIGINT, [](int) {
+        should_exit = true;
+        tetriq::Logger::log(tetriq::LogLevel::INFO, "SIGINT received, stopping server");
+    });
     try {
         tetriq::Server server("127.0.0.1", "4242");
         server.listen();
