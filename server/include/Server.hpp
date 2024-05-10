@@ -95,12 +95,11 @@ namespace tetriq {
             void handleNone(ENetEvent &event) const;
 
         private:
+            const ServerConfig _config;
             std::string _ip;
             std::string _port;
             ENetAddress _address;
             ENetHost *_server;
-            const ServerConfig _config;
-
 
             bool _running {true};
     };
