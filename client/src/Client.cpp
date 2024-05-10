@@ -33,6 +33,20 @@ namespace tetriq {
                 log(LogLevel::INFO, "Disconnected from the server");
                 break;
             }
+            break;
+        }
+        sf::Clock clock;
+        if (!_display.loadGame(_tetris))
+            return;
+        while (true) {
+            if (!_display.draw(_tetris))
+                break;
+            if (!_display.handleEvents(_tetris))
+                break;
+            if (clock.getElapsedTime() > sf::seconds(1.0 / 5.0)) {
+                clock.restart();
+                _tetris.tick();
+            }
         }
     }
 

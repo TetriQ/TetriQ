@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#include "Client.hpp"
 #include "Tetris.hpp"
 #include "SFMLDisplay.hpp"
 
@@ -13,21 +14,14 @@ int main(int argc, char *argv[])
     // Seed the random number generator
     srand(time(nullptr));
 
-    tetriq::Tetris tetris(12, 22);
-    tetriq::SFMLDisplay display;
-    sf::Clock clock;
-
-    if (!display.loadGame(tetris))
+    try {
+        tetriq::Client client("localhost", "4242");
+    } catch (const tetriq::Client::ClientInitException &e) {
+        std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
-    while (true) {
-        if (!display.draw(tetris))
-            break;
-        if (!display.handleEvents(tetris))
-            break;
-        if (clock.getElapsedTime() > sf::seconds(1.0 / 5.0)) {
-            clock.restart();
-            tetris.tick();
-        }
+    } catch (const tetriq::Client::ClientConnectionException &e) {
+        std::cerr << e.what() << std::endl;
+        return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;
 }
