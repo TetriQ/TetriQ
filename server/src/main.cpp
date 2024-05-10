@@ -10,8 +10,6 @@ bool should_exit = false;
 
 /**
  * @brief Main function of the server
- *
- *@todo use a configuration file
  */
 int main(int argc, char* argv[])
 {
