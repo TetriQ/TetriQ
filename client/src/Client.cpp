@@ -15,8 +15,8 @@ namespace tetriq {
     {
         if (init() == false)
             throw ClientInitException();
-        _client = enet_host_create(nullptr, 1, _max_channels,
-            _max_incoming_bandwidth, _max_outgoing_bandwidth);
+        _client = enet_host_create(nullptr, 1, 0,
+            _config.max_incoming_bandwidth, _config.max_outgoing_bandwidth);
         if (_client == nullptr or not setServer())
             throw ClientInitException();
         if (not connectToServer())
@@ -24,7 +24,7 @@ namespace tetriq {
 
         //TODO: Move it
         ENetEvent _event;
-        while (enet_host_service(_client, &_event, _timeout) >= 0) {
+        while (enet_host_service(_client, &_event, _config.server_timeout) >= 0) {
             if (_event.type == ENET_EVENT_TYPE_RECEIVE) {
                 log(LogLevel::INFO, "A packet was received");
                 enet_packet_destroy(_event.packet);
@@ -79,13 +79,13 @@ namespace tetriq {
     bool Client::connectToServer()
     {
         ENetEvent _event;
-        _server = enet_host_connect(_client, &_address, _max_channels, 0);
+        _server = enet_host_connect(_client, &_address, 0, 0);
         if (_server == nullptr) {
             log(LogLevel::CRITICAL, "An error occurred while connecting to the server : "
                 + _server_ip + ":" + _server_port);
             return false;
         }
-        if (enet_host_service(_client, &_event, _timeout) > 0 and
+        if (enet_host_service(_client, &_event, _config.server_timeout) > 0 and
             _event.type == ENET_EVENT_TYPE_CONNECT) {
             log(LogLevel::INFO, "Connected to the server : "
                 + _server_ip + ":" + _server_port);

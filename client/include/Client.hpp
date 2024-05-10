@@ -10,6 +10,7 @@
 #include "Logger.hpp"
 #include "SFMLDisplay.hpp"
 #include "Tetris.hpp"
+#include "ClientConfig.hpp"
 
 namespace tetriq {
     class Client {
@@ -72,6 +73,8 @@ namespace tetriq {
             */
             bool connectToServer();
 
+            const ClientConfig _config;
+
             /**
             * @brief The client username
             * @todo not implemented yet
@@ -83,15 +86,6 @@ namespace tetriq {
             ENetAddress _address;
             ENetHost *_client;
             ENetPeer *_server;
-
-            /**
-            * @todo load these values from a configuration file
-            * @todo release 2.0
-            */
-            uint64_t _max_channels{2};
-            uint64_t _max_outgoing_bandwidth{0};
-            uint64_t _max_incoming_bandwidth{0};
-            uint32_t _timeout{1000};
 
             /**
             * @todo remove this and replace logs it with static methods calls

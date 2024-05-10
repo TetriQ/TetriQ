@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#pragma once
+
 #include "AConfig.hpp"
 
 #include <cstdint>
@@ -14,5 +16,6 @@ namespace tetriq {
 
         uint32_t max_incoming_bandwidth = 0;
         uint32_t max_outgoing_bandwidth = 0;
+        uint32_t server_timeout = 1000;
     };
 }
