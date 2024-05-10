@@ -8,6 +8,8 @@
 
 #include "Network.hpp"
 #include "Logger.hpp"
+#include "SFMLDisplay.hpp"
+#include "Tetris.hpp"
 
 namespace tetriq {
     class Client {
@@ -60,5 +62,8 @@ namespace tetriq {
 
             bool _logging{true};
             Logger _logger;
+
+            Tetris _tetris {12, 22};
+            SFMLDisplay _display;
     };
 }
