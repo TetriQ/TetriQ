@@ -5,9 +5,9 @@
 #pragma once
 
 #include "Logger.hpp"
+#include "Network.hpp"
 
 #include <csignal>
-#include "Network.hpp"
 #include <toml++/toml.hpp>
 
 extern bool should_exit;
