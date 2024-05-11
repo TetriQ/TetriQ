@@ -5,6 +5,7 @@
 #pragma once
 
 #include <string>
+#include <iostream>
 
 namespace tetriq {
     enum class LogLevel {
@@ -31,7 +32,7 @@ namespace tetriq {
              * @param level Log level to convert
              * @return Log level as a string
              */
-            static std::string levelToString(LogLevel level);
+            static const char *levelToString(LogLevel level);
 
             /**
              * @brief Get the current timestamp
@@ -44,6 +45,20 @@ namespace tetriq {
              * @param level Log level to convert
              * @return Log level as a color
              */
-            static std::string levelToColor(LogLevel level);
+            static const char *levelToColor(LogLevel level);
     };
+
+    template<typename T>
+    std::ostream &operator<<(const LogLevel &level, const T& msg)
+    {
+        std::ostream &stream = (level == LogLevel::ERROR || level == LogLevel::CRITICAL)
+            ? std::cerr : std::cout;
+        return stream
+            << Logger::getTimestamp()
+            << " ["
+            << Logger::levelToColor(level)
+            << Logger::levelToString(level)
+            << "\033[0m] "
+            << msg;
+    }
 }
