@@ -4,12 +4,14 @@
 
 #pragma once
 
-#include "Logger.hpp"
-#include "Network.hpp"
+#include "Player.hpp"
 #include "ServerConfig.hpp"
 
 #include <csignal>
+#include <cstdint>
 #include <toml++/toml.hpp>
+#include <enet/enet.h>
+#include <unordered_map>
 
 extern bool should_exit;
 
@@ -102,5 +104,7 @@ namespace tetriq {
             ENetHost *_server;
 
             bool _running {true};
+            uint64_t _network_id_counter{0};
+            std::unordered_map<uint64_t, Player> _players;
     };
 }

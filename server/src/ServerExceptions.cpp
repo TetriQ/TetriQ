@@ -14,7 +14,7 @@ namespace tetriq {
         return _message.c_str();
     }
 
-    Server::ServerInitException::ServerInitException(): ServerException(
-        "Failed to initialize server")
+    Server::ServerInitException::ServerInitException()
+        : ServerException("Failed to initialize server")
     {}
 }
