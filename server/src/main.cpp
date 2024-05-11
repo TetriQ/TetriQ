@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 #include "Server.hpp"
+#include "Logger.hpp"
 
 #include <iostream>
 
@@ -11,7 +12,7 @@ bool should_exit = false;
 /**
  * @brief Main function of the server
  */
-int main(int argc, char* argv[])
+int main(void)
 {
     signal(SIGINT, [](int) {
         should_exit = true;

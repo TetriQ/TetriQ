@@ -95,7 +95,10 @@ void tetriq::Tetris::tick()
 
 void tetriq::Tetris::addGraceTicks(uint64_t n)
 {
-    _grace_ticks += n;
+    // Prevents resetting grace ticks to stall the game
+    if (_grace_ticks != 0)
+        return;
+    _grace_ticks = n;
 }
 
 bool tetriq::Tetris::isOver() const

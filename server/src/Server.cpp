@@ -3,6 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 #include "Server.hpp"
+#include "Logger.hpp"
+#include "Network.hpp"
+
+#include <cstdint>
 #include <utility>
 
 namespace tetriq {
@@ -54,7 +58,7 @@ namespace tetriq {
             _config.max_incoming_bandwidth, _config.max_outgoing_bandwidth);
         if (_server == nullptr) {
             Logger::log(LogLevel::CRITICAL,
-                "An error occurred while creating the server.");
+                "An error occurred while creating the enet host.");
             return false;
         }
         const std::string message =
@@ -92,29 +96,17 @@ namespace tetriq {
 
     bool Server::handleNewClient(ENetEvent &event)
     {
-        std::string message = "New client connected from ";
-
-        char ip[16] = {0};
-        enet_address_get_host_ip(&event.peer->address, ip, 16);
-
-        message += ip;
-        message += ":";
-        message += std::to_string(event.peer->address.port);
-        Logger::log(LogLevel::INFO, message);
+        event.peer->data = new uint64_t(_network_id_counter);
+        _players.emplace(_network_id_counter, _network_id_counter);
+        _network_id_counter++;
         return true;
     }
 
     void Server::handleClientDisconnect(ENetEvent &event)
     {
-        std::string message = "Client disconnected from ";
-
-        char ip[16] = {0};
-        enet_address_get_host_ip(&event.peer->address, ip, 16);
-
-        message += ip;
-        message += ":";
-        message += std::to_string(event.peer->address.port);
-        Logger::log(LogLevel::INFO, message);
+        uint64_t network_id = *(uint64_t *) event.peer->data;
+        _players.erase(network_id);
+        delete (uint64_t *) event.peer->data;
         event.peer->data = nullptr;
     }
 
@@ -125,6 +117,7 @@ namespace tetriq {
         message += ":";
         message += std::to_string(event.peer->address.port);
         Logger::log(LogLevel::INFO, message);
+        enet_packet_destroy(event.packet);
     }
 
     void Server::handleNone([[maybe_unused]] ENetEvent &event) const
