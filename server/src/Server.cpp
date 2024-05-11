@@ -36,19 +36,16 @@ namespace tetriq {
     bool Server::setHost()
     {
         if (enet_address_set_host(&_address, _ip.c_str()) != 0) {
-            const std::string message = "Failed to set host address: " + _ip;
-            Logger::log(LogLevel::ERROR, message);
+            LogLevel::ERROR << "Failed to set host address: " << _ip << std::endl;
             return false;
         }
         try {
             _address.port = std::stoi(_port);
         } catch (const std::invalid_argument &e) {
-            const std::string message = "Failed to set host port: " + _port;
-            Logger::log(LogLevel::ERROR, message);
+            LogLevel::ERROR << "Failed to set host port: " << _port << std::endl;
             return false;
         }
-        const std::string message = "Host set to " + _ip + ":" + _port;
-        Logger::log(LogLevel::INFO, message);
+        LogLevel::INFO << "Host set to " << _ip << ":" << _port << std::endl;
         return true;
     }
 
@@ -61,13 +58,11 @@ namespace tetriq {
                 "An error occurred while creating the enet host.");
             return false;
         }
-        const std::string message =
-            "Server created with max clients: " + std::to_string(_config.max_clients)
-            + ", max incoming bandwidth: "
-            + std::to_string(_config.max_incoming_bandwidth)
-            + ", max outgoing bandwidth: "
-            + std::to_string(_config.max_outgoing_bandwidth);
-        Logger::log(LogLevel::DEBUG, message);
+        LogLevel::DEBUG
+            << "Server created with max clients: " << _config.max_clients
+            << ", max incoming bandwidth: " << _config.max_incoming_bandwidth
+            << ", max outgoing bandwidth: " << _config.max_outgoing_bandwidth
+            << std::endl;
         return true;
     }
 
@@ -112,11 +107,12 @@ namespace tetriq {
 
     void Server::handleClientPacket(ENetEvent &event)
     {
-        std::string message = "Packet received from ";
-        message += std::to_string(event.peer->address.host);
-        message += ":";
-        message += std::to_string(event.peer->address.port);
-        Logger::log(LogLevel::INFO, message);
+        LogLevel::INFO
+            << "Packet received from "
+            << event.peer->address.host
+            << ":"
+            << event.peer->address.port
+            << std::endl;
         enet_packet_destroy(event.packet);
     }
 

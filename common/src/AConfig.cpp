@@ -33,15 +33,13 @@ tetriq::AConfig::AConfig(const std::string &config_name)
 bool tetriq::AConfig::tryParse(const std::string &file_name)
 {
     if (access(file_name.data(), R_OK) != 0) {
-        std::string msg = "looking for configuration " + file_name;
-        Logger::log(LogLevel::INFO, msg);
+        LogLevel::DEBUG << "looking for configuration " << file_name << std::endl;
         return false;
     }
     try {
         _table = toml::parse_file(file_name);
     } catch (const toml::parse_error &err) {
-        std::string msg = "failed to load config file " + file_name;
-        Logger::log(LogLevel::ERROR, msg);
+        LogLevel::ERROR << "failed to load config file " << file_name << std::endl;
         Logger::log(LogLevel::ERROR, err.what());
         return false;
     }
