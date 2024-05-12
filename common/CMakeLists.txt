@@ -4,7 +4,7 @@
 
 file(GLOB_RECURSE COMMON_SRC CONFIGURE_DEPENDS "${TetriQ_SOURCE_DIR}/common/src/*.cpp")
 
-find_package(tomlplusplus REQUIRED)
+#find_package(tomlplusplus REQUIRED)
 
 add_library(tetriq_common ${COMMON_SRC})
 

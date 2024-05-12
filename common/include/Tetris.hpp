@@ -5,7 +5,6 @@
 #pragma once
 
 #include "Block.hpp"
-#include "Network.hpp"
 #include "Tetromino.hpp"
 
 #include <cstdint>
@@ -13,10 +12,10 @@
 #include <memory>
 
 namespace tetriq {
-    class Tetris final: public NetworkObject {
+    class Tetris final {
         public:
             Tetris(size_t width, size_t height);
-            ~Tetris() override;
+            ~Tetris();
 
             [[nodiscard]] uint64_t getWidth() const;
             [[nodiscard]] uint64_t getHeight() const;

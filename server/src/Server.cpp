@@ -4,9 +4,10 @@
 
 #include "Server.hpp"
 #include "Logger.hpp"
-#include "Network.hpp"
+#include "Messages.hpp"
 
 #include <cstdint>
+#include <tuple>
 #include <utility>
 
 namespace tetriq {
@@ -86,13 +87,19 @@ namespace tetriq {
                     handleNone(event);
                     break;
             }
+            for (auto &pair : _players) {
+                Player &player{pair.second};
+                player.tickGame();
+            }
         }
     }
 
     bool Server::handleNewClient(ENetEvent &event)
     {
         event.peer->data = new uint64_t(_network_id_counter);
-        _players.emplace(_network_id_counter, _network_id_counter);
+        _players.emplace(std::piecewise_construct,
+                         std::forward_as_tuple(_network_id_counter),
+                         std::forward_as_tuple(_network_id_counter, event.peer));
         _network_id_counter++;
         return true;
     }
