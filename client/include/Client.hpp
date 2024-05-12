@@ -4,13 +4,13 @@
 
 #pragma once
 
-#include <string>
-
-#include "Network.hpp"
 #include "Logger.hpp"
 #include "SFMLDisplay.hpp"
 #include "Tetris.hpp"
 #include "ClientConfig.hpp"
+
+#include <string>
+#include <enet/enet.h>
 
 namespace tetriq {
     class Client {

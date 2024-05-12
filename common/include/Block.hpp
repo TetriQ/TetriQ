@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include "Network.hpp"
-
 #include <vector>
 #include <map>
 
@@ -30,10 +28,10 @@ namespace tetriq {
 
     extern const std::map<BlockType, std::vector<Rotation>> BLOCK_ROTATIONS;
 
-    class Block: public NetworkObject {
+    class Block {
         public:
             explicit Block(Tetris &tetris, BlockType type);
-            ~Block() override = default;
+            virtual ~Block() = default;
             virtual bool isDestructible() = 0;
             virtual void onDestruction() = 0;
             [[nodiscard]] BlockType getType() const;
