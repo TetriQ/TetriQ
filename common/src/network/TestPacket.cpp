@@ -13,19 +13,20 @@ tetriq::PacketId tetriq::TestPacket::getId() const
     return PacketId::TEST;
 }
 
-tetriq::NetworkStream &tetriq::TestPacket::operator>>(tetriq::NetworkStream &ns) const
+tetriq::NetworkOStream &tetriq::TestPacket::operator>>(tetriq::NetworkOStream &ns) const
 {
     ns << _magic;
     return ns;
 }
 
-tetriq::NetworkStream &tetriq::TestPacket::operator<<(tetriq::NetworkStream &ns)
+tetriq::NetworkIStream &tetriq::TestPacket::operator<<(tetriq::NetworkIStream &ns)
 {
     uint64_t magic;
     ns >> magic;
     if (magic != _magic)
         Logger::log(LogLevel::WARNING, "received incorrect magic value");
     _magic = magic;
+    LogLevel::DEBUG << "magic: " << _magic << std::endl;
     return ns;
 }
 

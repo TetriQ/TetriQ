@@ -4,8 +4,8 @@
 
 #pragma once
 
+#include "IDisplay.hpp"
 #include "Logger.hpp"
-#include "SFMLDisplay.hpp"
 #include "Tetris.hpp"
 #include "ClientConfig.hpp"
 
@@ -40,12 +40,17 @@ namespace tetriq {
             * @param ip The server IP address
             * @param port The server port
             */
-            Client(std::string ip, std::string port);
+            Client(std::string ip, std::string port, IDisplay &display);
 
             /**
             * @brief Client destructor
             */
             ~Client();
+
+            /**
+             * @brief Starts the main loop
+             */
+            void loop();
 
         private:
             /**
@@ -53,13 +58,6 @@ namespace tetriq {
             * @return True if the client was initialized successfully
             */
             bool init() const;
-
-            /**
-            * @brief Log a message
-            * @param level The log level
-            * @param message The message to log
-            */
-            void log(LogLevel level, const std::string &message) const;
 
             /**
             * @brief Set the server address
@@ -87,13 +85,7 @@ namespace tetriq {
             ENetHost *_client;
             ENetPeer *_server;
 
-            /**
-            * @todo remove this and replace logs it with static methods calls
-            */
-            bool _logging{true};
-            Logger _logger;
-
             Tetris _tetris {12, 22};
-            SFMLDisplay _display;
+            IDisplay &_display;
     };
 }

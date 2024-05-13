@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 #include "Client.hpp"
-#include "Tetris.hpp"
+#include "IDisplay.hpp"
 #include "SFMLDisplay.hpp"
-#include "ClientConfig.hpp"
+#include <memory>
 
 int main(int argc, char *argv[])
 {
@@ -16,7 +16,9 @@ int main(int argc, char *argv[])
     srand(time(nullptr));
 
     try {
-        tetriq::Client client("localhost", "4242");
+        std::unique_ptr<tetriq::IDisplay> display{new tetriq::SFMLDisplay{}};
+        tetriq::Client client("localhost", "4242", *display);
+        client.loop();
     } catch (const tetriq::Client::ClientInitException &e) {
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
