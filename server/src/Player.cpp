@@ -31,7 +31,7 @@ void tetriq::Player::tickGame()
 
 void tetriq::Player::sendPacket(const tetriq::IPacket &packet) const
 {
-    NetworkStream stream{sizeof(uint64_t) + packet.getSize()};
+    NetworkOStream stream{sizeof(uint64_t) + packet.getSize()};
 
     stream << packet.getId();
     packet >> stream;

@@ -14,8 +14,8 @@ namespace tetriq {
         public:
             PacketId getId() const override;
             
-            NetworkStream &operator>>(NetworkStream &ns) const override;
-            NetworkStream &operator<<(NetworkStream &ns) override;
+            NetworkOStream &operator>>(NetworkOStream &ns) const override;
+            NetworkIStream &operator<<(NetworkIStream &ns) override;
             size_t getSize() const override;
         private:
             uint64_t _magic = 0x737819;

@@ -15,12 +15,12 @@ namespace tetriq {
             /**
              * @brief Writes an object to a stream.
              */
-            virtual NetworkStream &operator>>(NetworkStream &os) const = 0;
+            virtual NetworkOStream &operator>>(NetworkOStream &os) const = 0;
 
             /**
              * @brief Reads an object from a stream.
              */
-            virtual NetworkStream &operator<<(NetworkStream &os) = 0;
+            virtual NetworkIStream &operator<<(NetworkIStream &os) = 0;
 
             /**
              * @returns the size of the object as it will be on the network.

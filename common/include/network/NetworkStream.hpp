@@ -8,27 +8,44 @@
 #include <cstdint>
 #include <exception>
 #include <memory>
+#include <enet/enet.h>
 
 namespace tetriq {
+    class NetworkStreamOverflowException : public std::exception {};
+
     /**
      * @brief Binary stream for a buffer of known size to be sent over the wire.
      * The stream should use the network endianness for all values.
      */
-    class NetworkStream {
+    class NetworkOStream {
         public:
-            NetworkStream(size_t size);
+            NetworkOStream(size_t size);
 
-            const char *getData() const;
+            const uint8_t *getData() const;
             size_t getSize() const;
 
-            NetworkStream &operator<<(uint64_t value);
-
-            NetworkStream &operator>>(uint64_t &value);
- 
-            class NetworkStreamOverflowException : public std::exception {};
-        private:
+            NetworkOStream &operator<<(uint64_t value);
+         private:
             size_t _size;
-            std::unique_ptr<char[]> _buf;
+            std::unique_ptr<uint8_t[]> _buf;
+            size_t _cursor;
+    };
+
+    /**
+     * @brief Binary stream to read a packet received from the wire.
+     * The stream should use the network endianness for all values.
+     */
+    class NetworkIStream {
+        public:
+            NetworkIStream(ENetPacket *packet);
+            ~NetworkIStream();
+
+            const uint8_t *getData() const;
+            size_t getSize() const;
+
+            NetworkIStream &operator>>(uint64_t &value);
+        private:
+            ENetPacket *const _packet;
             size_t _cursor;
     };
 }
