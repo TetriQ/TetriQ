@@ -7,7 +7,15 @@
 #include <cstdint>
 
 namespace tetriq {
-    enum PacketId : uint64_t {
-        TEST
+    /**
+     * Packets starting with S_ are sent from server to client and packets
+     * starting with C_ are sent from client to server. Others can be sent
+     * either way.
+     */
+    enum class PacketId : uint64_t {
+        TEST,
+        S_INIT_GAME,
+        S_TICK_GAME,
+        C_GAME_ACTION, // TODO : implement
     };
 }

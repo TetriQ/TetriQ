@@ -15,14 +15,14 @@ tetriq::PacketId tetriq::TestPacket::getId() const
 
 tetriq::NetworkOStream &tetriq::TestPacket::operator>>(tetriq::NetworkOStream &ns) const
 {
-    ns << _magic;
+    _magic >> ns;
     return ns;
 }
 
 tetriq::NetworkIStream &tetriq::TestPacket::operator<<(tetriq::NetworkIStream &ns)
 {
     uint64_t magic;
-    ns >> magic;
+    magic << ns;
     if (magic != _magic)
         Logger::log(LogLevel::WARNING, "received incorrect magic value");
     _magic = magic;
@@ -30,7 +30,7 @@ tetriq::NetworkIStream &tetriq::TestPacket::operator<<(tetriq::NetworkIStream &n
     return ns;
 }
 
-size_t tetriq::TestPacket::getSize() const
+size_t tetriq::TestPacket::getNetworkSize() const
 {
     return sizeof(uint64_t);
 }

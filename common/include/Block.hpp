@@ -4,13 +4,14 @@
 
 #pragma once
 
+#include <cstdint>
 #include <vector>
 #include <map>
 
 namespace tetriq {
     class Tetris;
 
-    enum BlockType {
+    enum class BlockType : uint64_t {
         EMPTY,
         RED,
         BLUE,
@@ -30,21 +31,20 @@ namespace tetriq {
 
     class Block {
         public:
-            explicit Block(Tetris &tetris, BlockType type);
+            explicit Block(BlockType type);
             virtual ~Block() = default;
             virtual bool isDestructible() = 0;
             virtual void onDestruction() = 0;
             [[nodiscard]] BlockType getType() const;
 
         private:
-            Tetris &_tetris;
             BlockType _type;
             bool _isDestructible;
     };
 
     class StandardBlock final: public Block {
         public:
-            explicit StandardBlock(Tetris &_tetris, BlockType type);
+            explicit StandardBlock(BlockType type);
             ~StandardBlock() override;
             bool isDestructible() override;
             void onDestruction() override;
@@ -52,7 +52,7 @@ namespace tetriq {
 
     class IndestructibleBlock final: public Block {
         public:
-            explicit IndestructibleBlock(Tetris &_tetris);
+            explicit IndestructibleBlock();
             ~IndestructibleBlock() override;
             bool isDestructible() override;
             void onDestruction() override;
@@ -60,7 +60,7 @@ namespace tetriq {
 
     class SpecialBlock: public Block {
         public:
-            explicit SpecialBlock(Tetris &_tetris, BlockType type);
+            explicit SpecialBlock(BlockType type);
             ~SpecialBlock() override;
             bool isDestructible() override;
             void onDestruction() override;

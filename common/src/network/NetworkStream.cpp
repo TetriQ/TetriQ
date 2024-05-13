@@ -7,56 +7,78 @@
 #include <cstdint>
 #include <endian.h>
 
-tetriq::NetworkOStream::NetworkOStream(size_t size)
-    : _size(size)
-    , _buf(new uint8_t[size])
-    , _cursor(0)
-{}
+namespace tetriq {
 
-const uint8_t *tetriq::NetworkOStream::getData() const
-{
-    return _buf.get();
-}
+    NetworkOStream::NetworkOStream(size_t size)
+        : _size(size)
+        , _buf(new uint8_t[size])
+        , _cursor(0)
+    {}
 
-size_t tetriq::NetworkOStream::getSize() const
-{
-    return _size;
-}
+    const uint8_t *NetworkOStream::getData() const
+    {
+        return _buf.get();
+    }
 
-tetriq::NetworkOStream &tetriq::NetworkOStream::operator<<(uint64_t value) 
-{
-    if (_cursor > _size - sizeof(uint64_t))
-        throw NetworkStreamOverflowException();
-    *(uint64_t *) &_buf[_cursor] = htobe64(value);
-    _cursor += sizeof(uint64_t);
-    return *this;
-}
+    size_t NetworkOStream::getSize() const
+    {
+        return _size;
+    }
 
-tetriq::NetworkIStream::NetworkIStream(ENetPacket *packet)
-    : _packet(packet)
-    , _cursor(0)
-{}
+    NetworkOStream &operator>>(uint64_t value, NetworkOStream &stream)
+    {
+        if (stream._cursor > stream._size - sizeof(uint64_t))
+            throw NetworkStreamOverflowException();
+        *(uint64_t *) &stream._buf[stream._cursor] = htobe64(value);
+        stream._cursor += sizeof(uint64_t);
+        return stream;
+    }
 
-tetriq::NetworkIStream::~NetworkIStream()
-{
-    enet_packet_destroy(_packet);
-}
+    NetworkOStream &operator>>(uint8_t value, NetworkOStream &stream)
+    {
+        if (stream._cursor > stream._size - sizeof(uint8_t))
+            throw NetworkStreamOverflowException();
+        *(uint8_t *) &stream._buf[stream._cursor] = htobe64(value);
+        stream._cursor += sizeof(uint8_t);
+        return stream;
+    }
 
-const uint8_t *tetriq::NetworkIStream::getData() const
-{
-    return _packet->data;
-}
+    NetworkIStream::NetworkIStream(ENetPacket *packet)
+        : _packet(packet)
+        , _cursor(0)
+    {}
 
-size_t tetriq::NetworkIStream::getSize() const
-{
-    return _packet->dataLength;
-}
+    NetworkIStream::~NetworkIStream()
+    {
+        enet_packet_destroy(_packet);
+    }
 
-tetriq::NetworkIStream &tetriq::NetworkIStream::operator>>(uint64_t &value)
-{
-    if (_cursor > _packet->dataLength - sizeof(uint64_t))
-        throw NetworkStreamOverflowException();
-    value = be64toh(*(uint64_t *) &_packet->data[_cursor]);
-    _cursor += sizeof(uint64_t);
-    return *this;
+    const uint8_t *NetworkIStream::getData() const
+    {
+        return _packet->data;
+    }
+
+    size_t NetworkIStream::getSize() const
+    {
+        return _packet->dataLength;
+    }
+
+    NetworkIStream &operator<<(uint64_t &value, NetworkIStream &stream)
+    {
+        if (stream._cursor > stream._packet->dataLength - sizeof(uint64_t))
+            throw NetworkStreamOverflowException();
+        value = be64toh(*(uint64_t *) &stream._packet->data[stream._cursor]);
+        stream._cursor += sizeof(uint64_t);
+        return stream;
+    }
+
+    NetworkIStream &operator<<(uint8_t &value, NetworkIStream &stream)
+    {
+        if (stream._cursor > stream._packet->dataLength - sizeof(uint8_t))
+            throw NetworkStreamOverflowException();
+        value = be64toh(*(uint8_t *) &stream._packet->data[stream._cursor]);
+        stream._cursor += sizeof(uint8_t);
+        return stream;
+    }
+
 }

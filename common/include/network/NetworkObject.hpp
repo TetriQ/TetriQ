@@ -25,6 +25,6 @@ namespace tetriq {
             /**
              * @returns the size of the object as it will be on the network.
              */
-            virtual size_t getSize() const = 0;
+            virtual size_t getNetworkSize() const = 0;
     };
 }

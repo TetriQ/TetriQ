@@ -7,6 +7,7 @@
 #include "network/IPacket.hpp"
 #include "network/NetworkStream.hpp"
 #include "network/TestPacket.hpp"
+#include "network/packets/TickGamePacket.hpp"
 #include <cstdint>
 #include <string>
 
@@ -25,15 +26,14 @@ tetriq::Player::~Player()
 
 void tetriq::Player::tickGame()
 {
-    Logger::log(LogLevel::DEBUG, "sending test packet");
-    sendPacket(TestPacket());
+    sendPacket(TickGamePacket{_game});
 }
 
 void tetriq::Player::sendPacket(const tetriq::IPacket &packet) const
 {
-    NetworkOStream stream{sizeof(uint64_t) + packet.getSize()};
+    NetworkOStream stream{sizeof(uint64_t) + packet.getNetworkSize()};
 
-    stream << packet.getId();
+    static_cast<uint64_t>(packet.getId()) >> stream;
     packet >> stream;
 
     ENetPacket *epacket = enet_packet_create(stream.getData(), stream.getSize(), ENET_PACKET_FLAG_RELIABLE);

@@ -4,8 +4,8 @@
 
 #include "Block.hpp"
 
-tetriq::Block::Block(Tetris &tetris, BlockType type)
-: _tetris(tetris), _type(type), _isDestructible(false)
+tetriq::Block::Block(BlockType type)
+: _type(type), _isDestructible(false)
 {}
 
 tetriq::BlockType tetriq::Block::getType() const
@@ -13,8 +13,8 @@ tetriq::BlockType tetriq::Block::getType() const
     return _type;
 }
 
-tetriq::StandardBlock::StandardBlock(Tetris &_tetris, BlockType type)
-: Block(_tetris, type)
+tetriq::StandardBlock::StandardBlock(BlockType type)
+: Block(type)
 {}
 
 tetriq::StandardBlock::~StandardBlock()
@@ -28,8 +28,8 @@ bool tetriq::StandardBlock::isDestructible()
 void tetriq::StandardBlock::onDestruction()
 {}
 
-tetriq::IndestructibleBlock::IndestructibleBlock(Tetris &_tetris)
-: Block(_tetris, INDESTRUCTIBLE)
+tetriq::IndestructibleBlock::IndestructibleBlock()
+    : Block(BlockType::INDESTRUCTIBLE)
 {}
 
 tetriq::IndestructibleBlock::~IndestructibleBlock() = default;
@@ -42,8 +42,8 @@ bool tetriq::IndestructibleBlock::isDestructible()
 void tetriq::IndestructibleBlock::onDestruction()
 {}
 
-tetriq::SpecialBlock::SpecialBlock(Tetris &_tetris, BlockType type) : Block(
-    _tetris, type)
+tetriq::SpecialBlock::SpecialBlock(BlockType type)
+    : Block(type)
 {}
 
 tetriq::SpecialBlock::~SpecialBlock() = default;
@@ -59,12 +59,12 @@ void tetriq::SpecialBlock::onDestruction()
 namespace tetriq {
     const std::map<BlockType, std::vector<Rotation>> BLOCK_ROTATIONS = {
         {
-            YELLOW, {
+            BlockType::YELLOW, {
                 {{0, 0}, {1, 0}, {0, 1}, {1, 1}},
             }
         },
         {
-            DARK_BLUE, {
+            BlockType::DARK_BLUE, {
                 {{0, 0}, {1, 0}, {2, 0}, {2, 1}},
                 {{1, -1}, {1, 0}, {1, 1}, {0, 1}},
                 {{0, -1}, {0, 0}, {1, 0}, {2, 0}},
@@ -72,7 +72,7 @@ namespace tetriq {
             }
         },
         {
-            ORANGE, {
+            BlockType::ORANGE, {
                 {{0, 0}, {1, 0}, {2, 0}, {0, 1}},
                 {{0, -1}, {1, -1}, {1, 0}, {1, 1}},
                 {{2, -1}, {0, 0}, {1, 0}, {2, 0}},
@@ -80,19 +80,19 @@ namespace tetriq {
             }
         },
         {
-            RED, {
+            BlockType::RED, {
                 {{0, 0}, {1, 0}, {1, 1}, {2, 1}},
                 {{1, 0}, {0, 1}, {1, 1}, {0, 2}}
             }
         },
         {
-            GREEN, {
+            BlockType::GREEN, {
                 {{1, 0}, {2, 0}, {0, 1}, {1, 1}},
                 {{0, 0}, {0, 1}, {1, 1}, {1, 2}}
             }
         },
         {
-            PURPLE, {
+            BlockType::PURPLE, {
                 {{1, 0}, {0, 1}, {1, 1}, {2, 1}},
                 {{1, 0}, {1, 1}, {2, 1}, {1, 2}},
                 {{0, 1}, {1, 1}, {2, 1}, {1, 2}},
@@ -100,7 +100,7 @@ namespace tetriq {
             }
         },
         {
-            BLUE, {
+            BlockType::BLUE, {
                 {{0, 0}, {1, 0}, {2, 0}, {3, 0}},
                 {{1, -1}, {1, 0}, {1, 1}, {1, 2}}
             }
