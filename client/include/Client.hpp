@@ -6,6 +6,7 @@
 
 #include "IDisplay.hpp"
 #include "Logger.hpp"
+#include "RemoteTetris.hpp"
 #include "Tetris.hpp"
 #include "ClientConfig.hpp"
 
@@ -13,7 +14,7 @@
 #include <enet/enet.h>
 
 namespace tetriq {
-    class Client {
+    class Client{
         public:
             class ClientException: public std::exception {
                 public:
@@ -85,7 +86,7 @@ namespace tetriq {
             ENetHost *_client;
             ENetPeer *_server;
 
-            Tetris _tetris {12, 22};
+            RemoteTetris _game;
             IDisplay &_display;
     };
 }
