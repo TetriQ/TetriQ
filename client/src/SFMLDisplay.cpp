@@ -95,34 +95,34 @@ void tetriq::SFMLDisplay::drawBlock(sf::Vector2u pos, BlockType block)
 
     rec.setPosition(sf::Vector2f(pos));
     switch (block) {
-        case RED:
+    case BlockType::RED:
             rec.setFillColor(sf::Color::Red);
             break;
-        case BLUE:
+    case BlockType::BLUE:
             rec.setFillColor(sf::Color::Blue);
             break;
-        case DARK_BLUE:
+    case BlockType::DARK_BLUE:
             rec.setFillColor(sf::Color(0, 0, 139));
             break;
-        case ORANGE:
+    case BlockType::ORANGE:
             rec.setFillColor(sf::Color(255, 165, 0));
             break;
-        case YELLOW:
+    case BlockType::YELLOW:
             rec.setFillColor(sf::Color::Yellow);
             break;
-        case GREEN:
+    case BlockType::GREEN:
             rec.setFillColor(sf::Color::Green);
             break;
-        case PURPLE:
+    case BlockType::PURPLE:
             rec.setFillColor(sf::Color::Magenta);
             break;
-        case INDESTRUCTIBLE:
+    case BlockType::INDESTRUCTIBLE:
             rec.setFillColor(sf::Color(59, 59, 59));
             break;
-        case EMPTY:
+    case BlockType::EMPTY:
             rec.setFillColor(sf::Color::Black);
             break;
-        case SPECIAL:
+    case BlockType::SPECIAL:
             rec.setFillColor(sf::Color::Cyan);
             break;
     }

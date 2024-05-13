@@ -1,6 +1,11 @@
+// SPDX-FileCopyrightText: 2024 The TetriQ authors
+//
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 #include "RemoteTetris.hpp"
 #include "Logger.hpp"
 #include "network/TestPacket.hpp"
+#include "network/packets/TickGamePacket.hpp"
 #include <cstddef>
 
 namespace tetriq {
@@ -17,6 +22,13 @@ namespace tetriq {
     bool RemoteTetris::handle(TestPacket &)
     {
         LogLevel::DEBUG << "handled test packet" << std::endl;
+        return true;
+    }
+
+    bool RemoteTetris::handle(TickGamePacket &packet)
+    {
+        LogLevel::DEBUG << "received server tick" << std::endl;
+        
         return true;
     }
 }

@@ -6,13 +6,14 @@
 
 #include "Block.hpp"
 #include "Tetromino.hpp"
+#include "network/NetworkObject.hpp"
 
 #include <cstdint>
 #include <vector>
 #include <memory>
 
 namespace tetriq {
-    class Tetris final {
+    class Tetris final : public NetworkObject {
         public:
             Tetris(size_t width, size_t height);
             ~Tetris();
@@ -24,6 +25,7 @@ namespace tetriq {
             const Tetromino &getCurrentPiece() const;
             Tetromino &getCurrentPiece();
             const Tetromino &getNextPiece() const;
+            const std::vector<Tetromino> &getNextPieces() const;
 
             [[nodiscard]] bool moveCurrentPiece(int xOffset, int yOffset);
             [[nodiscard]] bool rotateCurrentPiece();
@@ -39,6 +41,10 @@ namespace tetriq {
              * Returns true if the game is over.
              */
             bool isOver() const;
+
+            NetworkOStream &operator>>(NetworkOStream &os) const override;
+            NetworkIStream &operator<<(NetworkIStream &os) override;
+            size_t getNetworkSize() const override;
         private:
             void placeTetromino();
 
@@ -48,10 +54,10 @@ namespace tetriq {
              */
             uint64_t _grace_ticks;
             bool _game_over;
-            
-            std::vector<std::vector<std::unique_ptr<Block>>> _blocks;
-            std::vector<Tetromino> _nextPieces;
+
             uint64_t _width;
             uint64_t _height;
+            std::vector<std::vector<std::unique_ptr<Block>>> _blocks;
+            std::vector<Tetromino> _nextPieces;
     };
 }

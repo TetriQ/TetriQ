@@ -4,20 +4,26 @@
 
 #pragma once
 
+#include "Tetris.hpp"
 #include "network/IPacket.hpp"
-#include "network/PacketId.hpp"
-
-#include <cstdint>
 
 namespace tetriq {
-    struct TestPacket : public IPacket {
+    class TickGamePacket : public IPacket {
         public:
+            TickGamePacket();
+            TickGamePacket(const Tetris &game);
+
             PacketId getId() const override;
-            
+            // This should only be called if the packet was received
+            const Tetris &getGame() const;
+
             NetworkOStream &operator>>(NetworkOStream &ns) const override;
             NetworkIStream &operator<<(NetworkIStream &ns) override;
             size_t getNetworkSize() const override;
         private:
-            uint64_t _magic = 0x737819;
+            // TODO : figure out how to send the blocks too
+            uint64_t _width;
+            uint64_t _height;
+            std::vector<Tetromino> _nextPieces;
     };
 }

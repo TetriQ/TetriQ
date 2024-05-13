@@ -6,6 +6,7 @@
 #include "Block.hpp"
 #include "Utils.hpp"
 #include "Tetris.hpp"
+#include <cstdint>
 #include <tuple>
 
 // create a tetromino at x=4 y=0 && with a random shape
@@ -91,8 +92,29 @@ bool tetriq::Tetromino::collides(const Tetris &game) const
         int y = _position.y + std::get<1>(local_pos);
         if (x < 0 || x >= static_cast<int> (game.getWidth()) || y >= static_cast<int>(game.getHeight()))
             return true;
-        if (game.getBlockAt(x, y)->getType() != EMPTY)
+        if (game.getBlockAt(x, y)->getType() != BlockType::EMPTY)
             return true;
     }
     return false;
+}
+
+tetriq::NetworkOStream &tetriq::Tetromino::operator>>(tetriq::NetworkOStream &os) const
+{
+    static_cast<uint64_t>(_type) >> os;
+    // TODO : other fields
+    return os;
+}
+
+tetriq::NetworkIStream &tetriq::Tetromino::operator<<(tetriq::NetworkIStream &os)
+{
+    uint64_t type;
+    type << os;
+    _type = static_cast<BlockType>(type);
+    // TODO : other fields
+    return os;
+}
+
+size_t tetriq::Tetromino::getNetworkSize() const
+{
+    return sizeof(uint64_t);
 }

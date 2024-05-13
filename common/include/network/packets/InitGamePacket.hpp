@@ -5,19 +5,24 @@
 #pragma once
 
 #include "network/IPacket.hpp"
+#include "network/NetworkStream.hpp"
 #include "network/PacketId.hpp"
 
 #include <cstdint>
 
 namespace tetriq {
-    struct TestPacket : public IPacket {
+    class InitGamePacket : public IPacket {
         public:
+            InitGamePacket();
+            InitGamePacket(uint64_t game_width, uint64_t game_height);
+
             PacketId getId() const override;
-            
+
             NetworkOStream &operator>>(NetworkOStream &ns) const override;
             NetworkIStream &operator<<(NetworkIStream &ns) override;
             size_t getNetworkSize() const override;
         private:
-            uint64_t _magic = 0x737819;
+            uint64_t _game_width;
+            uint64_t _game_height;
     };
 }
