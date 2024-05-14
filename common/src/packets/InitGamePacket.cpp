@@ -16,7 +16,7 @@ namespace tetriq {
         : _game_width(game_width)
         , _game_height(game_height)
     {}
-    
+
     PacketId InitGamePacket::getId() const
     {
         return PacketId::S_INIT_GAME;

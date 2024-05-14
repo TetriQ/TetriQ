@@ -11,14 +11,14 @@
 
 // create a tetromino at x=4 y=0 && with a random shape
 tetriq::Tetromino::Tetromino()
-: _position({4, 1}), _type(static_cast<BlockType>(rand() % 7 + 1))
-{
-}
+    : _position({4, 1})
+    , _type(static_cast<BlockType>(rand() % 7 + 1))
+{}
 
-tetriq::Tetromino::Tetromino(BlockType &&type) : _position({4, 1}),
-_type(type)
-{
-}
+tetriq::Tetromino::Tetromino(BlockType &&type)
+    : _position({4, 1})
+    , _type(type)
+{}
 
 tetriq::Tetromino::~Tetromino() = default;
 
@@ -79,7 +79,7 @@ bool tetriq::Tetromino::rotate(const Tetris &game)
 
 void tetriq::Tetromino::drop(Tetris &game)
 {
-    while (move(0, 1, game));
+    while (move(0, 1, game)) {}
     game.addGraceTicks(1);
 }
 
@@ -90,7 +90,8 @@ bool tetriq::Tetromino::collides(const Tetris &game) const
         const std::tuple<char, char> &local_pos = shape.at(i);
         int x = _position.x + std::get<0>(local_pos);
         int y = _position.y + std::get<1>(local_pos);
-        if (x < 0 || x >= static_cast<int> (game.getWidth()) || y >= static_cast<int>(game.getHeight()))
+        if (x < 0 || x >= static_cast<int>(game.getWidth())
+            || y >= static_cast<int>(game.getHeight()))
             return true;
         if (game.getBlockAt(x, y) != BlockType::EMPTY)
             return true;

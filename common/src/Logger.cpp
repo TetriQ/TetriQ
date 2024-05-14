@@ -14,16 +14,16 @@ void tetriq::Logger::log(const LogLevel level, const std::string &message)
 const char *tetriq::Logger::levelToString(const LogLevel level)
 {
     switch (level) {
-    case LogLevel::DEBUG:
-        return "DEBUG";
-    case LogLevel::INFO:
-        return "INFO";
-    case LogLevel::WARNING:
-        return "WARNING";
-    case LogLevel::ERROR:
-        return "ERROR";
-    case LogLevel::CRITICAL:
-        return "CRITICAL";
+        case LogLevel::DEBUG:
+            return "DEBUG";
+        case LogLevel::INFO:
+            return "INFO";
+        case LogLevel::WARNING:
+            return "WARNING";
+        case LogLevel::ERROR:
+            return "ERROR";
+        case LogLevel::CRITICAL:
+            return "CRITICAL";
     }
     return "UNKNOWN";
 }
@@ -40,16 +40,16 @@ std::string tetriq::Logger::getTimestamp()
 const char *tetriq::Logger::levelToColor(LogLevel level)
 {
     switch (level) {
-    case LogLevel::DEBUG:
-        return "\033[38;5;244m";
-    case LogLevel::INFO:
-        return "\033[38;5;39m";
-    case LogLevel::WARNING:
-        return "\033[38;5;208m";
-    case LogLevel::ERROR:
-        return "\033[38;5;196m";
-    case LogLevel::CRITICAL:
-        return "\033[38;5;160m";
+        case LogLevel::DEBUG:
+            return "\033[38;5;244m";
+        case LogLevel::INFO:
+            return "\033[38;5;39m";
+        case LogLevel::WARNING:
+            return "\033[38;5;208m";
+        case LogLevel::ERROR:
+            return "\033[38;5;196m";
+        case LogLevel::CRITICAL:
+            return "\033[38;5;160m";
     }
     return "\033[38;5;255m";
 }

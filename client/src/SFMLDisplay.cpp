@@ -11,13 +11,9 @@
 #include <cstdint>
 
 tetriq::SFMLDisplay::SFMLDisplay()
-    : _window(
-        sf::VideoMode(
-            128,
-            128,
-            sf::VideoMode::getDesktopMode().bitsPerPixel),
-            "TetriQ client",
-            sf::Style::Titlebar | sf::Style::Close), _event()
+    : _window(sf::VideoMode(128, 128, sf::VideoMode::getDesktopMode().bitsPerPixel),
+          "TetriQ client", sf::Style::Titlebar | sf::Style::Close)
+    , _event()
 {
     _window.setFramerateLimit(60);
 }
@@ -62,25 +58,25 @@ bool tetriq::SFMLDisplay::handleEvents(Tetris &game)
             goto exit_window;
         if (_event.type == sf::Event::KeyPressed) {
             switch (_event.key.code) {
-            case sf::Keyboard::Escape:
-                goto exit_window;
-            case sf::Keyboard::Left:
-                (void) game.moveCurrentPiece(-1, 0);
-                continue;
-            case sf::Keyboard::Right:
-                (void) game.moveCurrentPiece(1, 0);
-                continue;
-            case sf::Keyboard::Up:
-                (void) game.rotateCurrentPiece();
-                continue;
-            case sf::Keyboard::Down:
-                (void) game.moveCurrentPiece(0, 1);
-                continue;
-            case sf::Keyboard::Space:
-                (void) game.dropCurrentPiece();
-                continue;
-            default:
-                continue;
+                case sf::Keyboard::Escape:
+                    goto exit_window;
+                case sf::Keyboard::Left:
+                    (void) game.moveCurrentPiece(-1, 0);
+                    continue;
+                case sf::Keyboard::Right:
+                    (void) game.moveCurrentPiece(1, 0);
+                    continue;
+                case sf::Keyboard::Up:
+                    (void) game.rotateCurrentPiece();
+                    continue;
+                case sf::Keyboard::Down:
+                    (void) game.moveCurrentPiece(0, 1);
+                    continue;
+                case sf::Keyboard::Space:
+                    (void) game.dropCurrentPiece();
+                    continue;
+                default:
+                    continue;
             }
         }
     }
@@ -96,34 +92,34 @@ void tetriq::SFMLDisplay::drawBlock(sf::Vector2u pos, BlockType block)
 
     rec.setPosition(sf::Vector2f(pos));
     switch (block) {
-    case BlockType::RED:
+        case BlockType::RED:
             rec.setFillColor(sf::Color::Red);
             break;
-    case BlockType::BLUE:
+        case BlockType::BLUE:
             rec.setFillColor(sf::Color::Blue);
             break;
-    case BlockType::DARK_BLUE:
+        case BlockType::DARK_BLUE:
             rec.setFillColor(sf::Color(0, 0, 139));
             break;
-    case BlockType::ORANGE:
+        case BlockType::ORANGE:
             rec.setFillColor(sf::Color(255, 165, 0));
             break;
-    case BlockType::YELLOW:
+        case BlockType::YELLOW:
             rec.setFillColor(sf::Color::Yellow);
             break;
-    case BlockType::GREEN:
+        case BlockType::GREEN:
             rec.setFillColor(sf::Color::Green);
             break;
-    case BlockType::PURPLE:
+        case BlockType::PURPLE:
             rec.setFillColor(sf::Color::Magenta);
             break;
-    case BlockType::INDESTRUCTIBLE:
+        case BlockType::INDESTRUCTIBLE:
             rec.setFillColor(sf::Color(59, 59, 59));
             break;
-    case BlockType::EMPTY:
+        case BlockType::EMPTY:
             rec.setFillColor(sf::Color::Black);
             break;
-    case BlockType::SPECIAL:
+        case BlockType::SPECIAL:
             rec.setFillColor(sf::Color::Cyan);
             break;
     }
@@ -150,10 +146,7 @@ void tetriq::SFMLDisplay::drawCurrentTetromino(const Tetris &game)
 
 void tetriq::SFMLDisplay::drawNextTetromino(const Tetris &game)
 {
-    Position pos = {
-        (int) (game.getWidth() + SIDEBAR_SIZE / 2) - 2,
-        1
-    };
+    Position pos = {(int) (game.getWidth() + SIDEBAR_SIZE / 2) - 2, 1};
 
     drawTetromino(game.getNextPiece(), pos);
 }
