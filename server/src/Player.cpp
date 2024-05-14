@@ -37,7 +37,8 @@ void tetriq::Player::sendPacket(const tetriq::IPacket &packet) const
     static_cast<uint64_t>(packet.getId()) >> stream;
     packet >> stream;
 
-    ENetPacket *epacket = enet_packet_create(stream.getData(), stream.getSize(), ENET_PACKET_FLAG_RELIABLE);
+    ENetPacket *epacket =
+        enet_packet_create(stream.getData(), stream.getSize(), ENET_PACKET_FLAG_RELIABLE);
     enet_peer_send(_peer, 0, epacket);
 }
 

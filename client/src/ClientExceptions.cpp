@@ -8,7 +8,7 @@
 
 namespace tetriq {
     Client::ClientException::ClientException(std::string message)
-    : _message(std::move(message))
+        : _message(std::move(message))
     {}
 
     const char *Client::ClientException::what() const noexcept
@@ -17,9 +17,10 @@ namespace tetriq {
     }
 
     Client::ClientInitException::ClientInitException()
-    : ClientException("Failed to initialize client")
+        : ClientException("Failed to initialize client")
     {}
 
-    Client::ClientConnectionException::ClientConnectionException() : ClientException("Failed to connect to server")
+    Client::ClientConnectionException::ClientConnectionException()
+        : ClientException("Failed to connect to server")
     {}
 }

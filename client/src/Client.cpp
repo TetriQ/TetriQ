@@ -19,8 +19,8 @@ namespace tetriq {
     {
         if (init() == false)
             throw ClientInitException();
-        _client = enet_host_create(nullptr, 1, 0,
-                                   _config.max_incoming_bandwidth, _config.max_outgoing_bandwidth);
+        _client = enet_host_create(
+            nullptr, 1, 0, _config.max_incoming_bandwidth, _config.max_outgoing_bandwidth);
         if (_client == nullptr or not setServer())
             throw ClientInitException();
         if (not connectToServer())
@@ -74,18 +74,19 @@ namespace tetriq {
         ENetEvent _event;
         _server = enet_host_connect(_client, &_address, 0, 0);
         if (_server == nullptr) {
-            Logger::log(LogLevel::CRITICAL, "An error occurred while connecting to the server : "
-                        + _server_ip + ":" + _server_port);
+            Logger::log(LogLevel::CRITICAL,
+                "An error occurred while connecting to the server : " + _server_ip + ":"
+                    + _server_port);
             return false;
         }
-        if (enet_host_service(_client, &_event, _config.server_timeout) > 0 and
-            _event.type == ENET_EVENT_TYPE_CONNECT) {
-            Logger::log(LogLevel::INFO, "Connected to the server : "
-                        + _server_ip + ":" + _server_port);
+        if (enet_host_service(_client, &_event, _config.server_timeout) > 0
+            and _event.type == ENET_EVENT_TYPE_CONNECT) {
+            Logger::log(
+                LogLevel::INFO, "Connected to the server : " + _server_ip + ":" + _server_port);
         } else {
             enet_peer_reset(_server);
-            Logger::log(LogLevel::CRITICAL, "Failed to connect to the server : "
-                        + _server_ip + ":" + _server_port);
+            Logger::log(LogLevel::CRITICAL,
+                "Failed to connect to the server : " + _server_ip + ":" + _server_port);
             return false;
         }
         return true;

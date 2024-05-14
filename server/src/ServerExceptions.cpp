@@ -5,8 +5,8 @@
 #include "Server.hpp"
 
 namespace tetriq {
-    Server::ServerException::ServerException(std::string message):
-        _message(std::move(message))
+    Server::ServerException::ServerException(std::string message)
+        : _message(std::move(message))
     {}
 
     const char *Server::ServerException::what() const noexcept

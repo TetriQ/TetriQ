@@ -158,10 +158,8 @@ tetriq::NetworkIStream &tetriq::Tetris::operator<<(tetriq::NetworkIStream &os)
 
 size_t tetriq::Tetris::getNetworkSize() const
 {
-    size_t size = sizeof(uint64_t) * 5
-        + sizeof(bool)
-        + sizeof(Tetromino) * _nextPieces.size()
-        + sizeof(uint64_t) * _blocks.size();
+    size_t size = sizeof(uint64_t) * 5 + sizeof(bool) + sizeof(Tetromino) * _nextPieces.size()
+                  + sizeof(uint64_t) * _blocks.size();
     for (const auto &type : _blocks) {
         size += sizeof(BlockType) * type.size();
     }

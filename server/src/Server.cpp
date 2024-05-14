@@ -52,18 +52,19 @@ namespace tetriq {
 
     bool Server::createHost()
     {
-        _server = enet_host_create(&_address, _config.max_clients, 0,
-            _config.max_incoming_bandwidth, _config.max_outgoing_bandwidth);
+        _server = enet_host_create(&_address,
+            _config.max_clients,
+            0,
+            _config.max_incoming_bandwidth,
+            _config.max_outgoing_bandwidth);
         if (_server == nullptr) {
-            Logger::log(LogLevel::CRITICAL,
-                "An error occurred while creating the enet host.");
+            Logger::log(LogLevel::CRITICAL, "An error occurred while creating the enet host.");
             return false;
         }
-        LogLevel::DEBUG
-            << "Server created with max clients: " << _config.max_clients
-            << ", max incoming bandwidth: " << _config.max_incoming_bandwidth
-            << ", max outgoing bandwidth: " << _config.max_outgoing_bandwidth
-            << std::endl;
+        LogLevel::DEBUG << "Server created with max clients: " << _config.max_clients
+                        << ", max incoming bandwidth: " << _config.max_incoming_bandwidth
+                        << ", max outgoing bandwidth: " << _config.max_outgoing_bandwidth
+                        << std::endl;
         return true;
     }
 
@@ -71,7 +72,7 @@ namespace tetriq {
     {
         ENetEvent event;
         while (not should_exit && _running
-            && enet_host_service(_server, &event, _config.client_timeout) >= 0) {
+               && enet_host_service(_server, &event, _config.client_timeout) >= 0) {
             switch (event.type) {
                 case ENET_EVENT_TYPE_CONNECT:
                     handleNewClient(event);
@@ -98,8 +99,8 @@ namespace tetriq {
     {
         event.peer->data = new uint64_t(_network_id_counter);
         _players.emplace(std::piecewise_construct,
-                         std::forward_as_tuple(_network_id_counter),
-                         std::forward_as_tuple(_network_id_counter, event.peer));
+            std::forward_as_tuple(_network_id_counter),
+            std::forward_as_tuple(_network_id_counter, event.peer));
         _network_id_counter++;
         return true;
     }
@@ -114,18 +115,14 @@ namespace tetriq {
 
     void Server::handleClientPacket(ENetEvent &event)
     {
-        LogLevel::INFO
-            << "Packet received from "
-            << event.peer->address.host
-            << ":"
-            << event.peer->address.port
-            << std::endl;
+        LogLevel::INFO << "Packet received from " << event.peer->address.host << ":"
+                       << event.peer->address.port << std::endl;
         enet_packet_destroy(event.packet);
     }
 
     void Server::handleNone([[maybe_unused]] ENetEvent &event) const
     {
-        //Logger::log(LogLevel::DEBUG, "No event occurred");
+        // Logger::log(LogLevel::DEBUG, "No event occurred");
     }
 
     Server::~Server()
