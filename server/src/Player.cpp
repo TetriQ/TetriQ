@@ -26,6 +26,7 @@ tetriq::Player::~Player()
 
 void tetriq::Player::tickGame()
 {
+    _game.tick();
     sendPacket(TickGamePacket{_game});
 }
 

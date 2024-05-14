@@ -9,6 +9,7 @@
 #include <exception>
 #include <memory>
 #include <enet/enet.h>
+#include <type_traits>
 #include <vector>
 
 namespace tetriq {
@@ -27,8 +28,6 @@ namespace tetriq {
          private:
             friend NetworkOStream &operator>>(uint64_t value, NetworkOStream &stream);
             friend NetworkOStream &operator>>(uint8_t value, NetworkOStream &stream);
-            template<typename T>
-            friend NetworkOStream &operator>>(std::vector<T> value, NetworkOStream &stream);
 
             size_t _size;
             std::unique_ptr<uint8_t[]> _buf;
@@ -49,8 +48,6 @@ namespace tetriq {
         private:
             friend NetworkIStream &operator<<(uint64_t &value, NetworkIStream &stream);
             friend NetworkIStream &operator<<(uint8_t &value, NetworkIStream &stream);
-            template<typename T>
-            friend NetworkIStream &operator<<(std::vector<T> &value, NetworkIStream &stream);
 
             ENetPacket *const _packet;
             size_t _cursor;
@@ -58,14 +55,17 @@ namespace tetriq {
 
     NetworkOStream &operator>>(uint64_t value, NetworkOStream &stream);
     NetworkOStream &operator>>(uint8_t value, NetworkOStream &stream);
-    template<typename T>
-    NetworkOStream &operator>>(std::vector<T> value, NetworkOStream &stream);
 
     NetworkIStream &operator<<(uint64_t &value, NetworkIStream &stream);
     NetworkIStream &operator<<(uint8_t &value, NetworkIStream &stream);
-    template<typename T>
-    NetworkIStream &operator<<(std::vector<T> &value, NetworkIStream &stream);
 
+
+    template<typename T, typename = std::enable_if<std::is_enum<T>::value, bool>::type>
+    NetworkOStream &operator>>(T value, NetworkOStream &stream)
+    {
+        return static_cast<typename std::underlying_type<T>::type>(value) >> stream;
+    }
+    
     template<typename T>
     NetworkOStream &operator>>(std::vector<T> value, NetworkOStream &stream)
     {
@@ -74,6 +74,16 @@ namespace tetriq {
         for (const T& v : value) {
             v >> stream;
         }
+        return stream;
+    }
+
+
+    template<typename T, typename = std::enable_if<std::is_enum<T>::value, bool>::type>
+    NetworkIStream &operator<<(T &value, NetworkIStream &stream)
+    {
+        typename std::underlying_type<T>::type v;
+        v << stream;
+        value = static_cast<T>(v);
         return stream;
     }
 

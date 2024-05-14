@@ -18,7 +18,9 @@ tetriq::SFMLDisplay::SFMLDisplay()
             sf::VideoMode::getDesktopMode().bitsPerPixel),
             "TetriQ client",
             sf::Style::Titlebar | sf::Style::Close), _event()
-{}
+{
+    _window.setFramerateLimit(60);
+}
 
 tetriq::SFMLDisplay::~SFMLDisplay()
 {}
@@ -39,11 +41,10 @@ bool tetriq::SFMLDisplay::draw(const Tetris &game)
     BlockType blockType;
     sf::Vector2u pos;
 
-    _window.setFramerateLimit(60);
     _window.clear(sf::Color::Black);
     for (uint64_t x = 0; x < game.getWidth(); x++) {
         for (uint64_t y = 0; y < game.getHeight(); y++) {
-            blockType = game.getBlockAt(x, y)->getType();
+            blockType = game.getBlockAt(x, y);
             pos = sf::Vector2u(x * BLOCK_SIZE, y * BLOCK_SIZE);
             drawBlock(pos, blockType);
         }
@@ -132,7 +133,7 @@ void tetriq::SFMLDisplay::drawBlock(sf::Vector2u pos, BlockType block)
 
 void tetriq::SFMLDisplay::drawTetromino(const Tetromino &tetromino, Position position)
 {
-    const Rotation &shape = tetromino.getBlockRotation();
+    const TetroRotation &shape = tetromino.getTetroRotation();
 
     for (int i = 0; i < 4; i++) {
         std::tuple<char, char> local_pos = shape.at(i);
