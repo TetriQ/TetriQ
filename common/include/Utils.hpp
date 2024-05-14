@@ -4,10 +4,17 @@
 
 #pragma once
 
+#include "network/NetworkStream.hpp"
+#include <cstdint>
+
 namespace tetriq {
-    struct Position {
-        int x;
-        int y;
+    class Position {
+        public:
+            uint64_t x;
+            uint64_t y;
     };
     using pos = Position;
+
+    NetworkOStream &operator>>(const Position &pos, NetworkOStream &os);
+    NetworkIStream &operator<<(Position &pos, NetworkIStream &os);
 }
