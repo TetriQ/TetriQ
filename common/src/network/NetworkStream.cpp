@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 #include "network/NetworkStream.hpp"
+#include "Logger.hpp"
 #include <cstddef>
 #include <cstdint>
 #include <endian.h>
@@ -17,6 +18,10 @@ namespace tetriq {
 
     const uint8_t *NetworkOStream::getData() const
     {
+        if (_size != _cursor)
+            LogLevel::WARNING
+                << "NetworkOStream was not completely filled before getting its data (" << _cursor
+                << "/" << _size << " bytes)" << std::endl;
         return _buf.get();
     }
 

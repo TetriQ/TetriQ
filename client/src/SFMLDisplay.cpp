@@ -146,7 +146,7 @@ void tetriq::SFMLDisplay::drawCurrentTetromino(const Tetris &game)
 
 void tetriq::SFMLDisplay::drawNextTetromino(const Tetris &game)
 {
-    Position pos = {(int) (game.getWidth() + SIDEBAR_SIZE / 2) - 2, 1};
+    Position pos = {game.getWidth() + 2, 1};
 
     drawTetromino(game.getNextPiece(), pos);
 }
