@@ -49,7 +49,7 @@ void tetriq::Tetromino::setPosition(pos position)
     _position = position;
 }
 
-const tetriq::Rotation &tetriq::Tetromino::getBlockRotation() const
+const tetriq::TetroRotation &tetriq::Tetromino::getTetroRotation() const
 {
     return BLOCK_ROTATIONS.at(getType()).at(getRotation());
 }
@@ -85,14 +85,14 @@ void tetriq::Tetromino::drop(Tetris &game)
 
 bool tetriq::Tetromino::collides(const Tetris &game) const
 {
-    const Rotation &shape = getBlockRotation();
+    const TetroRotation &shape = getTetroRotation();
     for (int i = 0; i < 4; i++) {
         const std::tuple<char, char> &local_pos = shape.at(i);
         int x = _position.x + std::get<0>(local_pos);
         int y = _position.y + std::get<1>(local_pos);
         if (x < 0 || x >= static_cast<int> (game.getWidth()) || y >= static_cast<int>(game.getHeight()))
             return true;
-        if (game.getBlockAt(x, y)->getType() != BlockType::EMPTY)
+        if (game.getBlockAt(x, y) != BlockType::EMPTY)
             return true;
     }
     return false;

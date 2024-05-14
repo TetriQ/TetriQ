@@ -10,7 +10,6 @@
 
 #include <cstdint>
 #include <vector>
-#include <memory>
 
 namespace tetriq {
     class Tetris final : public NetworkObject {
@@ -21,7 +20,7 @@ namespace tetriq {
             [[nodiscard]] uint64_t getWidth() const;
             [[nodiscard]] uint64_t getHeight() const;
 
-            const std::unique_ptr<Block> &getBlockAt(uint64_t x, uint64_t y) const;
+            BlockType getBlockAt(uint64_t x, uint64_t y) const;
             const Tetromino &getCurrentPiece() const;
             Tetromino &getCurrentPiece();
             const Tetromino &getNextPiece() const;
@@ -57,7 +56,7 @@ namespace tetriq {
 
             uint64_t _width;
             uint64_t _height;
-            std::vector<std::vector<std::unique_ptr<Block>>> _blocks;
+            std::vector<std::vector<BlockType>> _blocks;
             std::vector<Tetromino> _nextPieces;
     };
 }

@@ -28,7 +28,8 @@ namespace tetriq {
     bool RemoteTetris::handle(TickGamePacket &packet)
     {
         LogLevel::DEBUG << "received server tick" << std::endl;
-        
+        _server_state = packet.getGame();
+        _client_state = _server_state;
         return true;
     }
 }

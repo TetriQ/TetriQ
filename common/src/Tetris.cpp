@@ -5,6 +5,7 @@
 #include "Tetris.hpp"
 #include "Block.hpp"
 #include "Tetromino.hpp"
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 
@@ -25,9 +26,9 @@ tetriq::Tetris::Tetris(size_t width, size_t height)
     for (size_t i = 0; i < _height; i++) {
         for (size_t j = 0; j < _width; j++) {
             if (j == 0 || j == _width - 1 || i == _height - 1 || i == 0)
-                _blocks[i][j] = std::make_unique<IndestructibleBlock>();
+                _blocks[i][j] = BlockType::INDESTRUCTIBLE;
             else
-                _blocks[i][j] = std::make_unique<StandardBlock>(BlockType::EMPTY);
+                _blocks[i][j] = BlockType::EMPTY;
         }
     }
 }
@@ -45,8 +46,7 @@ uint64_t tetriq::Tetris::getHeight() const
     return _height;
 }
 
-const std::unique_ptr<tetriq::Block> &tetriq::Tetris::getBlockAt(uint64_t x,
-    uint64_t y) const
+tetriq::BlockType tetriq::Tetris::getBlockAt(uint64_t x, uint64_t y) const
 {
     return _blocks[y][x];
 }
@@ -116,14 +116,14 @@ bool tetriq::Tetris::isOver() const
 void tetriq::Tetris::placeTetromino()
 {
     Tetromino &currentPiece = _nextPieces[0];
-    const Rotation &shape = currentPiece.getBlockRotation();
+    const TetroRotation &shape = currentPiece.getTetroRotation();
 
     for (int i = 0; i < 4; i++) {
         auto pos = shape.at(i);
         int x = currentPiece.getPosition().x + std::get<0>(pos);
         int y = currentPiece.getPosition().y + std::get<1>(pos);
 
-        _blocks[y][x] = std::make_unique<StandardBlock>(currentPiece.getType());
+        _blocks[y][x] = currentPiece.getType();
     }
     _nextPieces.erase(_nextPieces.begin());
     _nextPieces.emplace_back();
@@ -137,7 +137,7 @@ tetriq::NetworkOStream &tetriq::Tetris::operator>>(tetriq::NetworkOStream &os) c
     (uint8_t) _game_over >> os;
     _width >> os;
     _height >> os;
-//  _blocks >> os;
+    _blocks >> os;
     _nextPieces >> os;
     return os;
 }
@@ -150,17 +150,20 @@ tetriq::NetworkIStream &tetriq::Tetris::operator<<(tetriq::NetworkIStream &os)
     game_over << os;
     _width << os;
     _height << os;
-//  _blocks << os;
+    _blocks << os;
     _nextPieces << os;
-
     _game_over = game_over;
     return os;
 }
 
 size_t tetriq::Tetris::getNetworkSize() const
 {
-    return
-        sizeof(uint64_t) * 3
+    size_t size = sizeof(uint64_t) * 5
         + sizeof(bool)
-        + sizeof(Tetromino) * _nextPieces.size();
+        + sizeof(Tetromino) * _nextPieces.size()
+        + sizeof(uint64_t) * _blocks.size();
+    for (const auto &type : _blocks) {
+        size += sizeof(BlockType) * type.size();
+    }
+    return size;
 }

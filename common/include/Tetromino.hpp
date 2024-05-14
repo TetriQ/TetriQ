@@ -22,7 +22,7 @@ namespace tetriq {
             [[nodiscard]] int getRotation() const;
             void setRotation(int rotation);
             void setPosition(pos position);
-            const Rotation &getBlockRotation() const;
+            const TetroRotation &getTetroRotation() const;
             [[nodiscard]] bool move(int x, int y, const Tetris &game);
             [[nodiscard]] bool rotate(const Tetris &game);
             void drop(Tetris &game);

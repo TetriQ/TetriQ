@@ -11,34 +11,34 @@ namespace tetriq {
     {}
 
     TickGamePacket::TickGamePacket(const Tetris &game)
-        : _width(game.getWidth())
-        , _height(game.getHeight())
-        , _nextPieces(game.getNextPieces())
-    {}
+    {
+        _game = game;
+    }
 
     PacketId TickGamePacket::getId() const
     {
         return PacketId::S_TICK_GAME;
     }
 
+    const Tetris &TickGamePacket::getGame() const
+    {
+        return _game;
+    }
+
     NetworkOStream &TickGamePacket::operator>>(NetworkOStream &ns) const
     {
-        _width >> ns;
-        _height >> ns;
-        _nextPieces >> ns;
+        _game >> ns;
         return ns;
     }
 
     NetworkIStream &TickGamePacket::operator<<(NetworkIStream &ns)
     {
-        _width << ns;
-        _height << ns;
-        _nextPieces << ns;
+        _game << ns;
         return ns;
     }
 
     size_t TickGamePacket::getNetworkSize() const
     {
-        return sizeof(uint64_t) * 3 + _nextPieces[0].getNetworkSize() * _nextPieces.size(); // TODO : not good
+        return _game.getNetworkSize();
     }
 }
