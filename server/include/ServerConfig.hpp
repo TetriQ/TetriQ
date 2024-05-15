@@ -13,7 +13,7 @@ namespace tetriq {
         public:
             ServerConfig(const std::string &config_name = "server.toml");
 
-            size_t max_clients = 5;
+            size_t max_clients = 128;
             uint32_t max_outgoing_bandwidth = 0;
             uint32_t max_incoming_bandwidth = 0;
             uint32_t client_timeout = 1000;
