@@ -6,3 +6,8 @@ max_clients=5
 max_incoming_bandwidth=0
 max_outgoing_bandwidth=0
 client_timeout=1000
+
+[game]
+ticks_per_second=5
+width=12
+height=22
