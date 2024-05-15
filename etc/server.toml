@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: CC0-1.0
 
-max_clients=5
+max_clients=128
 max_incoming_bandwidth=0
 max_outgoing_bandwidth=0
 client_timeout=1000
