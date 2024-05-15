@@ -5,6 +5,7 @@
 #pragma once
 
 #include "AConfig.hpp"
+#include "GameConfig.hpp"
 #include <cstdint>
 
 namespace tetriq {
@@ -16,5 +17,6 @@ namespace tetriq {
             uint32_t max_outgoing_bandwidth = 0;
             uint32_t max_incoming_bandwidth = 0;
             uint32_t client_timeout = 1000;
+            GameConfig game;
     };
 }
