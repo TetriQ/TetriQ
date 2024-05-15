@@ -5,6 +5,7 @@
 #include "Client.hpp"
 #include "IDisplay.hpp"
 #include "SFMLDisplay.hpp"
+#include <iostream>
 #include <memory>
 
 int main(int argc, char *argv[])

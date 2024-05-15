@@ -14,14 +14,14 @@ namespace tetriq {
             SFMLDisplay();
             ~SFMLDisplay() override;
 
-            bool loadGame(const Tetris &game) override;
-            bool draw(const Tetris &game) override;
-            bool handleEvents(Tetris &game) override;
+            bool loadGame(const ITetris &game) override;
+            bool draw(const ITetris &game) override;
+            bool handleEvents(ITetris &game) override;
         private:
             void drawBlock(sf::Vector2u pos, BlockType block);
             void drawTetromino(const Tetromino &tetromino, Position position);
-            void drawCurrentTetromino(const Tetris &game);
-            void drawNextTetromino(const Tetris &game);
+            void drawCurrentTetromino(const ITetris &game);
+            void drawNextTetromino(const ITetris &game);
 
             const uint64_t BLOCK_SIZE = 32;
             const uint64_t SIDEBAR_SIZE = 6;

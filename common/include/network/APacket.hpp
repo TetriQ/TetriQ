@@ -10,8 +10,10 @@
 #include <enet/enet.h>
 
 namespace tetriq {
-    class IPacket : public NetworkObject {
+    class APacket : public NetworkObject {
         public:
+            void send(ENetPeer *peer) const;
+
             virtual PacketId getId() const = 0;
     };
 }

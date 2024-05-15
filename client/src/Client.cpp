@@ -25,7 +25,7 @@ namespace tetriq {
             throw ClientInitException();
         if (not connectToServer())
             throw ClientConnectionException();
-        if (!_display.loadGame(_game.getState()))
+        if (!_display.loadGame(_game))
             throw ClientInitException();
     }
 
@@ -42,11 +42,11 @@ namespace tetriq {
     {
         ENetEvent _event;
         while (true) {
-            if (!_display.draw(_game.getState()))
+            if (!_display.draw(_game))
                 break;
-            // if (!_display.handleEvents(_game.getState()))
-            //     break;
-            if (enet_host_service(_client, &_event, _config.server_timeout) < 0)
+            if (!_display.handleEvents(_game))
+                break;
+            if (enet_host_service(_client, &_event, 0) < 0)
                 break;
             if (_event.type == ENET_EVENT_TYPE_RECEIVE) {
                 _game.decodePacket(_event);
@@ -89,6 +89,7 @@ namespace tetriq {
                 "Failed to connect to the server : " + _server_ip + ":" + _server_port);
             return false;
         }
+        _game.setPeer(_server);
         return true;
     }
 

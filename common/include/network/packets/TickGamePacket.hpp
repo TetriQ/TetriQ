@@ -5,10 +5,10 @@
 #pragma once
 
 #include "Tetris.hpp"
-#include "network/IPacket.hpp"
+#include "network/APacket.hpp"
 
 namespace tetriq {
-    class TickGamePacket : public IPacket {
+    class TickGamePacket : public APacket {
         public:
             TickGamePacket();
             TickGamePacket(const Tetris &game);

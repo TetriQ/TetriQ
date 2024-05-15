@@ -11,8 +11,8 @@ namespace tetriq {
         public:
             virtual ~IDisplay() = default;
 
-            [[nodiscard]] virtual bool loadGame(const Tetris &game) = 0;
-            [[nodiscard]] virtual bool draw(const Tetris &game) = 0;
-            [[nodiscard]] virtual bool handleEvents(Tetris &game) = 0;
+            [[nodiscard]] virtual bool loadGame(const ITetris &game) = 0;
+            [[nodiscard]] virtual bool draw(const ITetris &game) = 0;
+            [[nodiscard]] virtual bool handleEvents(ITetris &game) = 0;
     };
 }

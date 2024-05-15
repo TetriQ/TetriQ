@@ -4,9 +4,7 @@
 
 #include "Player.hpp"
 #include "Logger.hpp"
-#include "network/IPacket.hpp"
-#include "network/NetworkStream.hpp"
-#include "network/TestPacket.hpp"
+#include "network/packets/GameActionPacket.hpp"
 #include "network/packets/TickGamePacket.hpp"
 #include <cstdint>
 #include <string>
@@ -27,22 +25,16 @@ tetriq::Player::~Player()
 void tetriq::Player::tickGame()
 {
     _game.tick();
-    sendPacket(TickGamePacket{_game});
-}
-
-void tetriq::Player::sendPacket(const tetriq::IPacket &packet) const
-{
-    NetworkOStream stream{sizeof(uint64_t) + packet.getNetworkSize()};
-
-    static_cast<uint64_t>(packet.getId()) >> stream;
-    packet >> stream;
-
-    ENetPacket *epacket =
-        enet_packet_create(stream.getData(), stream.getSize(), ENET_PACKET_FLAG_RELIABLE);
-    enet_peer_send(_peer, 0, epacket);
+    TickGamePacket{_game}.send(_peer);
 }
 
 uint64_t tetriq::Player::getNetworkId() const
 {
     return _network_id;
+}
+
+bool tetriq::Player::handle(tetriq::GameActionPacket &packet)
+{
+    _game.handleGameAction(packet.getAction());
+    return true;
 }
