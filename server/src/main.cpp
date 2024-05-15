@@ -5,6 +5,7 @@
 #include "Server.hpp"
 #include "Logger.hpp"
 
+#include <csignal>
 #include <iostream>
 
 bool should_exit = false;
@@ -15,6 +16,8 @@ bool should_exit = false;
 int main(void)
 {
     signal(SIGINT, [](int) {
+        if (should_exit)
+            raise(SIGKILL);
         should_exit = true;
         tetriq::Logger::log(tetriq::LogLevel::INFO, "SIGINT received, stopping server");
     });
