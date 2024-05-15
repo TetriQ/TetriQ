@@ -16,6 +16,6 @@ namespace tetriq {
         TEST,
         S_INIT_GAME,
         S_TICK_GAME,
-        C_GAME_ACTION, // TODO : implement
+        C_GAME_ACTION,
     };
 }
