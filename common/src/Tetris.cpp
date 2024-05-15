@@ -8,6 +8,7 @@
 #include "Tetromino.hpp"
 #include <cstddef>
 #include <cstdint>
+#include <iostream>
 
 tetriq::Tetris::Tetris(size_t width, size_t height)
     : _grace_ticks(0)
@@ -113,12 +114,16 @@ void tetriq::Tetris::tick()
     if (!moveCurrentPiece(0, 1))
         placeTetromino();
 
-    //code to delete line todo move all blocks above down
-    for (uint64_t y = 0; y < _height; ++y) {
+    for (uint64_t y = 1; y < _height - 1; ++y) {
         if (isLineFull(y)) {
-            for (uint64_t x = 0; x < _width; ++x) {
+            for (uint64_t x = 1; x < _width - 1; ++x) {
                 if (_blocks[y][x] != BlockType::INDESTRUCTIBLE)
                     _blocks[y][x] = BlockType::EMPTY;
+            }
+            for (uint64_t i = y; i > 1; --i) {
+                for (uint64_t x = 1; x < _width - 1; ++x) {
+                    moveBlock({x, i}, {x, i + 1});
+                }
             }
         }
     }
@@ -200,5 +205,14 @@ bool tetriq::Tetris::isLineFull(uint64_t y) const
         if (_blocks[y][i] == BlockType::EMPTY)
             return false;
     }
+    return true;
+}
+
+bool tetriq::Tetris::moveBlock(Position oldPos, Position newPos)
+{
+    if (_blocks[newPos.y][newPos.x] != BlockType::EMPTY)
+        return false;
+    _blocks[newPos.y][newPos.x] = _blocks[oldPos.y][oldPos.x];
+    _blocks[oldPos.y][oldPos.x] = BlockType::EMPTY;
     return true;
 }

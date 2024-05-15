@@ -49,6 +49,7 @@ namespace tetriq {
             size_t getNetworkSize() const override;
         private:
             bool isLineFull(uint64_t y) const;
+            bool moveBlock(Position oldPos, Position newPos);
             void placeTetromino();
             Tetromino &getCurrentPiece();
 
