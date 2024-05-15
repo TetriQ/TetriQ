@@ -10,11 +10,13 @@ namespace tetriq {
     InitGamePacket::InitGamePacket()
         : _game_width(0)
         , _game_height(0)
+        , _player_ids()
     {}
 
-    InitGamePacket::InitGamePacket(uint64_t game_width, uint64_t game_height)
+    InitGamePacket::InitGamePacket(uint64_t game_width, uint64_t game_height, const std::vector<uint64_t> &player_ids)
         : _game_width(game_width)
         , _game_height(game_height)
+        , _player_ids(player_ids)
     {}
 
     PacketId InitGamePacket::getId() const
@@ -22,10 +24,26 @@ namespace tetriq {
         return PacketId::S_INIT_GAME;
     }
 
+    uint64_t InitGamePacket::getGameWidth() const
+    {
+        return _game_width;
+    }
+
+    uint64_t InitGamePacket::getGameHeight() const
+    {
+        return _game_height;
+    }
+
+    const std::vector<uint64_t> &InitGamePacket::getPlayerIds() const
+    {
+        return _player_ids;
+    }
+
     NetworkOStream &InitGamePacket::operator>>(NetworkOStream &ns) const
     {
         _game_width >> ns;
         _game_height >> ns;
+        _player_ids >> ns;
         return ns;
     }
 
@@ -33,11 +51,12 @@ namespace tetriq {
     {
         _game_width << ns;
         _game_height << ns;
+        _player_ids << ns;
         return ns;
     }
 
     size_t InitGamePacket::getNetworkSize() const
     {
-        return sizeof(uint64_t) * 2;
+        return sizeof(uint64_t) * (3 + _player_ids.size());
     }
 }
