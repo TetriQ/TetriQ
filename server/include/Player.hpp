@@ -5,21 +5,22 @@
 #pragma once
 
 #include "Tetris.hpp"
-#include "network/IPacket.hpp"
+#include "network/PacketHandler.hpp"
+#include "network/packets/GameActionPacket.hpp"
 #include <enet/enet.h>
 #include <cstdint>
 
 namespace tetriq {
-    class Player {
+    class Player : public PacketHandler {
         public:
             Player(uint64_t network_id, ENetPeer *peer);
             ~Player();
-
-            void sendPacket(const IPacket &packet) const;
             
             void tickGame();
 
             uint64_t getNetworkId() const;
+
+            bool handle(GameActionPacket &packet);
         private:
             const uint64_t _network_id;
             ENetPeer *const _peer;

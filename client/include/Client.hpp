@@ -5,9 +5,7 @@
 #pragma once
 
 #include "IDisplay.hpp"
-#include "Logger.hpp"
 #include "RemoteTetris.hpp"
-#include "Tetris.hpp"
 #include "ClientConfig.hpp"
 
 #include <string>

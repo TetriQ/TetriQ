@@ -4,6 +4,7 @@
 
 #include "SFMLDisplay.hpp"
 #include "Block.hpp"
+#include "GameAction.hpp"
 #include "Tetris.hpp"
 #include "Utils.hpp"
 
@@ -21,7 +22,7 @@ tetriq::SFMLDisplay::SFMLDisplay()
 tetriq::SFMLDisplay::~SFMLDisplay()
 {}
 
-bool tetriq::SFMLDisplay::loadGame(const Tetris &game)
+bool tetriq::SFMLDisplay::loadGame(const ITetris &game)
 {
     uint64_t width = (game.getWidth() + SIDEBAR_SIZE) * BLOCK_SIZE;
     uint64_t height = game.getHeight() * BLOCK_SIZE;
@@ -32,7 +33,7 @@ bool tetriq::SFMLDisplay::loadGame(const Tetris &game)
     return true;
 }
 
-bool tetriq::SFMLDisplay::draw(const Tetris &game)
+bool tetriq::SFMLDisplay::draw(const ITetris &game)
 {
     BlockType blockType;
     sf::Vector2u pos;
@@ -51,7 +52,7 @@ bool tetriq::SFMLDisplay::draw(const Tetris &game)
     return true;
 }
 
-bool tetriq::SFMLDisplay::handleEvents(Tetris &game)
+bool tetriq::SFMLDisplay::handleEvents(ITetris &game)
 {
     while (_window.pollEvent(_event)) {
         if (_event.type == sf::Event::Closed)
@@ -61,19 +62,19 @@ bool tetriq::SFMLDisplay::handleEvents(Tetris &game)
                 case sf::Keyboard::Escape:
                     goto exit_window;
                 case sf::Keyboard::Left:
-                    (void) game.moveCurrentPiece(-1, 0);
+                    game.handleGameAction(GameAction::MOVE_LEFT);
                     continue;
                 case sf::Keyboard::Right:
-                    (void) game.moveCurrentPiece(1, 0);
+                    game.handleGameAction(GameAction::MOVE_RIGHT);
                     continue;
                 case sf::Keyboard::Up:
-                    (void) game.rotateCurrentPiece();
+                    game.handleGameAction(GameAction::ROTATE);
                     continue;
                 case sf::Keyboard::Down:
-                    (void) game.moveCurrentPiece(0, 1);
+                    game.handleGameAction(GameAction::MOVE_DOWN);
                     continue;
                 case sf::Keyboard::Space:
-                    (void) game.dropCurrentPiece();
+                    game.handleGameAction(GameAction::DROP);
                     continue;
                 default:
                     continue;
@@ -139,12 +140,12 @@ void tetriq::SFMLDisplay::drawTetromino(const Tetromino &tetromino, Position pos
     }
 }
 
-void tetriq::SFMLDisplay::drawCurrentTetromino(const Tetris &game)
+void tetriq::SFMLDisplay::drawCurrentTetromino(const ITetris &game)
 {
     drawTetromino(game.getCurrentPiece(), game.getCurrentPiece().getPosition());
 }
 
-void tetriq::SFMLDisplay::drawNextTetromino(const Tetris &game)
+void tetriq::SFMLDisplay::drawNextTetromino(const ITetris &game)
 {
     Position pos = {game.getWidth() + 2, 1};
 

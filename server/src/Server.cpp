@@ -82,7 +82,6 @@ namespace tetriq {
                     break;
                 case ENET_EVENT_TYPE_RECEIVE:
                     handleClientPacket(event);
-                    enet_packet_destroy(event.packet);
                     break;
                 case ENET_EVENT_TYPE_NONE:
                     handleNone(event);
@@ -115,9 +114,9 @@ namespace tetriq {
 
     void Server::handleClientPacket(ENetEvent &event)
     {
-        LogLevel::INFO << "Packet received from " << event.peer->address.host << ":"
-                       << event.peer->address.port << std::endl;
-        enet_packet_destroy(event.packet);
+        uint64_t network_id = *(uint64_t *) event.peer->data;
+        LogLevel::INFO << "Packet received from player " << network_id << std::endl;
+        _players.at(network_id).decodePacket(event);
     }
 
     void Server::handleNone([[maybe_unused]] ENetEvent &event) const

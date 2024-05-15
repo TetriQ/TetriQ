@@ -4,14 +4,14 @@
 
 #pragma once
 
-#include "network/IPacket.hpp"
+#include "network/APacket.hpp"
 #include "network/NetworkStream.hpp"
 #include "network/PacketId.hpp"
 
 #include <cstdint>
 
 namespace tetriq {
-    class InitGamePacket : public IPacket {
+    class InitGamePacket : public APacket {
         public:
             InitGamePacket();
             InitGamePacket(uint64_t game_width, uint64_t game_height);

@@ -4,20 +4,23 @@
 
 #pragma once
 
+#include "GameAction.hpp"
 #include "network/APacket.hpp"
 #include "network/PacketId.hpp"
-
-#include <cstdint>
-
-namespace tetriq {
-    struct TestPacket : public APacket {
+namespace tetriq {    
+    class GameActionPacket : public APacket {
         public:
+            GameActionPacket();
+            GameActionPacket(GameAction action);
+
             PacketId getId() const override;
-            
+            GameAction getAction() const;
+
             NetworkOStream &operator>>(NetworkOStream &ns) const override;
             NetworkIStream &operator<<(NetworkIStream &ns) override;
             size_t getNetworkSize() const override;
+
         private:
-            uint64_t _magic = 0x737819;
+            GameAction _action;
     };
 }
