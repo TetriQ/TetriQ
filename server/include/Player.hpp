@@ -11,11 +11,14 @@
 #include <cstdint>
 
 namespace tetriq {
+    class Channel;
+
     class Player : public PacketHandler {
         public:
-            Player(uint64_t network_id, ENetPeer *peer);
+            Player(uint64_t network_id, ENetPeer *peer, Channel *channel);
             ~Player();
-            
+
+            void startGame();
             void tickGame();
 
             uint64_t getNetworkId() const;
@@ -25,6 +28,7 @@ namespace tetriq {
             const uint64_t _network_id;
             ENetPeer *const _peer;
 
+            Channel *_channel;
             Tetris _game;
     };
 }

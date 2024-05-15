@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "Channel.hpp"
 #include "Player.hpp"
 #include "ServerConfig.hpp"
 
@@ -12,16 +13,16 @@
 #include <toml++/toml.hpp>
 #include <enet/enet.h>
 #include <unordered_map>
+#include <vector>
 
 extern bool should_exit;
 
 namespace tetriq {
     class Server {
         public:
-            // Server exceptions
             /**
-            * @brief Base exception class for the server
-            */
+             * @brief Base exception class for the server
+             */
             class ServerException: public std::exception {
                 public:
                     explicit ServerException(std::string message);
@@ -33,70 +34,86 @@ namespace tetriq {
             };
 
             /**
-            * @brief Exception thrown when the server failed to initialize
-            */
+             * @brief Exception thrown when the server failed to initialize
+             */
             class ServerInitException final: public ServerException {
                 public:
                     explicit ServerInitException();
             };
 
-            // Server methods
             /**
-            * @brief Server constructor
-            * @param ip IP address to bind the server to
-            * @param port Port to bind the server to
-            * @param out Output stream for normal logs, defaults to std::cout
-            * @param err Output stream for error logs, defaults to std::cerr
-            * @exception ServerInitException if the server failed to initialize
-            */
+             * @brief Server constructor
+             * @param ip IP address to bind the server to
+             * @param port Port to bind the server to
+             * @param out Output stream for normal logs, defaults to std::cout
+             * @param err Output stream for error logs, defaults to std::cerr
+             * @exception ServerInitException if the server failed to initialize
+             */
             Server(std::string ip, std::string port);
+
             /**
-            * @brief Server destructor
-            */
+             * @brief Server destructor
+             */
             ~Server();
+
             /**
-            * @brief Initialize the server
-            * @return true if the server was successfully initialized, false otherwise
-            */
-            bool init();
-            /**
-            * @brief Set the host address and port
-            * @return true if the host address and port were successfully set, false otherwise
-            */
-            bool setHost();
-            /**
-            * @brief Create the server host
-            * @return true if the server host was successfully created, false otherwise
-            */
-            bool createHost();
-            /**
-            * @brief Listen for all enet events,
-            * stop when _running is false
-            */
+             * @brief Start main loop of listening to network events and managing players.
+             */
             void listen();
+
             /**
-            * @brief Handle a new client connection
-            * @param event ENet event containing the new client connection
-            * @return true if the new client was successfully handled, false otherwise
-            */
+             * @returns a player based on his network id.
+             */
+            Player &getPlayerById(uint64_t id);
+        private:
+            /**
+             * @brief Initialize the server
+             * @return true if the server was successfully initialized, false otherwise
+             */
+            bool init();
+
+            /**
+             * @brief Set the host address and port
+             * @return true if the host address and port were successfully set, false otherwise
+             */
+            bool setHost();
+
+            /**
+             * @brief Create the server host
+             * @return true if the server host was successfully created, false otherwise
+             */
+            bool createHost();
+
+            /**
+             * @brief Listen for all enet events.
+             */
+            bool handleENetEvents();
+
+            /**
+             * @brief Handle a new client connection
+             * @param event ENet event containing the new client connection
+             * @return true if the new client was successfully handled, false otherwise
+             */
             bool handleNewClient(ENetEvent &event);
+
             /**
-            * @brief Handle a client disconnection
-            * @param event ENet event containing the client disconnection
-            */
+             * @brief Handle a client disconnection
+             * @param event ENet event containing the client disconnection
+             */
             void handleClientDisconnect(ENetEvent &event);
+
             /**
-            * @brief Handle a client packet
-            * @param event ENet event containing the client packet
-            */
+             * @brief Handle a client packet
+             * @param event ENet event containing the client packet
+             */
             void handleClientPacket(ENetEvent &event);
+
             /**
-            * @brief Handle None event (timeout)
-            * @param event ENet event containing the None event
-            */
+             * @brief Handle None event (timeout)
+             * @param event ENet event containing the None event
+             */
             void handleNone(ENetEvent &event) const;
 
-        private:
             const ServerConfig _config;
             std::string _ip;
             std::string _port;
@@ -106,5 +123,6 @@ namespace tetriq {
             bool _running {true};
             uint64_t _network_id_counter{0};
             std::unordered_map<uint64_t, Player> _players;
+            std::vector<Channel> _channels;
     };
 }

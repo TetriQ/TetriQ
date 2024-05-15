@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 #include "Server.hpp"
+#include "Channel.hpp"
 #include "Logger.hpp"
 #include "Messages.hpp"
 
@@ -16,9 +17,15 @@ namespace tetriq {
         , _port(std::move(port))
         , _address()
         , _server(nullptr)
+        , _channels(1)
     {
         if (init() == false)
             throw ServerInitException();
+    }
+
+    Player &Server::getPlayerById(uint64_t id)
+    {
+        return _players.at(id);
     }
 
     bool Server::init()
@@ -70,9 +77,20 @@ namespace tetriq {
 
     void Server::listen()
     {
+        while (not should_exit && _running) {
+            // TODO : global TPS limit
+            if (!handleENetEvents())
+                break;
+            for (Channel &channel : _channels) {
+                channel.tick(*this);
+            }
+        }
+    }
+
+    bool Server::handleENetEvents()
+    {
         ENetEvent event;
-        while (not should_exit && _running
-               && enet_host_service(_server, &event, _config.client_timeout) >= 0) {
+        while (enet_host_service(_server, &event, 0) > 0) {
             switch (event.type) {
                 case ENET_EVENT_TYPE_CONNECT:
                     handleNewClient(event);
@@ -87,11 +105,8 @@ namespace tetriq {
                     handleNone(event);
                     break;
             }
-            for (auto &pair : _players) {
-                Player &player{pair.second};
-                player.tickGame();
-            }
         }
+        return true;
     }
 
     bool Server::handleNewClient(ENetEvent &event)
@@ -99,7 +114,7 @@ namespace tetriq {
         event.peer->data = new uint64_t(_network_id_counter);
         _players.emplace(std::piecewise_construct,
             std::forward_as_tuple(_network_id_counter),
-            std::forward_as_tuple(_network_id_counter, event.peer));
+            std::forward_as_tuple(_network_id_counter, event.peer, &_channels.front()));
         _network_id_counter++;
         return true;
     }
