@@ -20,7 +20,6 @@ namespace tetriq {
             NetworkIStream &operator<<(NetworkIStream &ns) override;
             size_t getNetworkSize() const override;
         private:
-            // TODO : figure out how to send the blocks too
 	    Tetris _game{0, 0};
     };
 }
