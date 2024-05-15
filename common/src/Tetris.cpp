@@ -110,9 +110,18 @@ void tetriq::Tetris::tick()
         _grace_ticks--;
         return;
     }
-
     if (!moveCurrentPiece(0, 1))
         placeTetromino();
+
+    //code to delete line todo move all blocks above down
+    for (uint64_t y = 0; y < _height; ++y) {
+        if (isLineFull(y)) {
+            for (uint64_t x = 0; x < _width; ++x) {
+                if (_blocks[y][x] != BlockType::INDESTRUCTIBLE)
+                    _blocks[y][x] = BlockType::EMPTY;
+            }
+        }
+    }
 }
 
 void tetriq::Tetris::addGraceTicks(uint64_t n)
@@ -183,4 +192,13 @@ size_t tetriq::Tetris::getNetworkSize() const
         size += sizeof(BlockType) * type.size();
     }
     return size;
+}
+
+bool tetriq::Tetris::isLineFull(uint64_t y) const
+{
+    for (uint64_t i = 0; i < _width; i++) {
+        if (_blocks[y][i] == BlockType::EMPTY)
+            return false;
+    }
+    return true;
 }

@@ -48,6 +48,7 @@ namespace tetriq {
             NetworkIStream &operator<<(NetworkIStream &os) override;
             size_t getNetworkSize() const override;
         private:
+            bool isLineFull(uint64_t y) const;
             void placeTetromino();
             Tetromino &getCurrentPiece();
 
