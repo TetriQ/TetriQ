@@ -80,7 +80,7 @@ bool tetriq::Tetromino::rotate(const Tetris &game)
 void tetriq::Tetromino::drop(Tetris &game)
 {
     while (move(0, 1, game)) {}
-    game.addGraceTicks(1);
+    //game.addGraceTicks(1);
 }
 
 bool tetriq::Tetromino::collides(const Tetris &game) const
