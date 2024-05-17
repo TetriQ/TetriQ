@@ -12,16 +12,11 @@
 #include <cstddef>
 
 namespace tetriq {
-    RemoteTetris::RemoteTetris(size_t width, size_t height)
-        : _peer(nullptr)
+    RemoteTetris::RemoteTetris(size_t width, size_t height, ENetPeer *peer)
+        : _peer(peer)
         , _server_state(width, height)
         , _client_state(width, height)
     {}
-
-    void RemoteTetris::setPeer(ENetPeer *peer)
-    {
-        _peer = peer;
-    }
 
     void RemoteTetris::handleGameAction(GameAction action)
     {

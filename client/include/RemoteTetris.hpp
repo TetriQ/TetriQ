@@ -16,9 +16,7 @@ namespace tetriq {
      */
     class RemoteTetris : public ITetris, public PacketHandler {
         public:
-            RemoteTetris(size_t width, size_t height);
-
-            void setPeer(ENetPeer *peer);
+            RemoteTetris(size_t width, size_t height, ENetPeer *peer);
 
             void handleGameAction(GameAction action) override;
             uint64_t getWidth() const override;

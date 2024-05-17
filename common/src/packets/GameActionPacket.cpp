@@ -28,6 +28,7 @@ namespace tetriq {
     {
         return _action >> ns;
     }
+
     NetworkIStream &GameActionPacket::operator<<(NetworkIStream &ns)
     {
         return _action << ns;

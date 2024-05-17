@@ -90,16 +90,16 @@ void tetriq::Tetris::dropCurrentPiece()
 void tetriq::Tetris::handleGameAction(tetriq::GameAction action)
 {
     switch (action) {
-    case GameAction::MOVE_LEFT:
-        return (void) moveCurrentPiece(-1, 0);
-    case GameAction::MOVE_RIGHT:
-        return (void) moveCurrentPiece(1, 0);
-    case GameAction::MOVE_DOWN:
-        return (void) moveCurrentPiece(0, 1);
-    case GameAction::DROP:
-        return (void) dropCurrentPiece();
-    case GameAction::ROTATE:
-        return (void) rotateCurrentPiece();
+        case GameAction::MOVE_LEFT:
+            return (void) moveCurrentPiece(-1, 0);
+        case GameAction::MOVE_RIGHT:
+            return (void) moveCurrentPiece(1, 0);
+        case GameAction::MOVE_DOWN:
+            return (void) moveCurrentPiece(0, 1);
+        case GameAction::DROP:
+            return (void) dropCurrentPiece();
+        case GameAction::ROTATE:
+            return (void) rotateCurrentPiece();
     }
 }
 

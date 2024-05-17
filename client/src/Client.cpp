@@ -6,7 +6,10 @@
 #include "IDisplay.hpp"
 #include "Logger.hpp"
 #include "Messages.hpp"
+#include "RemoteTetris.hpp"
+#include "network/PacketHandler.hpp"
 
+#include <memory>
 #include <utility>
 
 namespace tetriq {
@@ -14,7 +17,8 @@ namespace tetriq {
         : _username("Unknown")
         , _server_ip(std::move(ip))
         , _server_port(std::move(port))
-        , _game(12, 22)
+        , _game_started(false)
+        , _game(nullptr)
         , _display(display)
     {
         if (init() == false)
@@ -25,8 +29,6 @@ namespace tetriq {
             throw ClientInitException();
         if (not connectToServer())
             throw ClientConnectionException();
-        if (!_display.loadGame(_game))
-            throw ClientInitException();
     }
 
     Client::~Client()
@@ -42,18 +44,26 @@ namespace tetriq {
     {
         ENetEvent _event;
         while (true) {
-            if (!_display.draw(_game))
-                break;
-            if (!_display.handleEvents(_game))
-                break;
-            if (enet_host_service(_client, &_event, 0) < 0)
-                break;
-            if (_event.type == ENET_EVENT_TYPE_RECEIVE) {
-                _game.decodePacket(_event);
+            if (_game_started) {
+                if (!_display.draw(*_game))
+                    return;
+                if (!_display.handleEvents(*_game))
+                    return;
             }
-            if (_event.type == ENET_EVENT_TYPE_DISCONNECT) {
-                Logger::log(LogLevel::INFO, "Disconnected from the server");
-                break;
+            if (enet_host_service(_client, &_event, 0) < 0)
+                return;
+            switch (_event.type) {
+                case ENET_EVENT_TYPE_RECEIVE:
+                    if (_game_started)
+                        PacketHandler::decodePacket(_event, {this, _game.get()});
+                    else
+                        PacketHandler::decodePacket(_event, {this});
+                    break;
+                case ENET_EVENT_TYPE_DISCONNECT:
+                    Logger::log(LogLevel::INFO, "Disconnected from the server");
+                    return;
+                default:
+                    continue;
             }
         }
     }
@@ -89,7 +99,6 @@ namespace tetriq {
                 "Failed to connect to the server : " + _server_ip + ":" + _server_port);
             return false;
         }
-        _game.setPeer(_server);
         return true;
     }
 
@@ -109,6 +118,18 @@ namespace tetriq {
         }
         const std::string message = "Server set to " + _server_ip + ":" + _server_port;
         Logger::log(LogLevel::INFO, message);
+        return true;
+    }
+
+    bool Client::handle(InitGamePacket &packet)
+    {
+        std::unique_ptr<RemoteTetris> game =
+            std::make_unique<RemoteTetris>(packet.getGameWidth(), packet.getGameHeight(), _server);
+        _game.swap(game);
+        if (_display.loadGame(*_game))
+            _game_started = true;
+        else
+            LogLevel::ERROR << "failed loading game in display" << std::endl;
         return true;
     }
 }

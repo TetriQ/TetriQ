@@ -28,6 +28,7 @@ namespace tetriq {
             void removePlayer(Player &player);
 
             void startGame(Server &server);
+            void stopGame();
             void tick(Server &server);
         private:
             std::chrono::steady_clock::duration _next_tick;
