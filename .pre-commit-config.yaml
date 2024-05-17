@@ -1,0 +1,13 @@
+# SPDX-FileCopyrightText: 2024 The TetriQ authors
+#
+# SPDX-License-Identifier: CC0-1.0
+
+repos:
+  - repo: https://github.com/fsfe/reuse-tool
+    rev: v3.0.2
+    hooks:
+      - id: reuse
+  - repo: https://github.com/pre-commit/mirrors-clang-format
+    rev: v18.1.5
+    hooks:
+      - id: clang-format
