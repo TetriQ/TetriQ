@@ -12,16 +12,12 @@ namespace tetriq {
     template<class P>
     static bool handlePacket(const std::vector<PacketHandler *> &handlers, NetworkIStream &stream)
     {
-        bool handled = false;
         P packet;
         packet << stream;
         for (PacketHandler *handler : handlers) {
-            if (handler->handle(packet)) {
-                handled = true;
-            }
+            if (handler->handle(packet))
+                return true;
         }
-        if (handled)
-            return true;
         LogLevel::WARNING << "unhandled packet of type " << typeid(P).name() << std::endl;
         return false;
     }
