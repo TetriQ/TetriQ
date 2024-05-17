@@ -81,11 +81,11 @@ namespace tetriq {
             return;
         }
 
-        bool game_over = false;
+        bool game_over = true;
         for (uint64_t id : _players) {
             Player &player = server.getPlayerById(id);
             player.tickGame();
-            game_over |= player.isGameOver();
+            game_over &= player.isGameOver();
         }
 
         if (game_over)
