@@ -13,7 +13,8 @@ namespace tetriq {
         , _player_ids()
     {}
 
-    InitGamePacket::InitGamePacket(uint64_t game_width, uint64_t game_height, const std::vector<uint64_t> &player_ids)
+    InitGamePacket::InitGamePacket(
+        uint64_t game_width, uint64_t game_height, const std::vector<uint64_t> &player_ids)
         : _game_width(game_width)
         , _game_height(game_height)
         , _player_ids(player_ids)

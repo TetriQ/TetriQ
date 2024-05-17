@@ -10,31 +10,37 @@
 
 namespace tetriq {
     template<class P>
-    static bool handlePacket(PacketHandler &handler, NetworkIStream &stream)
+    static bool handlePacket(const std::vector<PacketHandler *> &handlers, NetworkIStream &stream)
     {
+        bool handled = false;
         P packet;
         packet << stream;
-        if (!handler.handle(packet)) {
-            LogLevel::WARNING << "unhandled packet of type " << typeid(P).name() << std::endl;
-            return false;
+        for (PacketHandler *handler : handlers) {
+            if (handler->handle(packet)) {
+                handled = true;
+            }
         }
-        return true;
+        if (handled)
+            return true;
+        LogLevel::WARNING << "unhandled packet of type " << typeid(P).name() << std::endl;
+        return false;
     }
 
-    bool PacketHandler::decodePacket(const ENetEvent &event)
+    bool PacketHandler::decodePacket(
+        const ENetEvent &event, const std::vector<PacketHandler *> &handlers)
     {
         NetworkIStream stream{event.packet};
         uint64_t id{0};
         id << stream;
         switch (static_cast<PacketId>(id)) {
             case PacketId::TEST:
-                return handlePacket<TestPacket>(*this, stream);
+                return handlePacket<TestPacket>(handlers, stream);
             case PacketId::S_INIT_GAME:
-                return handlePacket<InitGamePacket>(*this, stream);
+                return handlePacket<InitGamePacket>(handlers, stream);
             case PacketId::S_TICK_GAME:
-                return handlePacket<TickGamePacket>(*this, stream);
-        case PacketId::C_GAME_ACTION:
-            return handlePacket<GameActionPacket>(*this, stream);
+                return handlePacket<TickGamePacket>(handlers, stream);
+            case PacketId::C_GAME_ACTION:
+                return handlePacket<GameActionPacket>(handlers, stream);
             default:
                 LogLevel::WARNING << "reveived packet with unknown id '" << id << "'" << std::endl;
                 return false;

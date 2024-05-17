@@ -7,12 +7,15 @@
 #include "IDisplay.hpp"
 #include "RemoteTetris.hpp"
 #include "ClientConfig.hpp"
+#include "network/PacketHandler.hpp"
+#include "network/packets/InitGamePacket.hpp"
 
+#include <memory>
 #include <string>
 #include <enet/enet.h>
 
 namespace tetriq {
-    class Client{
+    class Client : public PacketHandler {
         public:
             class ClientException: public std::exception {
                 public:
@@ -70,6 +73,8 @@ namespace tetriq {
             */
             bool connectToServer();
 
+            bool handle(InitGamePacket &packet) override;
+
             const ClientConfig _config;
 
             /**
@@ -84,7 +89,8 @@ namespace tetriq {
             ENetHost *_client;
             ENetPeer *_server;
 
-            RemoteTetris _game;
+            bool _game_started;
+            std::unique_ptr<RemoteTetris> _game;
             IDisplay &_display;
     };
 }

@@ -13,10 +13,10 @@ namespace tetriq {
     class PacketHandler {
         public:
             /**
-             * @brief Decodes a packet and handles it.
+             * @brief Decodes a packet and handles it using the handlers.
              * @param event An enet event of type ENET_EVENT_TYPE_RECEIVE
              */
-            bool decodePacket(const ENetEvent &event);
+            static bool decodePacket(const ENetEvent &event, const std::vector<PacketHandler *> &handlers);
 
             virtual bool handle(TestPacket &p);
             virtual bool handle(InitGamePacket &p);

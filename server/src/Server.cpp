@@ -6,6 +6,8 @@
 #include "Channel.hpp"
 #include "Logger.hpp"
 #include "Messages.hpp"
+#include "ServerConfig.hpp"
+#include "network/PacketHandler.hpp"
 
 #include <cstdint>
 #include <tuple>
@@ -26,6 +28,11 @@ namespace tetriq {
     Player &Server::getPlayerById(uint64_t id)
     {
         return _players.at(id);
+    }
+
+    const ServerConfig &Server::getConfig() const
+    {
+        return _config;
     }
 
     bool Server::init()
@@ -115,6 +122,7 @@ namespace tetriq {
         _players.emplace(std::piecewise_construct,
             std::forward_as_tuple(_network_id_counter),
             std::forward_as_tuple(_network_id_counter, event.peer, &_channels.front()));
+        // TODO : choose a channel intelligently and dont start game instantly
         _network_id_counter++;
         return true;
     }
@@ -130,8 +138,7 @@ namespace tetriq {
     void Server::handleClientPacket(ENetEvent &event)
     {
         uint64_t network_id = *(uint64_t *) event.peer->data;
-        LogLevel::INFO << "Packet received from player " << network_id << std::endl;
-        _players.at(network_id).decodePacket(event);
+        PacketHandler::decodePacket(event, {&_players.at(network_id)});
     }
 
     void Server::handleNone([[maybe_unused]] ENetEvent &event) const

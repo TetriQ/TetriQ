@@ -65,6 +65,11 @@ namespace tetriq {
              * @returns a player based on his network id.
              */
             Player &getPlayerById(uint64_t id);
+
+            /**
+             * @returns the server's config.
+             */
+            const ServerConfig &getConfig() const;
         private:
             /**
              * @brief Initialize the server

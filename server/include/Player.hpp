@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "GameConfig.hpp"
 #include "Tetris.hpp"
 #include "network/PacketHandler.hpp"
 #include "network/packets/GameActionPacket.hpp"
@@ -18,8 +19,9 @@ namespace tetriq {
             Player(uint64_t network_id, ENetPeer *peer, Channel *channel);
             ~Player();
 
-            void startGame();
+            void startGame(const GameConfig &config);
             void tickGame();
+            bool isGameOver() const;
 
             uint64_t getNetworkId() const;
 

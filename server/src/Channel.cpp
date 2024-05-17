@@ -16,7 +16,7 @@ namespace tetriq {
         , _game_started(false)
         , _players()
     {}
-    
+
     bool Channel::hasGameStarted() const
     {
         return _game_started;
@@ -48,27 +48,47 @@ namespace tetriq {
 
     void Channel::startGame(Server &server)
     {
+        LogLevel::DEBUG << "starting game" << std::endl;
         for (uint64_t id : _players) {
             Player &player = server.getPlayerById(id);
-            player.startGame();
+            player.startGame(server.getConfig().game);
         }
         _game_started = true;
     }
-    
+
+    void Channel::stopGame()
+    {
+        LogLevel::DEBUG << "game stopped" << std::endl;
+        _game_started = false;
+    }
+
     void Channel::tick(Server &server)
     {
         if (!hasGameStarted()) {
-            startGame(server);
+            if (_players.size() > 0)
+                startGame(server);
             return;
         }
-        std::chrono::steady_clock::duration now = std::chrono::steady_clock::now().time_since_epoch();
+
+        std::chrono::steady_clock::duration now =
+            std::chrono::steady_clock::now().time_since_epoch();
         if (now < _next_tick)
             return;
         _next_tick = now + std::chrono::seconds(1);
 
+        if (_players.size() == 0) {
+            stopGame();
+            return;
+        }
+
+        bool game_over = false;
         for (uint64_t id : _players) {
             Player &player = server.getPlayerById(id);
             player.tickGame();
+            game_over |= player.isGameOver();
         }
+
+        if (game_over)
+            stopGame();
     }
 }
