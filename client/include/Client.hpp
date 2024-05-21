@@ -10,6 +10,7 @@
 #include "network/PacketHandler.hpp"
 #include "network/packets/InitGamePacket.hpp"
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <enet/enet.h>
@@ -42,7 +43,7 @@ namespace tetriq {
             * @param ip The server IP address
             * @param port The server port
             */
-            Client(std::string ip, std::string port, IDisplay &display);
+            Client(std::string ip, uint16_t port, IDisplay &display);
 
             /**
             * @brief Client destructor
@@ -83,7 +84,7 @@ namespace tetriq {
             */
             std::string _username;
             const std::string _server_ip;
-            const std::string _server_port;
+            const uint16_t _server_port;
 
             ENetAddress _address;
             ENetHost *_client;

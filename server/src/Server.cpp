@@ -14,10 +14,8 @@
 #include <utility>
 
 namespace tetriq {
-    Server::Server(std::string ip, std::string port)
-        : _ip(std::move(ip))
-        , _port(std::move(port))
-        , _address()
+    Server::Server()
+        : _address()
         , _server(nullptr)
         , _channels(1)
     {
@@ -50,17 +48,12 @@ namespace tetriq {
 
     bool Server::setHost()
     {
-        if (enet_address_set_host(&_address, _ip.c_str()) != 0) {
-            LogLevel::ERROR << "Failed to set host address: " << _ip << std::endl;
+        if (enet_address_set_host(&_address, _config.listen_address.c_str()) != 0) {
+            LogLevel::ERROR << "Failed to set host address: " << _config.listen_address << std::endl;
             return false;
         }
-        try {
-            _address.port = std::stoi(_port);
-        } catch (const std::invalid_argument &e) {
-            LogLevel::ERROR << "Failed to set host port: " << _port << std::endl;
-            return false;
-        }
-        LogLevel::INFO << "Host set to " << _ip << ":" << _port << std::endl;
+        _address.port = _config.listen_port;
+        LogLevel::INFO << "Host set to " << _config.listen_address << ":" << _config.listen_port << std::endl;
         return true;
     }
 

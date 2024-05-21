@@ -9,14 +9,16 @@
 #include "RemoteTetris.hpp"
 #include "network/PacketHandler.hpp"
 
+#include <cstdint>
 #include <memory>
+#include <string>
 #include <utility>
 
 namespace tetriq {
-    Client::Client(std::string ip, std::string port, IDisplay &display)
+    Client::Client(std::string ip, uint16_t port, IDisplay &display)
         : _username("Unknown")
         , _server_ip(std::move(ip))
-        , _server_port(std::move(port))
+        , _server_port(port)
         , _game_started(false)
         , _game(nullptr)
         , _display(display)
@@ -27,8 +29,12 @@ namespace tetriq {
             nullptr, 1, 0, _config.max_incoming_bandwidth, _config.max_outgoing_bandwidth);
         if (_client == nullptr or not setServer())
             throw ClientInitException();
-        if (not connectToServer())
+        if (not connectToServer()) {
+            LogLevel::CRITICAL
+                << "An error occurred while connecting to the server at address "
+                << _server_ip << ":" << _server_port << std::endl;
             throw ClientConnectionException();
+        }
     }
 
     Client::~Client()
@@ -84,22 +90,18 @@ namespace tetriq {
         ENetEvent _event;
         _server = enet_host_connect(_client, &_address, 0, 0);
         if (_server == nullptr) {
-            Logger::log(LogLevel::CRITICAL,
-                "An error occurred while connecting to the server : " + _server_ip + ":"
-                    + _server_port);
             return false;
         }
         if (enet_host_service(_client, &_event, _config.server_timeout) > 0
             and _event.type == ENET_EVENT_TYPE_CONNECT) {
-            Logger::log(
-                LogLevel::INFO, "Connected to the server : " + _server_ip + ":" + _server_port);
+            LogLevel::INFO
+                << "Connected to the server at address "
+                << _server_ip << ":" << _server_port << std::endl;
+            return true;
         } else {
             enet_peer_reset(_server);
-            Logger::log(LogLevel::CRITICAL,
-                "Failed to connect to the server : " + _server_ip + ":" + _server_port);
             return false;
         }
-        return true;
     }
 
     bool Client::setServer()
@@ -109,15 +111,7 @@ namespace tetriq {
             Logger::log(LogLevel::ERROR, message);
             return false;
         }
-        try {
-            _address.port = std::stoi(_server_port);
-        } catch (const std::invalid_argument &e) {
-            const std::string message = "Failed to set server port: " + _server_port;
-            Logger::log(LogLevel::ERROR, message);
-            return false;
-        }
-        const std::string message = "Server set to " + _server_ip + ":" + _server_port;
-        Logger::log(LogLevel::INFO, message);
+        _address.port = _server_port;
         return true;
     }
 

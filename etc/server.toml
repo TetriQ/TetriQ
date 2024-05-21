@@ -6,6 +6,8 @@ max_clients=128
 max_incoming_bandwidth=0
 max_outgoing_bandwidth=0
 client_timeout=1000
+listen_address="0.0.0.0"
+listen_port=31457
 
 [game]
 ticks_per_second=5

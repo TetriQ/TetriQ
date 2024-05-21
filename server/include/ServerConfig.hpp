@@ -17,6 +17,8 @@ namespace tetriq {
             uint32_t max_outgoing_bandwidth = 0;
             uint32_t max_incoming_bandwidth = 0;
             uint32_t client_timeout = 1000;
+	    std::string listen_address = "0.0.0.0";
+	    uint16_t listen_port = 31457;
             GameConfig game;
     };
 }
