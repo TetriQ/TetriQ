@@ -43,13 +43,9 @@ namespace tetriq {
 
             /**
              * @brief Server constructor
-             * @param ip IP address to bind the server to
-             * @param port Port to bind the server to
-             * @param out Output stream for normal logs, defaults to std::cout
-             * @param err Output stream for error logs, defaults to std::cerr
              * @exception ServerInitException if the server failed to initialize
              */
-            Server(std::string ip, std::string port);
+            Server();
 
             /**
              * @brief Server destructor
@@ -120,8 +116,6 @@ namespace tetriq {
             void handleNone(ENetEvent &event) const;
 
             const ServerConfig _config;
-            std::string _ip;
-            std::string _port;
             ENetAddress _address;
             ENetHost *_server;
 

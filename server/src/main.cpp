@@ -22,7 +22,7 @@ int main(void)
         tetriq::Logger::log(tetriq::LogLevel::INFO, "SIGINT received, stopping server");
     });
     try {
-        tetriq::Server server("127.0.0.1", "4242");
+        tetriq::Server server;
         server.listen();
     } catch (const tetriq::Server::ServerException &e) {
         std::cerr << e.what() << std::endl;
