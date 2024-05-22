@@ -74,7 +74,7 @@ namespace tetriq {
             std::chrono::steady_clock::now().time_since_epoch();
         if (now < _next_tick)
             return;
-        _next_tick = now + std::chrono::seconds(1);
+        _next_tick = now + std::chrono::nanoseconds(1'000'000'000 / 3);
 
         if (_players.size() == 0) {
             stopGame();
