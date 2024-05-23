@@ -103,19 +103,23 @@ void tetriq::Tetris::handleGameAction(tetriq::GameAction action)
     }
 }
 
-void tetriq::Tetris::tick()
+bool tetriq::Tetris::tick()
 {
+    bool changed = false;
+    
     if (_game_over)
-        return;
+        return changed;
     if (_grace_ticks != 0) {
         _grace_ticks--;
-        return;
+        return changed;
     }
-    if (!moveCurrentPiece(0, 1))
+    if (!moveCurrentPiece(0, 1)) {
         placeTetromino();
-
+        changed = true;
+    }
     for (uint64_t y = 1; y < _height - 1; ++y) {
         if (isLineFull(y)) {
+            changed = true;
             for (uint64_t x = 1; x < _width - 1; ++x) {
                 if (_blocks[y][x] != BlockType::INDESTRUCTIBLE)
                     _blocks[y][x] = BlockType::EMPTY;
@@ -127,6 +131,7 @@ void tetriq::Tetris::tick()
             }
         }
     }
+    return changed;
 }
 
 void tetriq::Tetris::addGraceTicks(uint64_t n)

@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 #include "ViewerTetris.hpp"
+#include "Logger.hpp"
 #include "Tetris.hpp"
 #include "network/packets/TickGamePacket.hpp"
 #include <cstdint>
@@ -17,7 +18,8 @@ namespace tetriq {
     {
         if (packet.getPlayerId() != _player_id) // Packet is not for us
             return false;
-        static_cast<Tetris>(*this) = packet.getGame();
+        LogLevel::INFO << "received game tick" << std::endl;
+        Tetris::operator=(packet.getGame());
         return true;
     }
 }

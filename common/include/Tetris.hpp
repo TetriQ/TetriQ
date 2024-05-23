@@ -35,8 +35,9 @@ namespace tetriq {
 
             /**
              * Advances the game by one tick.
+             * @returns true if a block was placed.
              */
-            void tick();
+            bool tick();
             void addGraceTicks(uint64_t n);
 
             /**

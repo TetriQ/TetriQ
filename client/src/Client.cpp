@@ -10,6 +10,7 @@
 #include "RemoteTetris.hpp"
 #include "ViewerTetris.hpp"
 #include "network/PacketHandler.hpp"
+#include "network/packets/TickGamePacket.hpp"
 
 #include <cstdint>
 #include <memory>
@@ -139,5 +140,15 @@ namespace tetriq {
             LogLevel::ERROR << "failed loading game in display" << std::endl;
         }
         return true;
+    }
+
+    bool Client::handle(TickGamePacket &packet)
+    {
+        for (std::unique_ptr<ITetris> &tetris : _external_games) {
+            ViewerTetris &viewer = dynamic_cast<ViewerTetris &>(*tetris);
+            if (viewer.handle(packet))
+                return true;
+        }
+        return false;
     }
 }

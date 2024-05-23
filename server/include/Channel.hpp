@@ -5,6 +5,7 @@
 #pragma once
 
 #include "Player.hpp"
+#include "network/APacket.hpp"
 #include <chrono>
 #include <cstdint>
 #include <ctime>
@@ -15,7 +16,7 @@ namespace tetriq {
 
     class Channel {
         public:
-            Channel();
+            Channel(Server &server);
 
             /**
              * @returns true if the game is started
@@ -29,10 +30,13 @@ namespace tetriq {
             void removePlayer(Player &player);
             const std::vector<uint64_t> &getPlayers() const;
 
-            void startGame(Server &server);
+            void startGame();
             void stopGame();
-            void tick(Server &server);
+            void tick();
+
+            void broadcastPacket(const APacket &packet);
         private:
+            Server &_server;
             std::chrono::steady_clock::duration _next_tick;
             bool _game_started;
             std::vector<uint64_t> _players;

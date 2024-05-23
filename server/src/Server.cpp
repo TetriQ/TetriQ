@@ -17,7 +17,7 @@ namespace tetriq {
     Server::Server()
         : _address()
         , _server(nullptr)
-        , _channels(1)
+        , _channels({ *this })
     {
         if (init() == false)
             throw ServerInitException();
@@ -82,7 +82,7 @@ namespace tetriq {
             if (!handleENetEvents())
                 break;
             for (Channel &channel : _channels) {
-                channel.tick(*this);
+                channel.tick();
             }
         }
     }
