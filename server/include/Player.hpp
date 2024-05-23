@@ -17,7 +17,7 @@ namespace tetriq {
 
     class Player : public PacketHandler {
         public:
-            Player(uint64_t network_id, ENetPeer *peer, Channel *channel);
+            Player(uint64_t network_id, ENetPeer *peer, Channel &channel);
             ~Player();
 
             void startGame(const GameConfig &config);
@@ -35,7 +35,7 @@ namespace tetriq {
             const uint64_t _network_id;
             ENetPeer *const _peer;
 
-            Channel *_channel;
+            Channel &_channel;
             Tetris _game;
     };
 }
