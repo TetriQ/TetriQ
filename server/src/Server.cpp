@@ -114,7 +114,7 @@ namespace tetriq {
         event.peer->data = new uint64_t(_network_id_counter);
         _players.emplace(std::piecewise_construct,
             std::forward_as_tuple(_network_id_counter),
-            std::forward_as_tuple(_network_id_counter, event.peer, &_channels.front()));
+            std::forward_as_tuple(_network_id_counter, event.peer, _channels.front()));
         // TODO : choose a channel intelligently and dont start game instantly
         if (_channels.front().hasGameStarted())
             _players.at(_network_id_counter).startGame(_config.game);
