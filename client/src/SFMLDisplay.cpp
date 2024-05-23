@@ -25,7 +25,6 @@ tetriq::SFMLDisplay::~SFMLDisplay()
 
 bool tetriq::SFMLDisplay::loadGame(const ITetris &game, uint64_t player_count)
 {
-    LogLevel::INFO << "player count" << player_count << std::endl;
     uint64_t board_width = (game.getWidth() + SIDEBAR_SIZE) * BLOCK_SIZE * 2;
     uint64_t board_height = game.getHeight() * BLOCK_SIZE * 2;
     uint64_t other_boards_width = player_count * game.getWidth() * BLOCK_SIZE;
@@ -39,15 +38,16 @@ bool tetriq::SFMLDisplay::loadGame(const ITetris &game, uint64_t player_count)
     return true;
 }
 
-bool tetriq::SFMLDisplay::draw(const ITetris &game, ITetrisIter otherGamesStart, ITetrisIter otherGamesEnd)
+bool tetriq::SFMLDisplay::draw(
+    const ITetris &game, ITetrisIter otherGamesStart, ITetrisIter otherGamesEnd)
 {
     _window.clear(sf::Color::Black);
-    drawGame(game, { 0, 0 }, BLOCK_SIZE * 2);
+    drawGame(game, {0, 0}, BLOCK_SIZE * 2);
     drawCurrentTetromino(game);
     drawNextTetromino(game);
     uint64_t x = (game.getWidth() + SIDEBAR_SIZE) * BLOCK_SIZE * 2;
     while (otherGamesStart != otherGamesEnd) {
-        drawGame(**otherGamesStart, { x, 0 }, BLOCK_SIZE);
+        drawGame(**otherGamesStart, {x, 0}, BLOCK_SIZE);
         x += (*otherGamesStart)->getWidth() * BLOCK_SIZE;
         ++otherGamesStart;
     }
@@ -98,10 +98,7 @@ void tetriq::SFMLDisplay::drawGame(const ITetris &game, Position position, uint6
     for (uint64_t x = 0; x < game.getWidth(); x++) {
         for (uint64_t y = 0; y < game.getHeight(); y++) {
             blockType = game.getBlockAt(x, y);
-            pos = sf::Vector2u(
-                position.x + x * block_size,
-                position.y + y * block_size
-            );
+            pos = sf::Vector2u(position.x + x * block_size, position.y + y * block_size);
             drawBlock(pos, blockType, block_size);
         }
     }
@@ -148,7 +145,8 @@ void tetriq::SFMLDisplay::drawBlock(sf::Vector2u pos, BlockType block, uint64_t 
     _window.draw(rec);
 }
 
-void tetriq::SFMLDisplay::drawTetromino(const Tetromino &tetromino, Position position, uint64_t block_size)
+void tetriq::SFMLDisplay::drawTetromino(
+    const Tetromino &tetromino, Position position, uint64_t block_size)
 {
     const TetroRotation &shape = tetromino.getTetroRotation();
 
