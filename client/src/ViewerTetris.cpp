@@ -18,7 +18,6 @@ namespace tetriq {
     {
         if (packet.getPlayerId() != _player_id) // Packet is not for us
             return false;
-        LogLevel::INFO << "received game tick" << std::endl;
         Tetris::operator=(packet.getGame());
         return true;
     }

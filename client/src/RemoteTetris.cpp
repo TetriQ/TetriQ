@@ -37,7 +37,6 @@ namespace tetriq {
     {
         if (packet.getPlayerId() != _player_id)
             return false;
-        LogLevel::DEBUG << "received server tick" << std::endl;
         _server_state = packet.getGame();
         _client_state = _server_state;
         return true;
