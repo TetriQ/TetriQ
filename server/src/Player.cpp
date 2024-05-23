@@ -15,7 +15,7 @@
 
 namespace tetriq {
     Player::Player(uint64_t network_id, ENetPeer *peer,
-        Channel *channel) // TODO : channel could be a reference
+        Channel &channel)
         : _network_id(network_id)
         , _peer(peer)
         , _channel(channel)
@@ -23,18 +23,18 @@ namespace tetriq {
     {
         Logger::log(LogLevel::INFO, "player " + std::to_string(_network_id) + " connected.");
         // Network ids are unique so no way the player was already added
-        assert(channel->addPlayer(*this));
+        assert(channel.addPlayer(*this));
     }
 
     Player::~Player()
     {
-        _channel->removePlayer(*this);
+        _channel.removePlayer(*this);
         Logger::log(LogLevel::INFO, "player " + std::to_string(_network_id) + " disconnected.");
     }
 
     void Player::startGame(const GameConfig &config)
     {
-        std::vector<uint64_t> other_players = _channel->getPlayers();
+        std::vector<uint64_t> other_players = _channel.getPlayers();
         other_players.erase(std::remove(other_players.begin(), other_players.end(), _network_id));
         InitGamePacket{config.width, config.height, _network_id, other_players}.send(_peer);
     }
@@ -44,7 +44,7 @@ namespace tetriq {
         bool modified = _game.tick();
         TickGamePacket packet{_network_id, _game};
         if (modified == true) {
-            _channel->broadcastPacket(packet);
+            _channel.broadcastPacket(packet);
         } else {
             this->sendPacket(packet);
         }
