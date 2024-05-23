@@ -8,6 +8,7 @@ max_outgoing_bandwidth=0
 client_timeout=1000
 listen_address="0.0.0.0"
 listen_port=31457
+ticks_per_second=60
 
 [game]
 ticks_per_second=5

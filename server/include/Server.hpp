@@ -8,6 +8,7 @@
 #include "Player.hpp"
 #include "ServerConfig.hpp"
 
+#include <chrono>
 #include <csignal>
 #include <cstdint>
 #include <toml++/toml.hpp>
@@ -119,6 +120,7 @@ namespace tetriq {
             ENetAddress _address;
             ENetHost *_server;
 
+            std::chrono::steady_clock::time_point _next_tick;
             bool _running {true};
             uint64_t _network_id_counter{0};
             std::unordered_map<uint64_t, Player> _players;
