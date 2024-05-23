@@ -6,6 +6,7 @@
 
 #include "GameConfig.hpp"
 #include "Tetris.hpp"
+#include "network/APacket.hpp"
 #include "network/PacketHandler.hpp"
 #include "network/packets/GameActionPacket.hpp"
 #include <enet/enet.h>
@@ -24,6 +25,8 @@ namespace tetriq {
             bool isGameOver() const;
 
             uint64_t getNetworkId() const;
+
+            void sendPacket(const APacket &packet);
 
             bool handle(GameActionPacket &packet);
         private:

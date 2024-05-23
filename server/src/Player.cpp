@@ -14,7 +14,7 @@
 #include <string>
 
 namespace tetriq {
-    Player::Player(uint64_t network_id, ENetPeer *peer, Channel *channel)
+    Player::Player(uint64_t network_id, ENetPeer *peer, Channel *channel) // TODO : channel could be a reference
         : _network_id(network_id)
         , _peer(peer)
         , _channel(channel)
@@ -40,8 +40,13 @@ namespace tetriq {
 
     void Player::tickGame()
     {
-        _game.tick();
-        TickGamePacket{_network_id, _game}.send(_peer);
+        bool modified = _game.tick();
+        TickGamePacket packet{_network_id, _game};
+        if (modified == true) {
+            _channel->broadcastPacket(packet);
+        } else {
+            this->sendPacket(packet);
+        }
     }
 
     uint64_t Player::getNetworkId() const
@@ -49,6 +54,11 @@ namespace tetriq {
         return _network_id;
     }
 
+    void Player::sendPacket(const APacket &packet)
+    {
+        packet.send(_peer);
+    }
+    
     bool Player::handle(GameActionPacket &packet)
     {
         _game.handleGameAction(packet.getAction());

@@ -6,13 +6,15 @@
 #include "Logger.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
+#include "network/APacket.hpp"
 #include <chrono>
 #include <cstddef>
 #include <cstdint>
 
 namespace tetriq {
-    Channel::Channel()
-        : _next_tick()
+    Channel::Channel(Server &server)
+        : _server(server)
+        , _next_tick()
         , _game_started(false)
         , _players()
     {}
@@ -51,12 +53,12 @@ namespace tetriq {
         return _players;
     }
 
-    void Channel::startGame(Server &server)
+    void Channel::startGame()
     {
         LogLevel::DEBUG << "starting game" << std::endl;
         for (uint64_t id : _players) {
-            Player &player = server.getPlayerById(id);
-            player.startGame(server.getConfig().game);
+            Player &player = _server.getPlayerById(id);
+            player.startGame(_server.getConfig().game);
         }
         _game_started = true;
     }
@@ -67,11 +69,11 @@ namespace tetriq {
         _game_started = false;
     }
 
-    void Channel::tick(Server &server)
+    void Channel::tick()
     {
         if (!hasGameStarted()) {
             if (_players.size() > 1)
-                startGame(server);
+                startGame();
             return;
         }
 
@@ -88,12 +90,19 @@ namespace tetriq {
 
         bool game_over = true;
         for (uint64_t id : _players) {
-            Player &player = server.getPlayerById(id);
+            Player &player = _server.getPlayerById(id);
             player.tickGame();
             game_over &= player.isGameOver();
         }
 
         if (game_over)
             stopGame();
+    }
+
+    void Channel::broadcastPacket(const APacket &packet)
+    {
+        for (uint64_t id : _players) {
+            _server.getPlayerById(id).sendPacket(packet);
+        }
     }
 }
