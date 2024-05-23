@@ -23,12 +23,14 @@ namespace tetriq {
             void startGame(const GameConfig &config);
             void tickGame();
             bool isGameOver() const;
+            Tetris &getGame();
 
             uint64_t getNetworkId() const;
 
             void sendPacket(const APacket &packet);
 
             bool handle(GameActionPacket &packet);
+
         private:
             const uint64_t _network_id;
             ENetPeer *const _peer;

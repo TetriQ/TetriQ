@@ -58,6 +58,8 @@ namespace tetriq {
         LogLevel::DEBUG << "starting game" << std::endl;
         for (uint64_t id : _players) {
             Player &player = _server.getPlayerById(id);
+            Tetris &game = player.getGame();
+            game = Tetris(_server.getConfig().game.width, _server.getConfig().game.height);
             player.startGame(_server.getConfig().game);
         }
         _game_started = true;

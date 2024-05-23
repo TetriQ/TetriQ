@@ -14,7 +14,8 @@
 #include <string>
 
 namespace tetriq {
-    Player::Player(uint64_t network_id, ENetPeer *peer, Channel *channel) // TODO : channel could be a reference
+    Player::Player(uint64_t network_id, ENetPeer *peer,
+        Channel *channel) // TODO : channel could be a reference
         : _network_id(network_id)
         , _peer(peer)
         , _channel(channel)
@@ -58,7 +59,7 @@ namespace tetriq {
     {
         packet.send(_peer);
     }
-    
+
     bool Player::handle(GameActionPacket &packet)
     {
         _game.handleGameAction(packet.getAction());
@@ -68,5 +69,10 @@ namespace tetriq {
     bool Player::isGameOver() const
     {
         return _game.isOver();
+    }
+
+    Tetris &Player::getGame()
+    {
+        return _game;
     }
 }
