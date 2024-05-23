@@ -6,6 +6,11 @@ SPDX-License-Identifier: GFDL-1.3-or-later
 
 # Summary
 
-[Introduction](./introduction.md)
-[Server configuration](./server_configuration.md)
-[Protocol](./protocol.md)
+# The TetriQ manual
+
+ - [Introduction](./introduction.md)
+ - [Server configuration](./server_configuration.md)
+ - [Protocol](./protocol.md)
+
+---
+[GNU Free Documentation License](./fdl-1.3.md)
