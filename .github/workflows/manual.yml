@@ -1,0 +1,29 @@
+name: Manual deployment
+
+on:
+  push:
+    paths:
+      - "doc/**"
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: extractions/setup-crate@v1
+        with:
+          owner: rust-lang
+          name: mdBook
+
+      - run: mdbook build doc
+
+      - uses: up9cloud/action-rsync@v1.2
+        env:
+          HOST: ${{secrets.DEPLOY_SSH_HOST}}
+          USER: ${{secrets.DEPLOY_SSH_USER}}
+          PASSWORD: ${{secrets.DEPLOY_SSH_PASSWORD}}
+          SOURCE: doc/book
+          TARGET: tetriq/manual/
+          ARGS: -avz --delete
