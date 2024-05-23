@@ -5,8 +5,10 @@
 #pragma once
 
 #include "IDisplay.hpp"
+#include "ITetris.hpp"
 #include "RemoteTetris.hpp"
 #include "ClientConfig.hpp"
+#include "ViewerTetris.hpp"
 #include "network/PacketHandler.hpp"
 #include "network/packets/InitGamePacket.hpp"
 
@@ -92,6 +94,7 @@ namespace tetriq {
 
             bool _game_started;
             std::unique_ptr<RemoteTetris> _game;
+            std::vector<std::unique_ptr<ITetris>> _external_games;
             IDisplay &_display;
     };
 }

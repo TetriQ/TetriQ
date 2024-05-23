@@ -14,11 +14,20 @@ namespace tetriq {
     class InitGamePacket : public APacket {
         public:
             InitGamePacket();
-            InitGamePacket(uint64_t game_width, uint64_t game_height, const std::vector<uint64_t> &player_ids);
+            InitGamePacket(uint64_t game_width, uint64_t game_height, uint64_t player_id, const std::vector<uint64_t> &player_ids);
 
             PacketId getId() const override;
             uint64_t getGameWidth() const;
             uint64_t getGameHeight() const;
+
+            /**
+             * @returns the network id of the player.
+             */
+            uint64_t getPlayerId() const;
+
+            /**
+             * @returns the network ids of the other players
+             */
             const std::vector<uint64_t> &getPlayerIds() const;
 
             NetworkOStream &operator>>(NetworkOStream &ns) const override;
@@ -27,6 +36,7 @@ namespace tetriq {
         private:
             uint64_t _game_width;
             uint64_t _game_height;
+            uint64_t _player_id;
             std::vector<uint64_t> _player_ids;
     };
 }

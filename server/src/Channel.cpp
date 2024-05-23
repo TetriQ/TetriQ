@@ -46,6 +46,11 @@ namespace tetriq {
         }
     }
 
+    const std::vector<uint64_t> &Channel::getPlayers() const
+    {
+        return _players;
+    }
+
     void Channel::startGame(Server &server)
     {
         LogLevel::DEBUG << "starting game" << std::endl;
@@ -65,7 +70,7 @@ namespace tetriq {
     void Channel::tick(Server &server)
     {
         if (!hasGameStarted()) {
-            if (_players.size() > 0)
+            if (_players.size() > 1)
                 startGame(server);
             return;
         }

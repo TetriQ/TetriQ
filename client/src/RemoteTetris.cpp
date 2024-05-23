@@ -10,10 +10,12 @@
 #include "network/packets/TickGamePacket.hpp"
 #include <cassert>
 #include <cstddef>
+#include <cstdint>
 
 namespace tetriq {
-    RemoteTetris::RemoteTetris(size_t width, size_t height, ENetPeer *peer)
+    RemoteTetris::RemoteTetris(size_t width, size_t height, ENetPeer *peer, uint64_t player_id)
         : _peer(peer)
+        , _player_id(player_id)
         , _server_state(width, height)
         , _client_state(width, height)
     {}
@@ -33,6 +35,8 @@ namespace tetriq {
 
     bool RemoteTetris::handle(TickGamePacket &packet)
     {
+        if (packet.getPlayerId() != _player_id)
+            return false;
         LogLevel::DEBUG << "received server tick" << std::endl;
         _server_state = packet.getGame();
         _client_state = _server_state;
