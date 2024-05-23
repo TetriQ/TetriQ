@@ -45,6 +45,7 @@ bool tetriq::SFMLDisplay::draw(
     drawGame(game, {0, 0}, BLOCK_SIZE * 2);
     drawCurrentTetromino(game);
     drawNextTetromino(game);
+    drawPrediction(game);
     uint64_t x = (game.getWidth() + SIDEBAR_SIZE) * BLOCK_SIZE * 2;
     while (otherGamesStart != otherGamesEnd) {
         drawGame(**otherGamesStart, {x, 0}, BLOCK_SIZE);
@@ -135,8 +136,7 @@ void tetriq::SFMLDisplay::drawBlock(sf::Vector2u pos, BlockType block, uint64_t 
             rec.setFillColor(sf::Color(59, 59, 59));
             break;
         case BlockType::EMPTY:
-            rec.setFillColor(sf::Color::Black);
-            break;
+            return;
         case BlockType::SPECIAL:
             rec.setFillColor(sf::Color::Cyan);
             break;
@@ -168,4 +168,26 @@ void tetriq::SFMLDisplay::drawNextTetromino(const ITetris &game)
     Position pos = {game.getWidth() + 1, 1};
 
     drawTetromino(game.getNextPiece(), pos, BLOCK_SIZE * 2);
+}
+
+void tetriq::SFMLDisplay::drawPrediction(const ITetris &game)
+{
+    const Tetromino &current = game.getCurrentPiece();
+    Position pos = current.getPosition();
+    const TetroRotation &shape = current.getTetroRotation();
+
+    for (int i = 0; i < 4; i++) {
+        std::tuple<char, char> local_pos = shape.at(i);
+        unsigned int tempx = pos.x + std::get<0>(local_pos);
+        unsigned int tempy = pos.y + std::get<1>(local_pos);
+        while (tempy < game.getHeight() && game.getBlockAt(tempx, tempy) == BlockType::EMPTY) {
+            float radius = 1;
+            sf::RectangleShape point(sf::Vector2f(radius, radius));
+            point.setFillColor(sf::Color::White);
+            point.setPosition(sf::Vector2f(
+                (tempx * BLOCK_SIZE * 2) + BLOCK_SIZE, (tempy * BLOCK_SIZE * 2) + BLOCK_SIZE));
+            tempy++;
+            _window.draw(point);
+        }
+    }
 }

@@ -11,20 +11,23 @@
 #include <cstdint>
 
 namespace tetriq {
-    class SFMLDisplay: public IDisplay {
+    class SFMLDisplay : public IDisplay {
         public:
             SFMLDisplay();
             ~SFMLDisplay() override;
 
             bool loadGame(const ITetris &game, uint64_t player_count) override;
-            bool draw(const ITetris &game, ITetrisIter otherGamesStart, ITetrisIter otherGamesEnd) override;
+            bool draw(const ITetris &game, ITetrisIter otherGamesStart,
+                ITetrisIter otherGamesEnd) override;
             bool handleEvents(ITetris &game) override;
+
         private:
             void drawGame(const ITetris &game, Position position, uint64_t block_size);
             void drawBlock(sf::Vector2u pos, BlockType block, uint64_t block_size);
             void drawTetromino(const Tetromino &tetromino, Position position, uint64_t block_size);
             void drawCurrentTetromino(const ITetris &game);
             void drawNextTetromino(const ITetris &game);
+            void drawPrediction(const ITetris &game);
 
             const uint64_t BLOCK_SIZE = 16;
             const uint64_t SIDEBAR_SIZE = 6;
