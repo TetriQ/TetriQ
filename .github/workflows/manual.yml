@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2024 The TetriQ authors
+#
+# SPDX-License-Identifier: CC0-1.0
+
 name: Manual deployment
 
 on:
@@ -23,7 +27,7 @@ jobs:
         env:
           HOST: ${{secrets.DEPLOY_SSH_HOST}}
           USER: ${{secrets.DEPLOY_SSH_USER}}
-          PASSWORD: ${{secrets.DEPLOY_SSH_PASSWORD}}
-          SOURCE: doc/book
+          KEY: ${{secrets.DEPLOY_SSH_KEY}}
+          SOURCE: doc/book/
           TARGET: tetriq/manual/
           ARGS: -avz --delete
