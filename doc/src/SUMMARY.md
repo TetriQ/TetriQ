@@ -13,4 +13,4 @@ SPDX-License-Identifier: GFDL-1.3-or-later
  - [Protocol](./protocol.md)
 
 ---
-[GNU Free Documentation License](./fdl-1.3.md)
+[GNU Free Documentation License](./gfdl.md)
