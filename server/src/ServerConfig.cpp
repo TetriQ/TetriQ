@@ -14,6 +14,7 @@ tetriq::ServerConfig::ServerConfig(const std::string &config_name)
     client_timeout = _table["client_timeout"].value<int64_t>().value_or(1000);
     listen_address = _table["listen_address"].value_or("0.0.0.0");
     listen_port = _table["listen_port"].value<int64_t>().value_or(31457);
+    ticks_per_second = _table["ticks_per_second"].value<int64_t>().value_or(60);
     if (_table["game"].is_table())
         game = GameConfig{*_table["game"].as_table()};
 }

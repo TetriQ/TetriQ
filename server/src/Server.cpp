@@ -9,7 +9,9 @@
 #include "ServerConfig.hpp"
 #include "network/PacketHandler.hpp"
 
+#include <chrono>
 #include <cstdint>
+#include <thread>
 #include <tuple>
 #include <utility>
 
@@ -77,8 +79,16 @@ namespace tetriq {
 
     void Server::listen()
     {
+        _next_tick = std::chrono::steady_clock::now() + std::chrono::nanoseconds(1'000'000'000 / 60);
         while (not should_exit && _running) {
-            // TODO : global TPS limit
+            std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+            if (now > _next_tick) {
+                LogLevel::WARNING << "main loop is running behind" << std::endl;
+                _next_tick = std::chrono::steady_clock::now() + std::chrono::nanoseconds(1'000'000'000 / _config.ticks_per_second);
+            } else {
+                std::this_thread::sleep_until(_next_tick);
+                _next_tick += std::chrono::nanoseconds(1'000'000'000 / _config.ticks_per_second);
+            }
             if (!handleENetEvents())
                 break;
             for (Channel &channel : _channels) {
