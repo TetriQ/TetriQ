@@ -33,13 +33,15 @@ namespace tetriq {
 
     void Player::startGame(const GameConfig &config)
     {
-        InitGamePacket{config.width, config.height, {}}.send(_peer);
+        std::vector<uint64_t> other_players = _channel->getPlayers();
+        other_players.erase(std::remove(other_players.begin(), other_players.end(), _network_id));
+        InitGamePacket{config.width, config.height, _network_id, other_players}.send(_peer);
     }
 
     void Player::tickGame()
     {
         _game.tick();
-        TickGamePacket{_game}.send(_peer);
+        TickGamePacket{_network_id, _game}.send(_peer);
     }
 
     uint64_t Player::getNetworkId() const

@@ -4,9 +4,11 @@
 
 #include "Client.hpp"
 #include "IDisplay.hpp"
+#include "ITetris.hpp"
 #include "Logger.hpp"
 #include "Messages.hpp"
 #include "RemoteTetris.hpp"
+#include "ViewerTetris.hpp"
 #include "network/PacketHandler.hpp"
 
 #include <cstdint>
@@ -51,7 +53,7 @@ namespace tetriq {
         ENetEvent _event;
         while (true) {
             if (_game_started) {
-                if (!_display.draw(*_game))
+                if (!_display.draw(*_game, _external_games.begin(), _external_games.end()))
                     return;
                 if (!_display.handleEvents(*_game))
                     return;
@@ -118,12 +120,24 @@ namespace tetriq {
     bool Client::handle(InitGamePacket &packet)
     {
         std::unique_ptr<RemoteTetris> game =
-            std::make_unique<RemoteTetris>(packet.getGameWidth(), packet.getGameHeight(), _server);
+            std::make_unique<RemoteTetris>(
+                packet.getGameWidth(),
+                packet.getGameHeight(),
+                _server,
+                packet.getPlayerId());
         _game.swap(game);
-        if (_display.loadGame(*_game))
+
+        _external_games.clear();
+        _external_games.reserve(packet.getPlayerIds().size());
+        for (uint64_t player_id : packet.getPlayerIds()) {
+            _external_games.emplace_back(std::make_unique<ViewerTetris>(packet.getGameWidth(), packet.getGameHeight(), player_id));
+        }
+
+        if (_display.loadGame(*_game, packet.getPlayerIds().size())) {
             _game_started = true;
-        else
+        } else {
             LogLevel::ERROR << "failed loading game in display" << std::endl;
+        }
         return true;
     }
 }

@@ -5,19 +5,25 @@
 #include "network/packets/TickGamePacket.hpp"
 #include "Tetris.hpp"
 #include "network/PacketId.hpp"
+#include <cstdint>
 
 namespace tetriq {
     TickGamePacket::TickGamePacket()
     {}
 
-    TickGamePacket::TickGamePacket(const Tetris &game)
-    {
-        _game = game;
-    }
+    TickGamePacket::TickGamePacket(uint64_t player_id, const Tetris &game)
+        : _player_id(player_id)
+        , _game(game)
+    {}
 
     PacketId TickGamePacket::getId() const
     {
         return PacketId::S_TICK_GAME;
+    }
+
+    uint64_t TickGamePacket::getPlayerId() const
+    {
+        return _player_id;
     }
 
     const Tetris &TickGamePacket::getGame() const
@@ -27,18 +33,20 @@ namespace tetriq {
 
     NetworkOStream &TickGamePacket::operator>>(NetworkOStream &ns) const
     {
+        _player_id >> ns;
         _game >> ns;
         return ns;
     }
 
     NetworkIStream &TickGamePacket::operator<<(NetworkIStream &ns)
     {
+        _player_id << ns;
         _game << ns;
         return ns;
     }
 
     size_t TickGamePacket::getNetworkSize() const
     {
-        return _game.getNetworkSize();
+        return sizeof(_player_id) + _game.getNetworkSize();
     }
 }

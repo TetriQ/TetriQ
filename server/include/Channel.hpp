@@ -6,6 +6,7 @@
 
 #include "Player.hpp"
 #include <chrono>
+#include <cstdint>
 #include <ctime>
 #include <vector>
 
@@ -26,6 +27,7 @@ namespace tetriq {
              */
             [[nodiscard]] bool addPlayer(Player &player);
             void removePlayer(Player &player);
+            const std::vector<uint64_t> &getPlayers() const;
 
             void startGame(Server &server);
             void stopGame();

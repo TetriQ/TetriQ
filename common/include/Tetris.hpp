@@ -14,7 +14,7 @@
 #include <vector>
 
 namespace tetriq {
-    class Tetris final : public ITetris, public NetworkObject {
+    class Tetris : public ITetris, public NetworkObject {
         public:
             Tetris(size_t width, size_t height);
             ~Tetris();
