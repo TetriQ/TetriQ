@@ -1,0 +1,37 @@
+# SPDX-FileCopyrightText: 2024 The TetriQ authors
+#
+# SPDX-License-Identifier: CC0-1.0
+
+name: Manual deployment
+
+on:
+  push:
+    paths:
+      - "doc/**"
+
+jobs:
+  deploy-manual:
+    name: Deploy manual
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install mdBook
+        uses: extractions/setup-crate@v1
+        with:
+          owner: rust-lang
+          name: mdBook
+
+      - name: Build manual
+        run: mdbook build doc
+
+      - name: Deploy with rsync
+        uses: up9cloud/action-rsync@v1.2
+        env:
+          HOST: ${{secrets.DEPLOY_SSH_HOST}}
+          USER: ${{secrets.DEPLOY_SSH_USER}}
+          KEY: ${{secrets.DEPLOY_SSH_KEY}}
+          SOURCE: doc/book/
+          TARGET: tetriq/manual/
+          ARGS: -avz --delete
