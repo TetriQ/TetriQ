@@ -10,20 +10,24 @@ on:
       - "doc/**"
 
 jobs:
-  deploy:
-    name: Deploy
+  deploy-manual:
+    name: Deploy manual
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - uses: extractions/setup-crate@v1
+      - name: Install mdBook
+        uses: extractions/setup-crate@v1
         with:
           owner: rust-lang
           name: mdBook
 
-      - run: mdbook build doc
+      - name: Build manual
+        run: mdbook build doc
 
-      - uses: up9cloud/action-rsync@v1.2
+      - name: Deploy with rsync
+        uses: up9cloud/action-rsync@v1.2
         env:
           HOST: ${{secrets.DEPLOY_SSH_HOST}}
           USER: ${{secrets.DEPLOY_SSH_USER}}
