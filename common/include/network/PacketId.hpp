@@ -18,5 +18,6 @@ namespace tetriq {
         S_TICK_GAME,
         S_FULL_GAME,
         C_GAME_ACTION,
+        C_FULL_GAME_REQUEST,
     };
 }

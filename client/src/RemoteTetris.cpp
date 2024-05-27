@@ -5,6 +5,7 @@
 #include "RemoteTetris.hpp"
 #include "GameAction.hpp"
 #include "Logger.hpp"
+#include "network/packets/FullGameRequestPacket.hpp"
 #include "network/packets/TestPacket.hpp"
 #include "network/packets/GameActionPacket.hpp"
 #include "network/packets/FullGamePacket.hpp"
@@ -54,10 +55,10 @@ namespace tetriq {
                 _actions.pop();
             } else {
                 LogLevel::ERROR << "server desynchronisation" << std::endl;
-                // TODO : ask server for fullgamepacket
                 while (!_actions.empty())
                     _actions.pop();
-                return false;
+                FullGameRequestPacket{}.send(_peer);
+                break;
             }
         }
         _client_state.tick();

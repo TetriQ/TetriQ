@@ -7,6 +7,7 @@
 #include "GameConfig.hpp"
 #include "Logger.hpp"
 #include "network/packets/FullGamePacket.hpp"
+#include "network/packets/FullGameRequestPacket.hpp"
 #include "network/packets/GameActionPacket.hpp"
 #include "network/packets/InitGamePacket.hpp"
 #include "network/packets/TickGamePacket.hpp"
@@ -69,6 +70,13 @@ namespace tetriq {
     {
         if (_game.handleGameAction(packet.getAction()))
             _applied_actions.push_back(packet.getAction());
+        return true;
+    }
+
+    bool Player::handle(FullGameRequestPacket &)
+    {
+        FullGamePacket{_network_id, _game}.send(_peer);
+        _applied_actions.clear();
         return true;
     }
 
