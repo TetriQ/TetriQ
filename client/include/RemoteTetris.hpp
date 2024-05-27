@@ -8,7 +8,7 @@
 #include "ITetris.hpp"
 #include "Tetris.hpp"
 #include "network/PacketHandler.hpp"
-#include "network/packets/TickGamePacket.hpp"
+#include "network/packets/FullGamePacket.hpp"
 #include <cstdint>
 
 namespace tetriq {
@@ -27,7 +27,7 @@ namespace tetriq {
             const Tetromino &getNextPiece() const override;
         private:
             bool handle(TestPacket &packet) override;
-            bool handle(TickGamePacket &packet) override;
+            bool handle(FullGamePacket &packet) override;
 
             ENetPeer *_peer;
             uint64_t _player_id;

@@ -7,7 +7,7 @@
 #include "network/TestPacket.hpp"
 #include "network/packets/GameActionPacket.hpp"
 #include "network/packets/InitGamePacket.hpp"
-#include "network/packets/TickGamePacket.hpp"
+#include "network/packets/FullGamePacket.hpp"
 
 namespace tetriq {
     class PacketHandler {
@@ -20,7 +20,7 @@ namespace tetriq {
 
             virtual bool handle(TestPacket &p);
             virtual bool handle(InitGamePacket &p);
-            virtual bool handle(TickGamePacket &p);
+            virtual bool handle(FullGamePacket &p);
             virtual bool handle(GameActionPacket &p);
     };
 }

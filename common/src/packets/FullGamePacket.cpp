@@ -2,50 +2,50 @@
 //
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-#include "network/packets/TickGamePacket.hpp"
+#include "network/packets/FullGamePacket.hpp"
 #include "Tetris.hpp"
 #include "network/PacketId.hpp"
 #include <cstdint>
 
 namespace tetriq {
-    TickGamePacket::TickGamePacket()
+    FullGamePacket::FullGamePacket()
     {}
 
-    TickGamePacket::TickGamePacket(uint64_t player_id, const Tetris &game)
+    FullGamePacket::FullGamePacket(uint64_t player_id, const Tetris &game)
         : _player_id(player_id)
         , _game(game)
     {}
 
-    PacketId TickGamePacket::getId() const
+    PacketId FullGamePacket::getId() const
     {
-        return PacketId::S_TICK_GAME;
+        return PacketId::S_FULL_GAME;
     }
 
-    uint64_t TickGamePacket::getPlayerId() const
+    uint64_t FullGamePacket::getPlayerId() const
     {
         return _player_id;
     }
 
-    const Tetris &TickGamePacket::getGame() const
+    const Tetris &FullGamePacket::getGame() const
     {
         return _game;
     }
 
-    NetworkOStream &TickGamePacket::operator>>(NetworkOStream &ns) const
+    NetworkOStream &FullGamePacket::operator>>(NetworkOStream &ns) const
     {
         _player_id >> ns;
         _game >> ns;
         return ns;
     }
 
-    NetworkIStream &TickGamePacket::operator<<(NetworkIStream &ns)
+    NetworkIStream &FullGamePacket::operator<<(NetworkIStream &ns)
     {
         _player_id << ns;
         _game << ns;
         return ns;
     }
 
-    size_t TickGamePacket::getNetworkSize() const
+    size_t FullGamePacket::getNetworkSize() const
     {
         return sizeof(_player_id) + _game.getNetworkSize();
     }

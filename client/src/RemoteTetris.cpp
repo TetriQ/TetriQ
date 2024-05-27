@@ -7,7 +7,7 @@
 #include "Logger.hpp"
 #include "network/TestPacket.hpp"
 #include "network/packets/GameActionPacket.hpp"
-#include "network/packets/TickGamePacket.hpp"
+#include "network/packets/FullGamePacket.hpp"
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
@@ -33,7 +33,7 @@ namespace tetriq {
         return true;
     }
 
-    bool RemoteTetris::handle(TickGamePacket &packet)
+    bool RemoteTetris::handle(FullGamePacket &packet)
     {
         if (packet.getPlayerId() != _player_id)
             return false;
