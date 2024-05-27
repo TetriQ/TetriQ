@@ -5,7 +5,7 @@
 #include "RemoteTetris.hpp"
 #include "GameAction.hpp"
 #include "Logger.hpp"
-#include "network/TestPacket.hpp"
+#include "network/packets/TestPacket.hpp"
 #include "network/packets/GameActionPacket.hpp"
 #include "network/packets/FullGamePacket.hpp"
 #include <cassert>
