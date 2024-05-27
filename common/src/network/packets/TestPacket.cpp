@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-#include "network/TestPacket.hpp"
+#include "network/packets/TestPacket.hpp"
 #include "Logger.hpp"
 #include "network/NetworkStream.hpp"
 #include "network/PacketId.hpp"
