@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "network/TestPacket.hpp"
+#include "network/packets/TestPacket.hpp"
 #include "network/packets/GameActionPacket.hpp"
 #include "network/packets/InitGamePacket.hpp"
 #include "network/packets/FullGamePacket.hpp"
