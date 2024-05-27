@@ -10,7 +10,7 @@
 #include "RemoteTetris.hpp"
 #include "ViewerTetris.hpp"
 #include "network/PacketHandler.hpp"
-#include "network/packets/TickGamePacket.hpp"
+#include "network/packets/FullGamePacket.hpp"
 
 #include <cstdint>
 #include <memory>
@@ -142,7 +142,7 @@ namespace tetriq {
         return true;
     }
 
-    bool Client::handle(TickGamePacket &packet)
+    bool Client::handle(FullGamePacket &packet)
     {
         for (std::unique_ptr<ITetris> &tetris : _external_games) {
             ViewerTetris &viewer = dynamic_cast<ViewerTetris &>(*tetris);
