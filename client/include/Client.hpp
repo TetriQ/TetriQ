@@ -77,7 +77,7 @@ namespace tetriq {
             bool connectToServer();
 
             bool handle(InitGamePacket &packet) override;
-            bool handle(TickGamePacket &packet) override;
+            bool handle(FullGamePacket &packet) override;
 
             const ClientConfig _config;
 

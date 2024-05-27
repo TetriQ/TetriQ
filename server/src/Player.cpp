@@ -6,9 +6,9 @@
 #include "Channel.hpp"
 #include "GameConfig.hpp"
 #include "Logger.hpp"
+#include "network/packets/FullGamePacket.hpp"
 #include "network/packets/GameActionPacket.hpp"
 #include "network/packets/InitGamePacket.hpp"
-#include "network/packets/TickGamePacket.hpp"
 #include <cassert>
 #include <cstdint>
 #include <string>
@@ -42,7 +42,7 @@ namespace tetriq {
     void Player::tickGame()
     {
         bool modified = _game.tick();
-        TickGamePacket packet{_network_id, _game};
+        FullGamePacket packet{_network_id, _game};
         if (modified == true) {
             _channel.broadcastPacket(packet);
         } else {
