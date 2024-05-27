@@ -20,12 +20,17 @@ namespace tetriq {
         , _player_id(player_id)
         , _server_state(width, height)
         , _client_state(width, height)
+        , _resyncing(true) // at the start of game we wait for the server's FullGamePacket
     {}
 
     bool RemoteTetris::handleGameAction(GameAction action)
     {
+        if (_resyncing)
+            return true;
         GameActionPacket packet{action};
         packet.send(_peer);
+        if (action == GameAction::DROP)
+            _resyncing = true;
         if (_client_state.handleGameAction(action)) {
             LogLevel::DEBUG
                 << "adding action"
@@ -47,6 +52,10 @@ namespace tetriq {
         if (packet.getPlayerId() != _player_id)
             return false;
         for (GameAction action : packet.getActions()) {
+            if (_actions.empty()) {
+                LogLevel::DEBUG << "received extraneous server action" << std::endl;
+                break;
+            }
             LogLevel::INFO << static_cast<uint64_t>(action)
                            << "="
                            << static_cast<uint64_t>(_actions.front())
@@ -55,9 +64,8 @@ namespace tetriq {
                 _actions.pop();
             } else {
                 LogLevel::ERROR << "server desynchronisation" << std::endl;
-                while (!_actions.empty())
-                    _actions.pop();
                 FullGameRequestPacket{}.send(_peer);
+                _resyncing = true;
                 break;
             }
         }
@@ -70,10 +78,13 @@ namespace tetriq {
     {
         if (packet.getPlayerId() != _player_id)
             return false;
-        _client_state = packet.getGame();
-        _server_state = _client_state;
-        while (!_actions.empty())
-            _actions.pop();
+        _server_state = packet.getGame();
+        if (_resyncing) {
+            _client_state = _server_state;
+            while (!_actions.empty())
+                _actions.pop();
+            _resyncing = false;
+        }
         return true;
     }
 

@@ -68,8 +68,10 @@ namespace tetriq {
 
     bool Player::handle(GameActionPacket &packet)
     {
-        if (_game.handleGameAction(packet.getAction()))
+        if (_game.handleGameAction(packet.getAction())) {
+            LogLevel::DEBUG << "handling action " << static_cast<uint64_t>(packet.getAction()) << std::endl;
             _applied_actions.push_back(packet.getAction());
+        }
         return true;
     }
 

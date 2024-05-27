@@ -38,5 +38,7 @@ namespace tetriq {
             Tetris _server_state;
             Tetris _client_state;
             std::queue<GameAction> _actions;
+
+            bool _resyncing;
     };
 }
