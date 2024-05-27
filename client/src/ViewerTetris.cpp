@@ -5,7 +5,7 @@
 #include "ViewerTetris.hpp"
 #include "Logger.hpp"
 #include "Tetris.hpp"
-#include "network/packets/TickGamePacket.hpp"
+#include "network/packets/FullGamePacket.hpp"
 #include <cstdint>
 
 namespace tetriq {
@@ -14,7 +14,7 @@ namespace tetriq {
         , _player_id(player_id)
     {}
 
-    bool ViewerTetris::handle(TickGamePacket &packet)
+    bool ViewerTetris::handle(FullGamePacket &packet)
     {
         if (packet.getPlayerId() != _player_id) // Packet is not for us
             return false;
