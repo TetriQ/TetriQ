@@ -9,6 +9,7 @@
 #include "network/packets/FullGamePacket.hpp"
 #include "network/packets/GameActionPacket.hpp"
 #include "network/packets/InitGamePacket.hpp"
+#include "network/packets/TickGamePacket.hpp"
 #include <cassert>
 #include <cstdint>
 #include <string>
@@ -37,16 +38,20 @@ namespace tetriq {
         std::vector<uint64_t> other_players = _channel.getPlayers();
         other_players.erase(std::remove(other_players.begin(), other_players.end(), _network_id));
         InitGamePacket{config.width, config.height, _network_id, other_players}.send(_peer);
+        FullGamePacket{_network_id, _game}.send(_peer);
     }
 
     void Player::tickGame()
     {
         bool modified = _game.tick();
-        FullGamePacket packet{_network_id, _game};
         if (modified == true) {
+            FullGamePacket packet{_network_id, _game};
             _channel.broadcastPacket(packet);
+            _applied_actions.clear();
         } else {
+            TickGamePacket packet{_network_id, _applied_actions.begin(), _applied_actions.end()};
             this->sendPacket(packet);
+            _applied_actions.clear();
         }
     }
 
@@ -62,7 +67,8 @@ namespace tetriq {
 
     bool Player::handle(GameActionPacket &packet)
     {
-        _game.handleGameAction(packet.getAction());
+        if (_game.handleGameAction(packet.getAction()))
+            _applied_actions.push_back(packet.getAction());
         return true;
     }
 

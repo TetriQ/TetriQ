@@ -4,11 +4,13 @@
 
 #pragma once
 
+#include "GameAction.hpp"
 #include "GameConfig.hpp"
 #include "Tetris.hpp"
 #include "network/APacket.hpp"
 #include "network/PacketHandler.hpp"
 #include "network/packets/GameActionPacket.hpp"
+#include <deque>
 #include <enet/enet.h>
 #include <cstdint>
 
@@ -37,5 +39,6 @@ namespace tetriq {
 
             Channel &_channel;
             Tetris _game;
+            std::deque<GameAction> _applied_actions;
     };
 }

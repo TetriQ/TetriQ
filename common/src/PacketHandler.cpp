@@ -7,6 +7,7 @@
 #include "network/packets/GameActionPacket.hpp"
 #include "network/packets/InitGamePacket.hpp"
 #include "network/packets/FullGamePacket.hpp"
+#include "network/packets/TickGamePacket.hpp"
 
 namespace tetriq {
     template<class P>
@@ -33,6 +34,8 @@ namespace tetriq {
                 return handlePacket<TestPacket>(handlers, stream);
             case PacketId::S_INIT_GAME:
                 return handlePacket<InitGamePacket>(handlers, stream);
+            case PacketId::S_TICK_GAME:
+                return handlePacket<TickGamePacket>(handlers, stream);
             case PacketId::S_FULL_GAME:
                 return handlePacket<FullGamePacket>(handlers, stream);
             case PacketId::C_GAME_ACTION:
@@ -49,6 +52,11 @@ namespace tetriq {
     }
 
     bool PacketHandler::handle(InitGamePacket &)
+    {
+        return false;
+    }
+
+    bool PacketHandler::handle(TickGamePacket &)
     {
         return false;
     }
