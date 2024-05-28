@@ -20,7 +20,7 @@ namespace tetriq {
                 throw std::out_of_range("");
             }
             port = n;
-        } catch (std::logic_error) {
+        } catch (std::logic_error &) {
             LogLevel::ERROR << "invalid port number" << std::endl;
             return false;
         }
