@@ -5,6 +5,7 @@
 #include "Tetris.hpp"
 #include "Block.hpp"
 #include "GameAction.hpp"
+#include "Logger.hpp"
 #include "Tetromino.hpp"
 #include <cstddef>
 #include <cstdint>
@@ -99,13 +100,16 @@ bool tetriq::Tetris::handleGameAction(tetriq::GameAction action)
             return dropCurrentPiece(), true;
         case GameAction::ROTATE:
             return rotateCurrentPiece();
+        default:
+            LogLevel::WARNING << "Unknown game action" << std::endl;
+            return false;
     }
 }
 
 bool tetriq::Tetris::tick()
 {
     bool changed = false;
-    
+
     if (_game_over)
         return changed;
     if (_grace_ticks != 0) {
