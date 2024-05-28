@@ -21,7 +21,7 @@ namespace tetriq {
         GREEN,
         PURPLE,
         INDESTRUCTIBLE,
-        SPECIAL // not used for now
+        PU_ADD_LINE
     };
 
     using TetroShape = std::pair<BlockType, std::vector<std::vector<int>>>;

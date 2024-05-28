@@ -11,6 +11,7 @@
 #include "network/NetworkObject.hpp"
 
 #include <cstdint>
+#include <queue>
 #include <vector>
 
 namespace tetriq {
@@ -48,11 +49,29 @@ namespace tetriq {
             NetworkOStream &operator>>(NetworkOStream &os) const override;
             NetworkIStream &operator<<(NetworkIStream &os) override;
             size_t getNetworkSize() const override;
+
         private:
             bool isLineFull(uint64_t y) const;
+
+            /**
+             *
+             * @return The number of blocks(!= EMPTY / INDESTRUCTIBLE) on the board.
+             */
+            uint64_t countBlocks() const;
             bool moveBlock(Position oldPos, Position newPos);
             void placeTetromino();
             Tetromino &getCurrentPiece();
+
+            /**
+             * @brief Removes all full lines from the board.
+             * @param changed reference to a boolean that will be set to true if any lines were
+             * removed.
+             * @param lines_deleted reference to an unsigned int that will be incremented by the
+             * number of lines removed.
+             * @return void
+             */
+            void removeLinesFulls(bool &changed, unsigned int &lines_deleted);
+            uint64_t getMaxHeight() const;
 
             /**
              * Prevents the block from being placed on the next n ticks. This is
@@ -65,5 +84,6 @@ namespace tetriq {
             uint64_t _height;
             std::vector<std::vector<BlockType>> _blocks;
             std::vector<Tetromino> _nextPieces;
+            std::queue<BlockType> _powerUps;
     };
 }

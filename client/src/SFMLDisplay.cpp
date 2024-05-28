@@ -31,7 +31,7 @@ bool tetriq::SFMLDisplay::loadGame(const ITetris &game, uint64_t player_count)
     uint64_t width = board_width + other_boards_width;
     uint64_t height = board_height;
 
-    sf::View new_view(sf::FloatRect(0, 0, width, height));
+    sf::View new_view(sf::FloatRect(0, 0, static_cast<float>(width), static_cast<float>(height)));
 
     _window.setSize(sf::Vector2u(width, height));
     _window.setView(new_view);
@@ -107,7 +107,8 @@ void tetriq::SFMLDisplay::drawGame(const ITetris &game, Position position, uint6
 
 void tetriq::SFMLDisplay::drawBlock(sf::Vector2u pos, BlockType block, uint64_t block_size)
 {
-    sf::RectangleShape rec{sf::Vector2f(block_size, block_size)};
+    sf::RectangleShape rec{
+        sf::Vector2f(static_cast<float>(block_size), static_cast<float>(block_size))};
 
     rec.setPosition(sf::Vector2f(pos));
     switch (block) {
@@ -137,8 +138,8 @@ void tetriq::SFMLDisplay::drawBlock(sf::Vector2u pos, BlockType block, uint64_t 
             break;
         case BlockType::EMPTY:
             return;
-        case BlockType::SPECIAL:
-            rec.setFillColor(sf::Color::Cyan);
+        default:
+            rec.setFillColor(sf::Color::White);
             break;
     }
 
@@ -152,8 +153,8 @@ void tetriq::SFMLDisplay::drawTetromino(
 
     for (int i = 0; i < 4; i++) {
         std::tuple<char, char> local_pos = shape.at(i);
-        int x = (position.x + std::get<0>(local_pos)) * block_size;
-        int y = (position.y + std::get<1>(local_pos)) * block_size;
+        unsigned int x = (position.x + std::get<0>(local_pos)) * block_size;
+        unsigned int y = (position.y + std::get<1>(local_pos)) * block_size;
         drawBlock(sf::Vector2u(x, y), tetromino.getType(), block_size);
     }
 }
@@ -185,7 +186,8 @@ void tetriq::SFMLDisplay::drawPrediction(const ITetris &game)
             sf::RectangleShape point(sf::Vector2f(radius, radius));
             point.setFillColor(sf::Color::White);
             point.setPosition(sf::Vector2f(
-                (tempx * BLOCK_SIZE * 2) + BLOCK_SIZE, (tempy * BLOCK_SIZE * 2) + BLOCK_SIZE));
+                static_cast<float>(tempx * BLOCK_SIZE * 2) + static_cast<float>(BLOCK_SIZE),
+                static_cast<float>(tempy * BLOCK_SIZE * 2) + static_cast<float>(BLOCK_SIZE)));
             tempy++;
             _window.draw(point);
         }

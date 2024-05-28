@@ -103,23 +103,12 @@ void tetriq::Tetris::handleGameAction(tetriq::GameAction action)
     }
 }
 
-bool tetriq::Tetris::tick()
+void tetriq::Tetris::removeLinesFulls(bool &changed, unsigned int &lines_deleted)
 {
-    bool changed = false;
-    
-    if (_game_over)
-        return changed;
-    if (_grace_ticks != 0) {
-        _grace_ticks--;
-        return changed;
-    }
-    if (!moveCurrentPiece(0, 1)) {
-        placeTetromino();
-        changed = true;
-    }
     for (uint64_t y = 1; y < _height - 1; ++y) {
         if (isLineFull(y)) {
             changed = true;
+            lines_deleted++;
             for (uint64_t x = 1; x < _width - 1; ++x) {
                 if (_blocks[y][x] != BlockType::INDESTRUCTIBLE)
                     _blocks[y][x] = BlockType::EMPTY;
@@ -130,6 +119,60 @@ bool tetriq::Tetris::tick()
                 }
             }
         }
+    }
+}
+
+uint64_t tetriq::Tetris::getMaxHeight() const
+{
+    for (uint64_t y = 0; y < _height; y++) {
+        for (uint64_t x = 0; x < _width; x++) {
+            if (_blocks[y][x] != BlockType::EMPTY && _blocks[y][x] != BlockType::INDESTRUCTIBLE) {
+                return y;
+            }
+        }
+    }
+    return _height;
+}
+
+bool tetriq::Tetris::tick()
+{
+    bool changed = false;
+    unsigned int lines_deleted = 0;
+
+    if (_game_over)
+        return changed;
+    if (_grace_ticks != 0) {
+        _grace_ticks--;
+        return changed;
+    }
+    if (!moveCurrentPiece(0, 1)) {
+        placeTetromino();
+        changed = true;
+    }
+    removeLinesFulls(changed, lines_deleted);
+    uint64_t block_on_board = countBlocks();
+    if (block_on_board == 0 || lines_deleted == 0)
+        return changed;
+
+    unsigned int max_height = getMaxHeight();
+    std::vector<std::tuple<uint64_t, uint64_t>> blocks_in_4_next_lines;
+    for (uint64_t y = max_height - 1; y < max_height + 4 && y < _height; y++) {
+        for (uint64_t x = 0; x < _width; x++) {
+            if (_blocks[y][x] != BlockType::EMPTY && _blocks[y][x] < BlockType::INDESTRUCTIBLE) {
+                blocks_in_4_next_lines.emplace_back(x, y);
+            }
+        }
+    }
+    for (unsigned int i = 0; i < lines_deleted; i++) {
+        uint64_t random_block = rand() % blocks_in_4_next_lines.size();
+        uint64_t random_block_x = std::get<0>(blocks_in_4_next_lines[random_block]);
+        uint64_t random_block_y = std::get<1>(blocks_in_4_next_lines[random_block]);
+        // todo: take a random powerup
+        _blocks[random_block_y][random_block_x] = BlockType::PU_ADD_LINE;
+        changed = true;
+        blocks_in_4_next_lines.erase(blocks_in_4_next_lines.begin() + random_block);
+        if (blocks_in_4_next_lines.empty())
+            break;
     }
     return changed;
 }
@@ -155,8 +198,8 @@ void tetriq::Tetris::placeTetromino()
 
     for (int i = 0; i < 4; i++) {
         auto pos = shape.at(i);
-        int x = currentPiece.getPosition().x + std::get<0>(pos);
-        int y = currentPiece.getPosition().y + std::get<1>(pos);
+        unsigned int x = currentPiece.getPosition().x + std::get<0>(pos);
+        unsigned int y = currentPiece.getPosition().y + std::get<1>(pos);
 
         _blocks[y][x] = currentPiece.getType();
     }
@@ -220,4 +263,17 @@ bool tetriq::Tetris::moveBlock(Position oldPos, Position newPos)
     _blocks[newPos.y][newPos.x] = _blocks[oldPos.y][oldPos.x];
     _blocks[oldPos.y][oldPos.x] = BlockType::EMPTY;
     return true;
+}
+
+uint64_t tetriq::Tetris::countBlocks() const
+{
+    uint64_t count = 0;
+    for (const auto &row : _blocks) {
+        for (const auto &block : row) {
+            if (block != BlockType::EMPTY && block < BlockType::INDESTRUCTIBLE) {
+                count++;
+            }
+        }
+    }
+    return count;
 }
