@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2024 The TetriQ authors
+//
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 #include "Arguments.hpp"
 #include "Logger.hpp"
 #include <stdexcept>
