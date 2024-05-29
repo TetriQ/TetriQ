@@ -14,8 +14,7 @@
 #include <string>
 
 namespace tetriq {
-    Player::Player(uint64_t network_id, ENetPeer *peer,
-        Channel &channel)
+    Player::Player(uint64_t network_id, ENetPeer *peer, Channel &channel)
         : _network_id(network_id)
         , _peer(peer)
         , _channel(channel)
@@ -35,7 +34,8 @@ namespace tetriq {
     void Player::startGame(const GameConfig &config)
     {
         std::vector<uint64_t> other_players = _channel.getPlayers();
-        other_players.erase(std::remove(other_players.begin(), other_players.end(), _network_id));
+        other_players.erase(std::remove(other_players.begin(), other_players.end(), _network_id),
+            other_players.end());
         InitGamePacket{config.width, config.height, _network_id, other_players}.send(_peer);
     }
 
