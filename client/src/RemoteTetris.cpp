@@ -5,6 +5,7 @@
 #include "RemoteTetris.hpp"
 #include "GameAction.hpp"
 #include "Logger.hpp"
+#include "network/packets/FullGameRequestPacket.hpp"
 #include "network/packets/TestPacket.hpp"
 #include "network/packets/GameActionPacket.hpp"
 #include "network/packets/FullGamePacket.hpp"
@@ -12,6 +13,7 @@
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
+#include <sys/types.h>
 
 namespace tetriq {
     RemoteTetris::RemoteTetris(size_t width, size_t height, ENetPeer *peer, uint64_t player_id)
@@ -23,9 +25,11 @@ namespace tetriq {
 
     bool RemoteTetris::handleGameAction(GameAction action)
     {
-        GameActionPacket packet{action};
-        packet.send(_peer);
-        _client_state.handleGameAction(action);
+        if (_client_state.handleGameAction(action)) {
+            GameActionPacket packet{action};
+            packet.send(_peer);
+            _predicted_actions.push_back(action);
+        }
         return true;
     }
 
@@ -37,8 +41,19 @@ namespace tetriq {
 
     bool RemoteTetris::handle(TickGamePacket &packet)
     {
-        if (packet.getPlayerId() != _player_id)
-            return false;
+        for (uint64_t i = 0; i < packet.getAppliedActions(); i++) {
+            if (_predicted_actions.empty()) {
+                triggerResync();
+                return true;
+            }
+            _server_state.handleGameAction(_predicted_actions.front());
+            _predicted_actions.pop_front();
+        }
+        _server_state.tick();
+        _client_state = _server_state;
+        for (GameAction action : _predicted_actions) {
+            _client_state.handleGameAction(action);
+        }
         return true;
     }
 
@@ -46,9 +61,20 @@ namespace tetriq {
     {
         if (packet.getPlayerId() != _player_id)
             return false;
-        _client_state = packet.getGame();
-        _server_state = _client_state;
+        for (uint64_t i = 0; i < packet.getAppliedActions(); i++)
+            _predicted_actions.pop_front();
+        _server_state = packet.getGame();
+        _client_state = _server_state;
+        for (GameAction action : _predicted_actions) {
+            _client_state.handleGameAction(action);
+        }
         return true;
+    }
+
+    void RemoteTetris::triggerResync()
+    {
+        LogLevel::DEBUG << "resyncing with server" << std::endl;
+        FullGameRequestPacket{}.send(_peer);
     }
 
     uint64_t RemoteTetris::getWidth() const

@@ -110,6 +110,7 @@ bool tetriq::Tetris::tick()
 {
     bool changed = false;
 
+    _tick++;
     if (_game_over)
         return changed;
     if (_grace_ticks != 0) {
@@ -145,6 +146,11 @@ void tetriq::Tetris::addGraceTicks(uint64_t n)
     _grace_ticks = n;
 }
 
+uint64_t tetriq::Tetris::getCurrentTick() const
+{
+    return _tick;
+}
+
 bool tetriq::Tetris::isOver() const
 {
     return _game_over;
@@ -177,6 +183,7 @@ tetriq::NetworkOStream &tetriq::Tetris::operator>>(tetriq::NetworkOStream &os) c
     _height >> os;
     _blocks >> os;
     _nextPieces >> os;
+    _tick >> os;
     return os;
 }
 
@@ -190,13 +197,14 @@ tetriq::NetworkIStream &tetriq::Tetris::operator<<(tetriq::NetworkIStream &os)
     _height << os;
     _blocks << os;
     _nextPieces << os;
+    _tick << os;
     _game_over = game_over;
     return os;
 }
 
 size_t tetriq::Tetris::getNetworkSize() const
 {
-    size_t size = sizeof(uint64_t) * 5 + sizeof(uint8_t);
+    size_t size = sizeof(uint64_t) * 6 + sizeof(uint8_t);
     for (const auto &tetro : _nextPieces) {
         size += tetro.getNetworkSize();
     }

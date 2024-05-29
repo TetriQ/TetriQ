@@ -8,20 +8,25 @@
 #include <cstdint>
 
 namespace tetriq {
+    /**
+     * Incremental update of the game state (delta encoding).
+     */
     class TickGamePacket : public APacket {
         public:
             TickGamePacket();
-            template<class InputIterator>
-            TickGamePacket(uint64_t player_id, InputIterator actionsBegin, InputIterator actionsEnd);
+            TickGamePacket(uint64_t applied_actions);
 
             PacketId getId() const override;
 
-            uint64_t getPlayerId() const;
+            uint64_t getAppliedActions() const;
 
             NetworkOStream &operator>>(NetworkOStream &ns) const override;
             NetworkIStream &operator<<(NetworkIStream &ns) override;
             size_t getNetworkSize() const override;
         private:
-            uint64_t _player_id;
+            /**
+             * Number of actions that have been applied.
+             */
+            uint64_t _applied_actions;
     };
 }

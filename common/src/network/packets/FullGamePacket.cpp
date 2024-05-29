@@ -11,9 +11,10 @@ namespace tetriq {
     FullGamePacket::FullGamePacket()
     {}
 
-    FullGamePacket::FullGamePacket(uint64_t player_id, const Tetris &game)
+    FullGamePacket::FullGamePacket(uint64_t player_id, const Tetris &game, uint64_t applied_actions)
         : _player_id(player_id)
         , _game(game)
+        , _applied_actions(applied_actions)
     {}
 
     PacketId FullGamePacket::getId() const
@@ -31,10 +32,16 @@ namespace tetriq {
         return _game;
     }
 
+    uint64_t FullGamePacket::getAppliedActions() const
+    {
+        return _applied_actions;
+    }
+
     NetworkOStream &FullGamePacket::operator>>(NetworkOStream &ns) const
     {
         _player_id >> ns;
         _game >> ns;
+        _applied_actions >> ns;
         return ns;
     }
 
@@ -42,11 +49,12 @@ namespace tetriq {
     {
         _player_id << ns;
         _game << ns;
+        _applied_actions << ns;
         return ns;
     }
 
     size_t FullGamePacket::getNetworkSize() const
     {
-        return sizeof(_player_id) + _game.getNetworkSize();
+        return sizeof(_player_id) + sizeof(_applied_actions) + _game.getNetworkSize();
     }
 }
