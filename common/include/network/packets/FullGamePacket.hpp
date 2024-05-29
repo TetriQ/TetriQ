@@ -12,7 +12,7 @@ namespace tetriq {
     class FullGamePacket : public APacket {
         public:
             FullGamePacket();
-            FullGamePacket(uint64_t player_id, const Tetris &game);
+            FullGamePacket(uint64_t player_id, const Tetris &game, uint64_t applied_actions);
 
             PacketId getId() const override;
 
@@ -21,6 +21,7 @@ namespace tetriq {
              */
             uint64_t getPlayerId() const;
             const Tetris &getGame() const;
+            uint64_t getAppliedActions() const;
 
             NetworkOStream &operator>>(NetworkOStream &ns) const override;
             NetworkIStream &operator<<(NetworkIStream &ns) override;
@@ -28,5 +29,6 @@ namespace tetriq {
         private:
             uint64_t _player_id;
 	    Tetris _game{0, 0};
+            uint64_t _applied_actions;
     };
 }

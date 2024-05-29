@@ -12,30 +12,34 @@ namespace tetriq {
     TickGamePacket::TickGamePacket()
     {}
 
+    TickGamePacket::TickGamePacket(uint64_t applied_actions)
+        : _applied_actions(applied_actions)
+    {}
+
     PacketId TickGamePacket::getId() const
     {
         return PacketId::S_TICK_GAME;
     }
 
-    uint64_t TickGamePacket::getPlayerId() const
+    uint64_t TickGamePacket::getAppliedActions() const
     {
-        return _player_id;
+        return _applied_actions;
     }
 
     NetworkOStream &TickGamePacket::operator>>(NetworkOStream &ns) const
     {
-        _player_id >> ns;
+        _applied_actions >> ns;
         return ns;
     }
 
     NetworkIStream &TickGamePacket::operator<<(NetworkIStream &ns)
     {
-        _player_id << ns;
+        _applied_actions << ns;
         return ns;
     }
 
     size_t TickGamePacket::getNetworkSize() const
     {
-        return sizeof(_player_id);
+        return sizeof(_applied_actions);
     }
 }
