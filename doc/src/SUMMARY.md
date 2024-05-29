@@ -9,6 +9,7 @@ SPDX-License-Identifier: GFDL-1.3-or-later
 # The TetriQ manual
 
  - [Introduction](./introduction.md)
+ - [Building from source](./building.md)
  - [Server configuration](./server_configuration.md)
  - [Protocol](./protocol.md)
 
