@@ -8,6 +8,8 @@ on:
   push:
     paths:
       - "doc/**"
+    branches:
+      - main
 
 jobs:
   deploy-manual:
