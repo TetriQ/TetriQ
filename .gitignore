@@ -7,4 +7,5 @@
 vgcore.*
 tetriq_client
 tetriq_server
-*build*
+build/
+cmake-build-*
