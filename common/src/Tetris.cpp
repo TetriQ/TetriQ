@@ -34,8 +34,7 @@ tetriq::Tetris::Tetris(size_t width, size_t height)
     }
 }
 
-tetriq::Tetris::~Tetris()
-{}
+tetriq::Tetris::~Tetris() = default;
 
 uint64_t tetriq::Tetris::getWidth() const
 {
@@ -110,8 +109,12 @@ void tetriq::Tetris::removeLinesFulls(bool &changed, unsigned int &lines_deleted
             changed = true;
             lines_deleted++;
             for (uint64_t x = 1; x < _width - 1; ++x) {
-                if (_blocks[y][x] != BlockType::INDESTRUCTIBLE)
+                if (_blocks[y][x] != BlockType::INDESTRUCTIBLE) {
+                    if (_blocks[y][x] > BlockType::INDESTRUCTIBLE) {
+                        _powerUps.emplace(_blocks[y][x]);
+                    }
                     _blocks[y][x] = BlockType::EMPTY;
+                }
             }
             for (uint64_t i = y; i > 1; --i) {
                 for (uint64_t x = 1; x < _width - 1; ++x) {
@@ -132,6 +135,11 @@ uint64_t tetriq::Tetris::getMaxHeight() const
         }
     }
     return _height;
+}
+
+std::queue<tetriq::BlockType> tetriq::Tetris::getPowerUps() const
+{
+    return _powerUps;
 }
 
 bool tetriq::Tetris::tick()
@@ -167,8 +175,7 @@ bool tetriq::Tetris::tick()
         uint64_t random_block = rand() % blocks_in_4_next_lines.size();
         uint64_t random_block_x = std::get<0>(blocks_in_4_next_lines[random_block]);
         uint64_t random_block_y = std::get<1>(blocks_in_4_next_lines[random_block]);
-        // todo: take a random powerup
-        _blocks[random_block_y][random_block_x] = BlockType::PU_ADD_LINE;
+        _blocks[random_block_y][random_block_x] = WeightedPowerUp::getRandom();
         changed = true;
         blocks_in_4_next_lines.erase(blocks_in_4_next_lines.begin() + random_block);
         if (blocks_in_4_next_lines.empty())
@@ -198,8 +205,8 @@ void tetriq::Tetris::placeTetromino()
 
     for (int i = 0; i < 4; i++) {
         auto pos = shape.at(i);
-        unsigned int x = currentPiece.getPosition().x + std::get<0>(pos);
-        unsigned int y = currentPiece.getPosition().y + std::get<1>(pos);
+        const uint64_t x = currentPiece.getPosition().x + std::get<0>(pos);
+        const uint64_t y = currentPiece.getPosition().y + std::get<1>(pos);
 
         _blocks[y][x] = currentPiece.getType();
     }

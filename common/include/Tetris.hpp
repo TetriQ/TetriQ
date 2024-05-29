@@ -28,6 +28,7 @@ namespace tetriq {
             const Tetromino &getNextPiece() const override;
 
             const std::vector<Tetromino> &getNextPieces() const;
+            std::queue<BlockType> getPowerUps() const;
 
             [[nodiscard]] bool moveCurrentPiece(int xOffset, int yOffset);
             [[nodiscard]] bool rotateCurrentPiece();
