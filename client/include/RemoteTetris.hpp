@@ -11,6 +11,7 @@
 #include "network/packets/FullGamePacket.hpp"
 #include "network/packets/TickGamePacket.hpp"
 #include <cstdint>
+#include <list>
 
 namespace tetriq {
     /**
@@ -27,6 +28,8 @@ namespace tetriq {
             const Tetromino &getCurrentPiece() const override;
             const Tetromino &getNextPiece() const override;
         private:
+            void triggerResync();
+            
             bool handle(TestPacket &packet) override;
             bool handle(TickGamePacket &packet) override;
             bool handle(FullGamePacket &packet) override;
@@ -36,5 +39,6 @@ namespace tetriq {
 
             Tetris _server_state;
             Tetris _client_state;
+            std::list<GameAction> _predicted_actions;
     };
 }

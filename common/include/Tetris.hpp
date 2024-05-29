@@ -39,6 +39,7 @@ namespace tetriq {
              */
             bool tick();
             void addGraceTicks(uint64_t n);
+            uint64_t getCurrentTick() const;
 
             /**
              * Returns true if the game is over.
@@ -65,5 +66,7 @@ namespace tetriq {
             uint64_t _height;
             std::vector<std::vector<BlockType>> _blocks;
             std::vector<Tetromino> _nextPieces;
+
+            uint64_t _tick{0};
     };
 }

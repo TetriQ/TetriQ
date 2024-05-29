@@ -39,5 +39,7 @@ namespace tetriq {
 
             Channel &_channel;
             Tetris _game;
+
+            uint64_t _applied_actions{0};
     };
 }
