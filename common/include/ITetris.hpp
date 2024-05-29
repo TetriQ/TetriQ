@@ -19,6 +19,6 @@ namespace tetriq {
             virtual const Tetromino &getCurrentPiece() const = 0;
             virtual const Tetromino &getNextPiece() const = 0;
 
-            virtual void handleGameAction(GameAction action) = 0;
+            virtual bool handleGameAction(GameAction action) = 0;
     };
 }

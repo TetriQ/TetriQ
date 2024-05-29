@@ -31,7 +31,7 @@ namespace tetriq {
             [[nodiscard]] bool moveCurrentPiece(int xOffset, int yOffset);
             [[nodiscard]] bool rotateCurrentPiece();
             void dropCurrentPiece();
-            void handleGameAction(GameAction action) override;
+            bool handleGameAction(GameAction action) override;
 
             /**
              * Advances the game by one tick.

@@ -8,6 +8,7 @@
 #include "network/packets/TestPacket.hpp"
 #include "network/packets/GameActionPacket.hpp"
 #include "network/packets/FullGamePacket.hpp"
+#include "network/packets/TickGamePacket.hpp"
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
@@ -20,11 +21,12 @@ namespace tetriq {
         , _client_state(width, height)
     {}
 
-    void RemoteTetris::handleGameAction(GameAction action)
+    bool RemoteTetris::handleGameAction(GameAction action)
     {
         GameActionPacket packet{action};
         packet.send(_peer);
         _client_state.handleGameAction(action);
+        return true;
     }
 
     bool RemoteTetris::handle(TestPacket &)
@@ -33,12 +35,19 @@ namespace tetriq {
         return true;
     }
 
+    bool RemoteTetris::handle(TickGamePacket &packet)
+    {
+        if (packet.getPlayerId() != _player_id)
+            return false;
+        return true;
+    }
+
     bool RemoteTetris::handle(FullGamePacket &packet)
     {
         if (packet.getPlayerId() != _player_id)
             return false;
-        _server_state = packet.getGame();
-        _client_state = _server_state;
+        _client_state = packet.getGame();
+        _server_state = _client_state;
         return true;
     }
 
