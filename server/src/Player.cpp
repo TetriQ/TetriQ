@@ -10,6 +10,7 @@
 #include "network/packets/FullGameRequestPacket.hpp"
 #include "network/packets/GameActionPacket.hpp"
 #include "network/packets/InitGamePacket.hpp"
+#include "network/packets/TickGamePacket.hpp"
 #include <cassert>
 #include <cstdint>
 #include <string>
@@ -38,14 +39,18 @@ namespace tetriq {
         other_players.erase(std::remove(other_players.begin(), other_players.end(), _network_id),
             other_players.end());
         InitGamePacket{config.width, config.height, _network_id, other_players}.send(_peer);
-        FullGamePacket{_network_id, _game}.send(_peer);
+        FullGamePacket{_network_id, _game, 0}.send(_peer);
     }
 
     void Player::tickGame()
     {
-        _game.tick();
-        FullGamePacket packet{_network_id, _game};
-        _channel.broadcastPacket(packet);
+        bool modified = _game.tick();
+        if (modified) {
+            _channel.broadcastPacket(FullGamePacket{_network_id, _game, _applied_actions});
+        } else {
+            TickGamePacket{_applied_actions}.send(_peer);
+        }
+        _applied_actions = 0;
     }
 
     uint64_t Player::getNetworkId() const
@@ -61,6 +66,7 @@ namespace tetriq {
     bool Player::handle(GameActionPacket &packet)
     {
         _game.handleGameAction(packet.getAction());
+        _applied_actions++;
         return true;
     }
 
@@ -68,7 +74,8 @@ namespace tetriq {
     {
         // TODO : its possible that this packets is handled in the middle of a
         // tick, we should wait for the end of the tick before sending info.
-        FullGamePacket{_network_id, _game}.send(_peer);
+        FullGamePacket{_network_id, _game, _applied_actions}.send(_peer);
+        _applied_actions = 0;
         return true;
     }
 
