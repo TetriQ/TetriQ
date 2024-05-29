@@ -138,6 +138,33 @@ void tetriq::SFMLDisplay::drawBlock(sf::Vector2u pos, BlockType block, uint64_t 
             break;
         case BlockType::EMPTY:
             return;
+        case BlockType::PU_ADD_LINE:
+            rec.setFillColor(sf::Color::Cyan);
+            break;
+        case BlockType::PU_GRAVITY:
+            rec.setFillColor(sf::Color(70, 70, 165));
+            break;
+        case BlockType::PU_BLOCK_BOMB:
+            rec.setFillColor(sf::Color(80, 175, 162));
+            break;
+        case BlockType::PU_CLEAR_LINE:
+            rec.setFillColor(sf::Color(152, 129, 53));
+            break;
+        case BlockType::PU_NUKE_FIELD:
+            rec.setFillColor(sf::Color(142, 184, 202));
+            break;
+        case BlockType::PU_BLOCK_QUAKE:
+            rec.setFillColor(sf::Color(83, 137, 36));
+            break;
+        case BlockType::PU_SWITCH_FIELD:
+            rec.setFillColor(sf::Color(158, 80, 111));
+            break;
+        case BlockType::PU_CLEAR_BLOCK_RANDOM:
+            rec.setFillColor(sf::Color(139, 5, 59));
+            break;
+        case BlockType::PU_CLEAR_SPECIAL_BLOCK:
+            rec.setFillColor(sf::Color(5, 90, 139));
+            break;
         default:
             rec.setFillColor(sf::Color::White);
             break;
