@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "network/packets/FullGameRequestPacket.hpp"
 #include "network/packets/TestPacket.hpp"
 #include "network/packets/GameActionPacket.hpp"
 #include "network/packets/InitGamePacket.hpp"
@@ -24,5 +25,6 @@ namespace tetriq {
             virtual bool handle(TickGamePacket &p);
             virtual bool handle(FullGamePacket &p);
             virtual bool handle(GameActionPacket &p);
+            virtual bool handle(FullGameRequestPacket &p);
     };
 }
