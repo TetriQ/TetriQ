@@ -25,11 +25,10 @@ namespace tetriq {
 
     bool RemoteTetris::handleGameAction(GameAction action)
     {
-        if (_client_state.handleGameAction(action)) {
-            GameActionPacket packet{action};
-            packet.send(_peer);
-            _predicted_actions.push_back(action);
-        }
+        _client_state.handleGameAction(action);
+        GameActionPacket packet{action};
+        packet.send(_peer);
+        _predicted_actions.push_back(action);
         return true;
     }
 
