@@ -7,9 +7,9 @@
 #include "GameConfig.hpp"
 #include "Logger.hpp"
 #include "network/packets/FullGamePacket.hpp"
+#include "network/packets/FullGameRequestPacket.hpp"
 #include "network/packets/GameActionPacket.hpp"
 #include "network/packets/InitGamePacket.hpp"
-#include "network/packets/TickGamePacket.hpp"
 #include <cassert>
 #include <cstdint>
 #include <string>
@@ -61,6 +61,14 @@ namespace tetriq {
     bool Player::handle(GameActionPacket &packet)
     {
         _game.handleGameAction(packet.getAction());
+        return true;
+    }
+
+    bool Player::handle(FullGameRequestPacket &)
+    {
+        // TODO : its possible that this packets is handled in the middle of a
+        // tick, we should wait for the end of the tick before sending info.
+        FullGamePacket{_network_id, _game}.send(_peer);
         return true;
     }
 

@@ -8,6 +8,7 @@
 #include "Tetris.hpp"
 #include "network/APacket.hpp"
 #include "network/PacketHandler.hpp"
+#include "network/packets/FullGameRequestPacket.hpp"
 #include "network/packets/GameActionPacket.hpp"
 #include <enet/enet.h>
 #include <cstdint>
@@ -30,6 +31,7 @@ namespace tetriq {
             void sendPacket(const APacket &packet);
 
             bool handle(GameActionPacket &packet);
+            bool handle(FullGameRequestPacket &packet);
 
         private:
             const uint64_t _network_id;
