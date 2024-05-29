@@ -9,6 +9,7 @@
 #include "network/packets/FullGamePacket.hpp"
 #include "network/packets/GameActionPacket.hpp"
 #include "network/packets/InitGamePacket.hpp"
+#include "network/packets/TickGamePacket.hpp"
 #include <cassert>
 #include <cstdint>
 #include <string>
@@ -37,17 +38,14 @@ namespace tetriq {
         other_players.erase(std::remove(other_players.begin(), other_players.end(), _network_id),
             other_players.end());
         InitGamePacket{config.width, config.height, _network_id, other_players}.send(_peer);
+        FullGamePacket{_network_id, _game}.send(_peer);
     }
 
     void Player::tickGame()
     {
-        bool modified = _game.tick();
+        _game.tick();
         FullGamePacket packet{_network_id, _game};
-        if (modified == true) {
-            _channel.broadcastPacket(packet);
-        } else {
-            this->sendPacket(packet);
-        }
+        _channel.broadcastPacket(packet);
     }
 
     uint64_t Player::getNetworkId() const

@@ -9,6 +9,7 @@
 #include "Tetris.hpp"
 #include "network/PacketHandler.hpp"
 #include "network/packets/FullGamePacket.hpp"
+#include "network/packets/TickGamePacket.hpp"
 #include <cstdint>
 
 namespace tetriq {
@@ -19,7 +20,7 @@ namespace tetriq {
         public:
             RemoteTetris(size_t width, size_t height, ENetPeer *peer, uint64_t player_id);
 
-            void handleGameAction(GameAction action) override;
+            bool handleGameAction(GameAction action) override;
             uint64_t getWidth() const override;
             uint64_t getHeight() const override;
             BlockType getBlockAt(uint64_t x, uint64_t y) const override;
@@ -27,6 +28,7 @@ namespace tetriq {
             const Tetromino &getNextPiece() const override;
         private:
             bool handle(TestPacket &packet) override;
+            bool handle(TickGamePacket &packet) override;
             bool handle(FullGamePacket &packet) override;
 
             ENetPeer *_peer;

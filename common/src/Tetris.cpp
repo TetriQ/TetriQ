@@ -8,7 +8,6 @@
 #include "Tetromino.hpp"
 #include <cstddef>
 #include <cstdint>
-#include <iostream>
 
 tetriq::Tetris::Tetris(size_t width, size_t height)
     : _grace_ticks(0)
@@ -86,19 +85,19 @@ void tetriq::Tetris::dropCurrentPiece()
     getCurrentPiece().drop(*this);
 }
 
-void tetriq::Tetris::handleGameAction(tetriq::GameAction action)
+bool tetriq::Tetris::handleGameAction(tetriq::GameAction action)
 {
     switch (action) {
         case GameAction::MOVE_LEFT:
-            return (void) moveCurrentPiece(-1, 0);
+            return moveCurrentPiece(-1, 0);
         case GameAction::MOVE_RIGHT:
-            return (void) moveCurrentPiece(1, 0);
+            return moveCurrentPiece(1, 0);
         case GameAction::MOVE_DOWN:
-            return (void) moveCurrentPiece(0, 1);
+            return moveCurrentPiece(0, 1);
         case GameAction::DROP:
-            return (void) dropCurrentPiece();
+            return dropCurrentPiece(), true;
         case GameAction::ROTATE:
-            return (void) rotateCurrentPiece();
+            return rotateCurrentPiece();
     }
 }
 
