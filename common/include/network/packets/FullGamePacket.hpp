@@ -26,9 +26,9 @@ namespace tetriq {
             NetworkOStream &operator>>(NetworkOStream &ns) const override;
             NetworkIStream &operator<<(NetworkIStream &ns) override;
             size_t getNetworkSize() const override;
+
         private:
-            uint64_t _player_id;
-	    Tetris _game{0, 0};
+            uint64_t _player_i Tetris _game{0, 0};
             uint64_t _applied_actions;
     };
 }

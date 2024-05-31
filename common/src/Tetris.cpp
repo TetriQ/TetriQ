@@ -234,6 +234,7 @@ tetriq::NetworkOStream &tetriq::Tetris::operator>>(tetriq::NetworkOStream &os) c
     _blocks >> os;
     _nextPieces >> os;
     _tick >> os;
+    _powerUps >> os;
     return os;
 }
 
@@ -248,13 +249,14 @@ tetriq::NetworkIStream &tetriq::Tetris::operator<<(tetriq::NetworkIStream &os)
     _blocks << os;
     _nextPieces << os;
     _tick << os;
+    _powerUps << os;
     _game_over = game_over;
     return os;
 }
 
 size_t tetriq::Tetris::getNetworkSize() const
 {
-    size_t size = sizeof(uint64_t) * 6 + sizeof(uint8_t);
+    size_t size = sizeof(uint64_t) * 7 + sizeof(uint8_t);
     for (const auto &tetro : _nextPieces) {
         size += tetro.getNetworkSize();
     }
@@ -262,6 +264,7 @@ size_t tetriq::Tetris::getNetworkSize() const
         size += sizeof(uint64_t);
         size += sizeof(BlockType) * type.size();
     }
+    size += sizeof(uint64_t) * _powerUps.size();
     return size;
 }
 
