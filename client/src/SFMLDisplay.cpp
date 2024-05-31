@@ -39,26 +39,32 @@ bool tetriq::SFMLDisplay::loadGame(const ITetris &game, uint64_t player_count)
 }
 
 bool tetriq::SFMLDisplay::draw(
-    const ITetris &game, ITetrisIter otherGamesStart, ITetrisIter otherGamesEnd)
+    const Client &client, ITetrisIter otherGamesStart, ITetrisIter otherGamesEnd)
 {
+    uint64_t index = 1;
     _window.clear(sf::Color::Black);
-    drawGame(game, {0, 0}, BLOCK_SIZE * 2);
+    ITetris &game = client.getGame();
+    drawGame(game, {0, 0}, BLOCK_SIZE * 2, client.targetId == 0);
     drawCurrentTetromino(game);
     drawNextTetromino(game);
     drawPrediction(game);
     drawPowerUps(game);
     uint64_t x = (game.getWidth() + SIDEBAR_SIZE) * BLOCK_SIZE * 2;
     while (otherGamesStart != otherGamesEnd) {
-        drawGame(**otherGamesStart, {x, 0}, BLOCK_SIZE);
+        drawGame(**otherGamesStart, {x, 0}, BLOCK_SIZE, client.targetId == index);
         x += (*otherGamesStart)->getWidth() * BLOCK_SIZE;
         ++otherGamesStart;
+        index++;
     }
     _window.display();
     return true;
 }
 
-bool tetriq::SFMLDisplay::handleEvents(ITetris &game)
+bool tetriq::SFMLDisplay::handleEvents(Client &client)
 {
+    static bool is_shift_pressed = false;
+    static std::string target;
+    ITetris &game = client.getGame();
     while (_window.pollEvent(_event)) {
         if (_event.type == sf::Event::Closed)
             goto exit_window;
@@ -81,8 +87,24 @@ bool tetriq::SFMLDisplay::handleEvents(ITetris &game)
                 case sf::Keyboard::Space:
                     game.handleGameAction(GameAction::DROP);
                     continue;
-                default:
+                case sf::Keyboard::LShift:
+                    is_shift_pressed = true;
+                    target.clear();
+                    client.targetId = 0;
                     continue;
+                default:;
+            }
+            if (is_shift_pressed && _event.key.code >= sf::Keyboard::Num0
+                && _event.key.code <= sf::Keyboard::Num9) {
+                if (target.size() >= 3)
+                    target.clear();
+                target += std::to_string(_event.key.code - sf::Keyboard::Num0);
+                client.targetId = std::stoul(target);
+            }
+        }
+        if (_event.type == sf::Event::KeyReleased) {
+            if (_event.key.code == sf::Keyboard::LShift) {
+                is_shift_pressed = false;
             }
         }
     }
@@ -92,7 +114,8 @@ exit_window:
     return false;
 }
 
-void tetriq::SFMLDisplay::drawGame(const ITetris &game, Position position, uint64_t block_size)
+void tetriq::SFMLDisplay::drawGame(
+    const ITetris &game, Position position, uint64_t block_size, bool is_target)
 {
     BlockType blockType;
     sf::Vector2u pos;
@@ -101,12 +124,13 @@ void tetriq::SFMLDisplay::drawGame(const ITetris &game, Position position, uint6
         for (uint64_t y = 0; y < game.getHeight(); y++) {
             blockType = game.getBlockAt(x, y);
             pos = sf::Vector2u(position.x + x * block_size, position.y + y * block_size);
-            drawBlock(pos, blockType, block_size);
+            drawBlock(pos, blockType, block_size, is_target);
         }
     }
 }
 
-void tetriq::SFMLDisplay::drawBlock(sf::Vector2u pos, BlockType block, uint64_t block_size)
+void tetriq::SFMLDisplay::drawBlock(
+    sf::Vector2u pos, BlockType block, uint64_t block_size, bool is_target)
 {
     sf::RectangleShape rec{
         sf::Vector2f(static_cast<float>(block_size), static_cast<float>(block_size))};
@@ -135,7 +159,7 @@ void tetriq::SFMLDisplay::drawBlock(sf::Vector2u pos, BlockType block, uint64_t 
             rec.setFillColor(sf::Color::Magenta);
             break;
         case BlockType::INDESTRUCTIBLE:
-            rec.setFillColor(sf::Color(59, 59, 59));
+            rec.setFillColor(is_target ? sf::Color(158, 114, 114) : sf::Color(59, 59, 59));
             break;
         case BlockType::EMPTY:
             return;
@@ -183,7 +207,7 @@ void tetriq::SFMLDisplay::drawTetromino(
         std::tuple<char, char> local_pos = shape.at(i);
         unsigned int x = (position.x + std::get<0>(local_pos)) * block_size;
         unsigned int y = (position.y + std::get<1>(local_pos)) * block_size;
-        drawBlock(sf::Vector2u(x, y), tetromino.getType(), block_size);
+        drawBlock(sf::Vector2u(x, y), tetromino.getType(), block_size, false);
     }
 }
 
@@ -229,7 +253,10 @@ void tetriq::SFMLDisplay::drawPowerUps(const ITetris &game)
 
     Position pos = {game.getWidth() + 1, 4};
     for (auto i = it; i != end; ++i) {
-        drawBlock(sf::Vector2u(pos.x * BLOCK_SIZE * 2, pos.y * BLOCK_SIZE * 2), *i, BLOCK_SIZE * 2);
+        drawBlock(sf::Vector2u(pos.x * BLOCK_SIZE * 2, pos.y * BLOCK_SIZE * 2),
+            *i,
+            BLOCK_SIZE * 2,
+            false);
         pos.y += 2;
     }
 }

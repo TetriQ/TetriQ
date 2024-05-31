@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "Client.hpp"
 #include "ITetris.hpp"
 #include <Tetris.hpp>
 
@@ -12,10 +13,11 @@ namespace tetriq {
         public:
             virtual ~IDisplay() = default;
 
-            using ITetrisIter = std::vector<std::unique_ptr<ITetris>>::const_iterator;
-            
+            using ITetrisIter = std::vector<std::unique_ptr<ViewerTetris>>::const_iterator;
+
             [[nodiscard]] virtual bool loadGame(const ITetris &game, uint64_t player_count) = 0;
-            [[nodiscard]] virtual bool draw(const ITetris &game, ITetrisIter otherGamesStart, ITetrisIter otherGamesEnd) = 0;
-            [[nodiscard]] virtual bool handleEvents(ITetris &game) = 0;
+            [[nodiscard]] virtual bool draw(
+                const Client &Client, ITetrisIter otherGamesStart, ITetrisIter otherGamesEnd) = 0;
+            [[nodiscard]] virtual bool handleEvents(Client &Client) = 0;
     };
 }

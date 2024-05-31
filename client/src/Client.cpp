@@ -19,7 +19,8 @@
 
 namespace tetriq {
     Client::Client(std::string ip, uint16_t port, IDisplay &display)
-        : _username("Unknown")
+        : targetId(0)
+        , _username("Unknown")
         , _server_ip(std::move(ip))
         , _server_port(port)
         , _game_started(false)
@@ -33,9 +34,8 @@ namespace tetriq {
         if (_client == nullptr or not setServer())
             throw ClientInitException();
         if (not connectToServer()) {
-            LogLevel::CRITICAL
-                << "An error occurred while connecting to the server at address "
-                << _server_ip << ":" << _server_port << std::endl;
+            LogLevel::CRITICAL << "An error occurred while connecting to the server at address "
+                               << _server_ip << ":" << _server_port << std::endl;
             throw ClientConnectionException();
         }
     }
@@ -54,9 +54,9 @@ namespace tetriq {
         ENetEvent _event;
         while (true) {
             if (_game_started) {
-                if (!_display.draw(*_game, _external_games.begin(), _external_games.end()))
+                if (!_display.draw(*this, _external_games.begin(), _external_games.end()))
                     return;
-                if (!_display.handleEvents(*_game))
+                if (!_display.handleEvents(*this))
                     return;
             }
             if (enet_host_service(_client, &_event, 0) < 0)
@@ -75,6 +75,16 @@ namespace tetriq {
                     continue;
             }
         }
+    }
+
+    ITetris &Client::getGame() const
+    {
+        return *_game;
+    }
+
+    uint64_t Client::getClientId() const
+    {
+        return _game->getPlayerId();
     }
 
     bool Client::init() const
@@ -97,9 +107,8 @@ namespace tetriq {
         }
         if (enet_host_service(_client, &_event, _config.server_timeout) > 0
             and _event.type == ENET_EVENT_TYPE_CONNECT) {
-            LogLevel::INFO
-                << "Connected to the server at address "
-                << _server_ip << ":" << _server_port << std::endl;
+            LogLevel::INFO << "Connected to the server at address " << _server_ip << ":"
+                           << _server_port << std::endl;
             return true;
         } else {
             enet_peer_reset(_server);
@@ -120,18 +129,15 @@ namespace tetriq {
 
     bool Client::handle(InitGamePacket &packet)
     {
-        std::unique_ptr<RemoteTetris> game =
-            std::make_unique<RemoteTetris>(
-                packet.getGameWidth(),
-                packet.getGameHeight(),
-                _server,
-                packet.getPlayerId());
+        std::unique_ptr<RemoteTetris> game = std::make_unique<RemoteTetris>(
+            packet.getGameWidth(), packet.getGameHeight(), _server, packet.getPlayerId());
         _game.swap(game);
 
         _external_games.clear();
         _external_games.reserve(packet.getPlayerIds().size());
         for (uint64_t player_id : packet.getPlayerIds()) {
-            _external_games.emplace_back(std::make_unique<ViewerTetris>(packet.getGameWidth(), packet.getGameHeight(), player_id));
+            _external_games.emplace_back(std::make_unique<ViewerTetris>(
+                packet.getGameWidth(), packet.getGameHeight(), player_id));
         }
 
         if (_display.loadGame(*_game, packet.getPlayerIds().size())) {
@@ -144,9 +150,8 @@ namespace tetriq {
 
     bool Client::handle(FullGamePacket &packet)
     {
-        for (std::unique_ptr<ITetris> &tetris : _external_games) {
-            ViewerTetris &viewer = dynamic_cast<ViewerTetris &>(*tetris);
-            if (viewer.handle(packet))
+        for (std::unique_ptr<ViewerTetris> &tetris : _external_games) {
+            if (tetris->handle(packet))
                 return true;
         }
         return false;

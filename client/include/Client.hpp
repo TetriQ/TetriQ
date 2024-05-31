@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include "IDisplay.hpp"
 #include "ITetris.hpp"
 #include "RemoteTetris.hpp"
 #include "ClientConfig.hpp"
@@ -18,9 +17,11 @@
 #include <enet/enet.h>
 
 namespace tetriq {
+    class IDisplay;
+
     class Client : public PacketHandler {
         public:
-            class ClientException: public std::exception {
+            class ClientException : public std::exception {
                 public:
                     explicit ClientException(std::string message);
 
@@ -30,26 +31,26 @@ namespace tetriq {
                     std::string _message;
             };
 
-            class ClientInitException final: public ClientException {
+            class ClientInitException final : public ClientException {
                 public:
                     explicit ClientInitException();
             };
 
-            class ClientConnectionException final: public ClientException {
+            class ClientConnectionException final : public ClientException {
                 public:
                     explicit ClientConnectionException();
             };
 
             /**
-            * @brief Client constructor
-            * @param ip The server IP address
-            * @param port The server port
-            */
+             * @brief Client constructor
+             * @param ip The server IP address
+             * @param port The server port
+             */
             Client(std::string ip, uint16_t port, IDisplay &display);
 
             /**
-            * @brief Client destructor
-            */
+             * @brief Client destructor
+             */
             ~Client();
 
             /**
@@ -57,23 +58,27 @@ namespace tetriq {
              */
             void loop();
 
+            ITetris &getGame() const;
+            uint64_t getClientId() const;
+            uint64_t targetId;
+
         private:
             /**
-            * @brief Initialize the client
-            * @return True if the client was initialized successfully
-            */
+             * @brief Initialize the client
+             * @return True if the client was initialized successfully
+             */
             bool init() const;
 
             /**
-            * @brief Set the server address
-            * @return True if the server address was set successfully
-            */
+             * @brief Set the server address
+             * @return True if the server address was set successfully
+             */
             bool setServer();
 
             /**
-            * @brief Connect to the server
-            * @return True if the client connected to the server successfully
-            */
+             * @brief Connect to the server
+             * @return True if the client connected to the server successfully
+             */
             bool connectToServer();
 
             bool handle(InitGamePacket &packet) override;
@@ -82,9 +87,9 @@ namespace tetriq {
             const ClientConfig _config;
 
             /**
-            * @brief The client username
-            * @todo not implemented yet
-            */
+             * @brief The client username
+             * @todo not implemented yet
+             */
             std::string _username;
             const std::string _server_ip;
             const uint16_t _server_port;
@@ -95,7 +100,7 @@ namespace tetriq {
 
             bool _game_started;
             std::unique_ptr<RemoteTetris> _game;
-            std::vector<std::unique_ptr<ITetris>> _external_games;
+            std::vector<std::unique_ptr<ViewerTetris>> _external_games;
             IDisplay &_display;
     };
 }

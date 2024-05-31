@@ -105,4 +105,9 @@ namespace tetriq {
     {
         return _client_state.getPowerUps();
     }
+
+    uint64_t RemoteTetris::getPlayerId() const
+    {
+        return _player_id;
+    }
 }

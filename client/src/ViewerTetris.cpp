@@ -21,4 +21,9 @@ namespace tetriq {
         Tetris::operator=(packet.getGame());
         return true;
     }
+
+    uint64_t ViewerTetris::getPlayerId() const
+    {
+        return _player_id;
+    }
 }

@@ -28,6 +28,7 @@ namespace tetriq {
             const Tetromino &getCurrentPiece() const override;
             const Tetromino &getNextPiece() const override;
             const std::deque<BlockType> &getPowerUps() const override;
+            uint64_t getPlayerId() const;
 
         private:
             void triggerResync();
