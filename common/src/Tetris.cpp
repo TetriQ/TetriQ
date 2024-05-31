@@ -114,7 +114,7 @@ void tetriq::Tetris::removeLinesFulls(bool &changed, unsigned int &lines_deleted
             for (uint64_t x = 1; x < _width - 1; ++x) {
                 if (_blocks[y][x] != BlockType::INDESTRUCTIBLE) {
                     if (_blocks[y][x] > BlockType::INDESTRUCTIBLE) {
-                        _powerUps.emplace(_blocks[y][x]);
+                        _powerUps.emplace_back(_blocks[y][x]);
                     }
                     _blocks[y][x] = BlockType::EMPTY;
                 }
@@ -140,7 +140,7 @@ uint64_t tetriq::Tetris::getMaxHeight() const
     return _height;
 }
 
-std::queue<tetriq::BlockType> tetriq::Tetris::getPowerUps() const
+const std::deque<tetriq::BlockType> &tetriq::Tetris::getPowerUps() const
 {
     return _powerUps;
 }

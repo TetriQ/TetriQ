@@ -11,7 +11,7 @@
 #include "network/NetworkObject.hpp"
 
 #include <cstdint>
-#include <queue>
+#include <deque>
 #include <vector>
 
 namespace tetriq {
@@ -28,7 +28,7 @@ namespace tetriq {
             const Tetromino &getNextPiece() const override;
 
             const std::vector<Tetromino> &getNextPieces() const;
-            std::queue<BlockType> getPowerUps() const;
+            const std::deque<BlockType> &getPowerUps() const override;
 
             [[nodiscard]] bool moveCurrentPiece(int xOffset, int yOffset);
             [[nodiscard]] bool rotateCurrentPiece();
@@ -86,7 +86,7 @@ namespace tetriq {
             uint64_t _height;
             std::vector<std::vector<BlockType>> _blocks;
             std::vector<Tetromino> _nextPieces;
-            std::queue<BlockType> _powerUps;
+            std::deque<BlockType> _powerUps;
 
             uint64_t _tick{0};
     };

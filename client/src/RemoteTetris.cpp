@@ -100,4 +100,9 @@ namespace tetriq {
     {
         return _client_state.getNextPiece();
     }
+
+    const std::deque<BlockType> &RemoteTetris::getPowerUps() const
+    {
+        return _client_state.getPowerUps();
+    }
 }

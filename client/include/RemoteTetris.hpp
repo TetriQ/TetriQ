@@ -27,9 +27,11 @@ namespace tetriq {
             BlockType getBlockAt(uint64_t x, uint64_t y) const override;
             const Tetromino &getCurrentPiece() const override;
             const Tetromino &getNextPiece() const override;
+            const std::deque<BlockType> &getPowerUps() const override;
+
         private:
             void triggerResync();
-            
+
             bool handle(TestPacket &packet) override;
             bool handle(TickGamePacket &packet) override;
             bool handle(FullGamePacket &packet) override;

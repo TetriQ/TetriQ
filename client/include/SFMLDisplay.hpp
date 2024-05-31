@@ -28,6 +28,7 @@ namespace tetriq {
             void drawCurrentTetromino(const ITetris &game);
             void drawNextTetromino(const ITetris &game);
             void drawPrediction(const ITetris &game);
+            void drawPowerUps(const ITetris &game);
 
             const uint64_t BLOCK_SIZE = 16;
             const uint64_t SIDEBAR_SIZE = 6;

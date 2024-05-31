@@ -46,6 +46,7 @@ bool tetriq::SFMLDisplay::draw(
     drawCurrentTetromino(game);
     drawNextTetromino(game);
     drawPrediction(game);
+    drawPowerUps(game);
     uint64_t x = (game.getWidth() + SIDEBAR_SIZE) * BLOCK_SIZE * 2;
     while (otherGamesStart != otherGamesEnd) {
         drawGame(**otherGamesStart, {x, 0}, BLOCK_SIZE);
@@ -218,5 +219,17 @@ void tetriq::SFMLDisplay::drawPrediction(const ITetris &game)
             tempy++;
             _window.draw(point);
         }
+    }
+}
+
+void tetriq::SFMLDisplay::drawPowerUps(const ITetris &game)
+{
+    const auto it = game.getPowerUps().begin();
+    const auto end = game.getPowerUps().end();
+
+    Position pos = {game.getWidth() + 1, 4};
+    for (auto i = it; i != end; ++i) {
+        drawBlock(sf::Vector2u(pos.x * BLOCK_SIZE * 2, pos.y * BLOCK_SIZE * 2), *i, BLOCK_SIZE * 2);
+        pos.y += 2;
     }
 }
