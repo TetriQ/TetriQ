@@ -85,7 +85,7 @@ namespace tetriq {
             return;
         _next_tick = now + std::chrono::nanoseconds(1'000'000'000 / 3);
 
-        if (_players.size() == 0) {
+        if (_players.empty()) {
             stopGame();
             return;
         }
