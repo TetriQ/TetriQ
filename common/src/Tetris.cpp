@@ -29,9 +29,8 @@ tetriq::Tetris::Tetris(size_t width, size_t height)
     , _width(width)
     , _height(height)
 {
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < 3; i++) {
         _nextPieces.emplace_back();
-        _powerUps.emplace_back(BlockType::PU_SWITCH_FIELD);
     }
 
     _blocks.resize(_height);
