@@ -79,6 +79,24 @@ namespace tetriq {
         return true;
     }
 
+    bool Player::doPuSwitchField(BlockType power_up, Player &target)
+    {
+        if (power_up == BlockType::PU_SWITCH_FIELD) {
+            Tetris tempBoard = _game;
+            _game = target.getGame();
+            for (uint64_t i = 0; i < 8; i++) {
+                tempBoard.clearLine(i);
+            }
+            target.getGame() = tempBoard;
+            _channel.broadcastPacket(FullGamePacket{_network_id, _game, _applied_actions});
+            _channel.broadcastPacket(FullGamePacket{target.getNetworkId(), target.getGame(), 0});
+            LogLevel::DEBUG << "Player " << _network_id << " switched board with player "
+                            << target.getNetworkId() << std::endl;
+            return true;
+        }
+        return false;
+    }
+
     bool Player::handle(PowerUpPacket &packet)
     {
         BlockType power_up = _game.consumePowerUp();
@@ -87,8 +105,13 @@ namespace tetriq {
         }
         try {
             Player &target = _channel.getPlayerById(packet.getTarget());
+            if (doPuSwitchField(power_up, target))
+                return true;
             Tetris &game = target.getGame();
             game.applyPowerUp(power_up);
+            LogLevel::DEBUG << "Player " << _network_id << " applied "
+                            << static_cast<uint64_t>(power_up) << " to player "
+                            << target.getNetworkId() << std::endl;
             _channel.broadcastPacket(
                 FullGamePacket{target.getNetworkId(), target.getGame(), _applied_actions});
         } catch (std::out_of_range &e) {
