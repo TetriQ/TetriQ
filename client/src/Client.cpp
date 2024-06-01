@@ -60,20 +60,20 @@ namespace tetriq {
                 if (!_display.handleEvents(*this))
                     return;
             }
-            if (enet_host_service(_client, &_event, 0) < 0)
-                return;
-            switch (_event.type) {
-                case ENET_EVENT_TYPE_RECEIVE:
-                    if (_game_started)
-                        PacketHandler::decodePacket(_event, {this, _game.get()});
-                    else
-                        PacketHandler::decodePacket(_event, {this});
-                    break;
-                case ENET_EVENT_TYPE_DISCONNECT:
-                    Logger::log(LogLevel::INFO, "Disconnected from the server");
-                    return;
-                default:
-                    continue;
+            while (enet_host_service(_client, &_event, 0) > 0) {
+                switch (_event.type) {
+                    case ENET_EVENT_TYPE_RECEIVE:
+                        if (_game_started)
+                            PacketHandler::decodePacket(_event, {this, _game.get()});
+                        else
+                            PacketHandler::decodePacket(_event, {this});
+                        break;
+                    case ENET_EVENT_TYPE_DISCONNECT:
+                        Logger::log(LogLevel::INFO, "Disconnected from the server");
+                        return;
+                    default:
+                        continue;
+                }
             }
         }
     }
