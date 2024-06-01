@@ -60,6 +60,7 @@ namespace tetriq {
 
             ITetris &getGame() const;
             uint64_t getClientId() const;
+            void sendPowerUp() const;
             uint64_t targetId;
 
         private:

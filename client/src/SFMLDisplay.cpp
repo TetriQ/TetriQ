@@ -92,6 +92,9 @@ bool tetriq::SFMLDisplay::handleEvents(Client &client)
                     target.clear();
                     client.targetId = 0;
                     continue;
+                case sf::Keyboard::Q:
+                    client.sendPowerUp();
+                    continue;
                 default:;
             }
             if (is_shift_pressed && _event.key.code >= sf::Keyboard::Num0

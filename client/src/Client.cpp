@@ -11,6 +11,7 @@
 #include "ViewerTetris.hpp"
 #include "network/PacketHandler.hpp"
 #include "network/packets/FullGamePacket.hpp"
+#include "network/packets/PowerUpPacket.hpp"
 
 #include <cstdint>
 #include <memory>
@@ -85,6 +86,15 @@ namespace tetriq {
     uint64_t Client::getClientId() const
     {
         return _game->getPlayerId();
+    }
+
+    void Client::sendPowerUp() const
+    {
+        if (targetId == 0) {
+            PowerUpPacket{getClientId()}.send(_server);
+        } else if (targetId - 1 < _external_games.size()) {
+            PowerUpPacket{_external_games[targetId - 1]->getPlayerId()}.send(_server);
+        }
     }
 
     bool Client::init() const
