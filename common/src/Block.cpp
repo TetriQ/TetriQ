@@ -34,13 +34,13 @@ namespace tetriq {
     static constexpr std::array<WeightedPowerUp, 9> powerUps = {{
         {BlockType::PU_ADD_LINE, 100},
         {BlockType::PU_CLEAR_SPECIAL_BLOCK, 100},
-        {BlockType::PU_CLEAR_LINE, 50},
+        {BlockType::PU_CLEAR_LINE, 100},
         {BlockType::PU_CLEAR_BLOCK_RANDOM, 100},
         {BlockType::PU_GRAVITY, 100},
         {BlockType::PU_NUKE_FIELD, 100},
         {BlockType::PU_BLOCK_BOMB, 1},
-        {BlockType::PU_BLOCK_QUAKE, 100},
-        {BlockType::PU_SWITCH_FIELD, 3000},
+        {BlockType::PU_COLUMN_SHUFFLE, 100},
+        {BlockType::PU_SWITCH_FIELD, 100},
     }};
 
     static constexpr uint64_t TOTAL_POWERUPS_WEIGHT = std::accumulate(powerUps.begin(),
