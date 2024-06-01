@@ -60,7 +60,7 @@ namespace tetriq {
     {
         if (packet.getPlayerId() != _player_id)
             return false;
-        for (uint64_t i = 0; i < packet.getAppliedActions(); i++)
+        for (uint64_t i = 0; i < packet.getAppliedActions() && not _predicted_actions.empty(); i++)
             _predicted_actions.pop_front();
         _server_state = packet.getGame();
         _client_state = _server_state;
