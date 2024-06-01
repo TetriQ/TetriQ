@@ -35,8 +35,13 @@ namespace tetriq {
             void dropCurrentPiece();
             bool handleGameAction(GameAction action) override;
             BlockType consumePowerUp();
+            void doPuAddLine();
+            void doPuClearLine();
             void applyPowerUp(BlockType powerUp);
             void clearLine(uint64_t y);
+
+            void moveBlocksDown(uint64_t y);
+            void moveBlocksUp(uint64_t y);
 
             /**
              * Advances the game by one tick.

@@ -16,8 +16,9 @@ tetriq::Tetris::Tetris(size_t width, size_t height)
     , _width(width)
     , _height(height)
 {
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 10; i++) {
         _nextPieces.emplace_back();
+        _powerUps.emplace_back(BlockType::PU_ADD_LINE);
     }
 
     _blocks.resize(_height);
@@ -114,6 +115,23 @@ tetriq::BlockType tetriq::Tetris::consumePowerUp()
     return powerUp;
 }
 
+void tetriq::Tetris::doPuAddLine()
+{
+    __attribute_maybe_unused__ bool has_moved = moveCurrentPiece(0, -1);
+    moveBlocksUp(_height - 2);
+    uint64_t random = rand() % (_width - 2) + 1;
+    for (uint64_t x = 1; x < _width - 1; ++x) {
+        _blocks[_height - 2][x] = BlockType::RED;
+    }
+    _blocks[_height - 2][random] = BlockType::EMPTY;
+}
+
+void tetriq::Tetris::doPuClearLine()
+{
+    clearLine(_height - 2);
+    moveBlocksDown(_height - 2);
+}
+
 void tetriq::Tetris::applyPowerUp(BlockType powerUp)
 {
     switch (powerUp) {
@@ -128,17 +146,18 @@ void tetriq::Tetris::applyPowerUp(BlockType powerUp)
         case BlockType::INDESTRUCTIBLE:
             break;
         case BlockType::PU_ADD_LINE:
+            doPuAddLine();
+            break;
         case BlockType::PU_CLEAR_SPECIAL_BLOCK:
         case BlockType::PU_CLEAR_LINE:
+            doPuClearLine();
+            break;
         case BlockType::PU_CLEAR_BLOCK_RANDOM:
         case BlockType::PU_GRAVITY:
         case BlockType::PU_NUKE_FIELD:
         case BlockType::PU_BLOCK_BOMB:
         case BlockType::PU_BLOCK_QUAKE:
         case BlockType::PU_SWITCH_FIELD:
-            {
-                clearLine(_height - 2);
-            }
             break;
         default:
             LogLevel::WARNING << "Unknown power up" << std::endl;
@@ -158,6 +177,24 @@ void tetriq::Tetris::clearLine(uint64_t y)
     }
 }
 
+void tetriq::Tetris::moveBlocksDown(uint64_t y)
+{
+    for (uint64_t i = y; i > 1; --i) {
+        for (uint64_t x = 1; x < _width - 1; ++x) {
+            moveBlock({x, i}, {x, i + 1});
+        }
+    }
+}
+
+void tetriq::Tetris::moveBlocksUp(uint64_t y)
+{
+    for (uint64_t i = 1; i < y + 1; ++i) {
+        for (uint64_t x = 1; x < _width - 1; ++x) {
+            moveBlock({x, i}, {x, i - 1});
+        }
+    }
+}
+
 void tetriq::Tetris::removeLinesFulls(bool &changed, unsigned int &lines_deleted)
 {
     for (uint64_t y = 1; y < _height - 1; ++y) {
@@ -165,11 +202,7 @@ void tetriq::Tetris::removeLinesFulls(bool &changed, unsigned int &lines_deleted
             changed = true;
             lines_deleted++;
             clearLine(y);
-            for (uint64_t i = y; i > 1; --i) {
-                for (uint64_t x = 1; x < _width - 1; ++x) {
-                    moveBlock({x, i}, {x, i + 1});
-                }
-            }
+            moveBlocksDown(y - 1);
         }
     }
 }
