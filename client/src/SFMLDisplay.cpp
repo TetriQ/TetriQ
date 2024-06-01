@@ -181,7 +181,7 @@ void tetriq::SFMLDisplay::drawBlock(
         case BlockType::PU_NUKE_FIELD:
             rec.setFillColor(sf::Color(142, 184, 202));
             break;
-        case BlockType::PU_BLOCK_QUAKE:
+        case BlockType::PU_COLUMN_SHUFFLE:
             rec.setFillColor(sf::Color(83, 137, 36));
             break;
         case BlockType::PU_SWITCH_FIELD:
