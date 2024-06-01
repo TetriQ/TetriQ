@@ -89,7 +89,8 @@ namespace tetriq {
             Player &target = _channel.getPlayerById(packet.getTarget());
             Tetris &game = target.getGame();
             game.applyPowerUp(power_up);
-            _channel.broadcastPacket(FullGamePacket{_network_id, _game, _applied_actions});
+            _channel.broadcastPacket(
+                FullGamePacket{target.getNetworkId(), target.getGame(), _applied_actions});
         } catch (std::out_of_range &e) {
             LogLevel::ERROR << "Player not in channel" << std::endl;
         }
