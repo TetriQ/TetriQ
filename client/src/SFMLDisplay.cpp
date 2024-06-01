@@ -18,6 +18,7 @@ tetriq::SFMLDisplay::SFMLDisplay()
     , _event()
 {
     _window.setFramerateLimit(60);
+    _default_font.loadFromFile("assets/fonts/arial.ttf");
 }
 
 tetriq::SFMLDisplay::~SFMLDisplay()
@@ -41,6 +42,11 @@ bool tetriq::SFMLDisplay::loadGame(const ITetris &game, uint64_t player_count)
 bool tetriq::SFMLDisplay::draw(
     const Client &client, ITetrisIter otherGamesStart, ITetrisIter otherGamesEnd)
 {
+    if (_show_help) {
+        displayHelp();
+        _window.display();
+        return true;
+    }
     uint64_t index = 1;
     _window.clear(sf::Color::Black);
     ITetris &game = client.getGame();
@@ -94,6 +100,9 @@ bool tetriq::SFMLDisplay::handleEvents(Client &client)
                     continue;
                 case sf::Keyboard::Q:
                     client.sendPowerUp();
+                    continue;
+                case sf::Keyboard::H:
+                    _show_help = !_show_help;
                     continue;
                 default:;
             }
@@ -262,4 +271,24 @@ void tetriq::SFMLDisplay::drawPowerUps(const ITetris &game)
             false);
         pos.y += 2;
     }
+}
+
+void tetriq::SFMLDisplay::displayHelp()
+{
+    _window.clear(sf::Color::Black);
+    uint64_t x = 0;
+    uint64_t y = 0;
+    for (uint64_t i = 0; i < 16; i++) {
+        auto block = static_cast<BlockType>(i);
+        drawBlock(sf::Vector2u(x, y), block, BLOCK_SIZE, false);
+        sf::Text text;
+        text.setFont(_default_font);
+        text.setString(std::to_string(i) + " " + blockTypeToString(block));
+        text.setCharacterSize(12);
+        text.setFillColor(sf::Color::White);
+        text.setPosition(x + BLOCK_SIZE, y);
+        _window.draw(text);
+        y += BLOCK_SIZE;
+    }
+    _window.display();
 }

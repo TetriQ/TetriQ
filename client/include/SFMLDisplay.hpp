@@ -30,11 +30,15 @@ namespace tetriq {
             void drawNextTetromino(const ITetris &game);
             void drawPrediction(const ITetris &game);
             void drawPowerUps(const ITetris &game);
+            void displayHelp();
 
             const uint64_t BLOCK_SIZE = 16;
             const uint64_t SIDEBAR_SIZE = 6;
 
             sf::RenderWindow _window;
             sf::Event _event;
+
+            bool _show_help = false;
+            sf::Font _default_font;
     };
 }

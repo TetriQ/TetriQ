@@ -35,6 +35,8 @@ namespace tetriq {
         PU_SWITCH_FIELD,
     };
 
+    std::string blockTypeToString(BlockType block);
+
     using TetroShape = std::pair<BlockType, std::vector<std::vector<int>>>;
     using TetroRotation = std::vector<std::tuple<char, char>>;
 
