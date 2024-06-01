@@ -31,7 +31,7 @@ namespace tetriq {
         PU_GRAVITY,
         PU_NUKE_FIELD,
         PU_BLOCK_BOMB,
-        PU_BLOCK_QUAKE,
+        PU_COLUMN_SHUFFLE,
         PU_SWITCH_FIELD,
     };
 
