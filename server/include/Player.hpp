@@ -32,6 +32,9 @@ namespace tetriq {
 
             bool handle(GameActionPacket &packet) override;
             bool handle(FullGameRequestPacket &packet) override;
+            bool handle(PowerUpPacket &packet) override;
+
+            Channel &getChannel();
 
         private:
             const uint64_t _network_id;

@@ -79,6 +79,28 @@ namespace tetriq {
         return true;
     }
 
+    bool Player::handle(PowerUpPacket &packet)
+    {
+        BlockType power_up = _game.consumePowerUp();
+        if (power_up == BlockType::EMPTY) {
+            return true;
+        }
+        try {
+            Player &target = _channel.getPlayerById(packet.getTarget());
+            Tetris &game = target.getGame();
+            game.applyPowerUp(power_up);
+            _channel.broadcastPacket(FullGamePacket{_network_id, _game, _applied_actions});
+        } catch (std::out_of_range &e) {
+            LogLevel::ERROR << "Player not in channel" << std::endl;
+        }
+        return true;
+    }
+
+    Channel &Player::getChannel()
+    {
+        return _channel;
+    }
+
     bool Player::isGameOver() const
     {
         return _game.isOver();
