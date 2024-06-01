@@ -105,20 +105,66 @@ bool tetriq::Tetris::handleGameAction(tetriq::GameAction action)
     }
 }
 
+tetriq::BlockType tetriq::Tetris::consumePowerUp()
+{
+    if (_powerUps.empty())
+        return BlockType::EMPTY;
+    const BlockType powerUp = _powerUps.front();
+    _powerUps.pop_front();
+    return powerUp;
+}
+
+void tetriq::Tetris::applyPowerUp(BlockType powerUp)
+{
+    switch (powerUp) {
+        case BlockType::EMPTY:
+        case BlockType::RED:
+        case BlockType::BLUE:
+        case BlockType::DARK_BLUE:
+        case BlockType::ORANGE:
+        case BlockType::YELLOW:
+        case BlockType::GREEN:
+        case BlockType::PURPLE:
+        case BlockType::INDESTRUCTIBLE:
+            break;
+        case BlockType::PU_ADD_LINE:
+        case BlockType::PU_CLEAR_SPECIAL_BLOCK:
+        case BlockType::PU_CLEAR_LINE:
+        case BlockType::PU_CLEAR_BLOCK_RANDOM:
+        case BlockType::PU_GRAVITY:
+        case BlockType::PU_NUKE_FIELD:
+        case BlockType::PU_BLOCK_BOMB:
+        case BlockType::PU_BLOCK_QUAKE:
+        case BlockType::PU_SWITCH_FIELD:
+            {
+                clearLine(_height - 2);
+            }
+            break;
+        default:
+            LogLevel::WARNING << "Unknown power up" << std::endl;
+            break;
+    }
+}
+
+void tetriq::Tetris::clearLine(uint64_t y)
+{
+    for (uint64_t x = 1; x < _width - 1; ++x) {
+        if (_blocks[y][x] != BlockType::INDESTRUCTIBLE) {
+            if (_blocks[y][x] > BlockType::INDESTRUCTIBLE) {
+                _powerUps.emplace_back(_blocks[y][x]);
+            }
+            _blocks[y][x] = BlockType::EMPTY;
+        }
+    }
+}
+
 void tetriq::Tetris::removeLinesFulls(bool &changed, unsigned int &lines_deleted)
 {
     for (uint64_t y = 1; y < _height - 1; ++y) {
         if (isLineFull(y)) {
             changed = true;
             lines_deleted++;
-            for (uint64_t x = 1; x < _width - 1; ++x) {
-                if (_blocks[y][x] != BlockType::INDESTRUCTIBLE) {
-                    if (_blocks[y][x] > BlockType::INDESTRUCTIBLE) {
-                        _powerUps.emplace_back(_blocks[y][x]);
-                    }
-                    _blocks[y][x] = BlockType::EMPTY;
-                }
-            }
+            clearLine(y);
             for (uint64_t i = y; i > 1; --i) {
                 for (uint64_t x = 1; x < _width - 1; ++x) {
                     moveBlock({x, i}, {x, i + 1});

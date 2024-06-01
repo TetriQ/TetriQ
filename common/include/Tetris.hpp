@@ -34,6 +34,9 @@ namespace tetriq {
             [[nodiscard]] bool rotateCurrentPiece();
             void dropCurrentPiece();
             bool handleGameAction(GameAction action) override;
+            BlockType consumePowerUp();
+            void applyPowerUp(BlockType powerUp);
+            void clearLine(uint64_t y);
 
             /**
              * Advances the game by one tick.
