@@ -35,13 +35,10 @@ namespace tetriq {
             void dropCurrentPiece();
             bool handleGameAction(GameAction action) override;
             BlockType consumePowerUp();
-            void doPuAddLine();
-            void doPuClearLine();
             void applyPowerUp(BlockType powerUp);
             void clearLine(uint64_t y);
-
-            void moveBlocksDown(uint64_t y);
-            void moveBlocksUp(uint64_t y);
+            static void createBorders(
+                std::vector<std::vector<BlockType>> &_board, uint64_t _width, uint64_t _height);
 
             /**
              * Advances the game by one tick.
@@ -61,6 +58,17 @@ namespace tetriq {
             size_t getNetworkSize() const override;
 
         private:
+            void doPuAddLine();
+            void doPuClearLine();
+            void doPuClearSpecialBlock();
+            void doPuClearBlockRandom();
+            void doPuGravity();
+            void doPuNukeField();
+            void doPuColumnShuffle();
+
+            void moveBlocksDown(uint64_t y);
+            void moveBlocksUp(uint64_t y);
+
             bool isLineFull(uint64_t y) const;
 
             /**
@@ -68,6 +76,7 @@ namespace tetriq {
              * @return The number of blocks(!= EMPTY / INDESTRUCTIBLE) on the board.
              */
             uint64_t countBlocks() const;
+            std::vector<Position> getBlocks() const;
             bool moveBlock(Position oldPos, Position newPos);
             void placeTetromino();
             Tetromino &getCurrentPiece();

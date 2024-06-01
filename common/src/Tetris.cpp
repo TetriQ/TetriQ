@@ -10,29 +10,35 @@
 #include <cstddef>
 #include <cstdint>
 
+void tetriq::Tetris::createBorders(
+    std::vector<std::vector<BlockType>> &_board, uint64_t width, uint64_t height)
+{
+    for (size_t i = 0; i < height; i++) {
+        for (size_t j = 0; j < width; j++) {
+            if (j == 0 || j == width - 1 || i == height - 1 || i == 0)
+                _board[i][j] = BlockType::INDESTRUCTIBLE;
+            else
+                _board[i][j] = BlockType::EMPTY;
+        }
+    }
+}
+
 tetriq::Tetris::Tetris(size_t width, size_t height)
     : _grace_ticks(0)
     , _game_over(false)
     , _width(width)
     , _height(height)
 {
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 1000; i++) {
         _nextPieces.emplace_back();
-        _powerUps.emplace_back(BlockType::PU_ADD_LINE);
+        _powerUps.emplace_back(BlockType::PU_SWITCH_FIELD);
     }
 
     _blocks.resize(_height);
     for (size_t i = 0; i < _height; i++)
         _blocks[i].resize(_width);
 
-    for (size_t i = 0; i < _height; i++) {
-        for (size_t j = 0; j < _width; j++) {
-            if (j == 0 || j == _width - 1 || i == _height - 1 || i == 0)
-                _blocks[i][j] = BlockType::INDESTRUCTIBLE;
-            else
-                _blocks[i][j] = BlockType::EMPTY;
-        }
-    }
+    createBorders(_blocks, _width, _height);
 }
 
 tetriq::Tetris::~Tetris() = default;
@@ -132,6 +138,76 @@ void tetriq::Tetris::doPuClearLine()
     moveBlocksDown(_height - 2);
 }
 
+void tetriq::Tetris::doPuClearSpecialBlock()
+{
+    for (uint64_t y = 1; y < _height - 1; ++y) {
+        for (uint64_t x = 1; x < _width - 1; ++x) {
+            if (_blocks[y][x] > BlockType::INDESTRUCTIBLE) {
+                _blocks[y][x] = BlockType::EMPTY;
+            }
+        }
+    }
+}
+
+void tetriq::Tetris::doPuClearBlockRandom()
+{
+    auto blocks = getBlocks();
+    if (blocks.empty())
+        return;
+    uint64_t blocks_to_clear = blocks.size() * 0.3;
+    for (uint64_t i = 0; i < blocks_to_clear; i++) {
+        uint64_t random_block = rand() % blocks.size();
+        _blocks[blocks[random_block].y][blocks[random_block].x] = BlockType::EMPTY;
+        blocks.erase(blocks.begin() + random_block);
+    }
+}
+
+void tetriq::Tetris::doPuGravity()
+{
+    for (uint64_t y = _height - 2; y > 0; --y) {
+        for (uint64_t x = 1; x < _width - 1; ++x) {
+            if (_blocks[y][x] != BlockType::EMPTY && _blocks[y][x] != BlockType::INDESTRUCTIBLE) {
+                while (moveBlock({x, y}, {x, y + 1})) {
+                    y = y + 1;
+                }
+            }
+        }
+    }
+}
+
+void tetriq::Tetris::doPuNukeField()
+{
+    for (uint64_t y = 1; y < _height - 1; ++y) {
+        for (uint64_t x = 1; x < _width - 1; ++x) {
+            if (_blocks[y][x] != BlockType::INDESTRUCTIBLE) {
+                _blocks[y][x] = BlockType::EMPTY;
+            }
+        }
+    }
+    while (not _powerUps.empty())
+        _powerUps.pop_front();
+}
+
+void tetriq::Tetris::doPuColumnShuffle()
+{
+    static std::random_device rd;
+    static std::mt19937 g(rd());
+
+    std::vector<uint64_t> columns;
+    for (uint64_t i = 1; i < _width - 1; i++) {
+        columns.push_back(i);
+    }
+    std::ranges::shuffle(columns, g);
+    std::vector new_blocks(_height, std::vector(_width, BlockType::EMPTY));
+    createBorders(new_blocks, _width, _height);
+    for (uint64_t y = 1; y < _height - 1; y++) {
+        for (uint64_t x = 1; x < _width - 1; x++) {
+            new_blocks[y][columns[x - 1]] = _blocks[y][x];
+        }
+    }
+    _blocks = new_blocks;
+}
+
 void tetriq::Tetris::applyPowerUp(BlockType powerUp)
 {
     switch (powerUp) {
@@ -149,14 +225,27 @@ void tetriq::Tetris::applyPowerUp(BlockType powerUp)
             doPuAddLine();
             break;
         case BlockType::PU_CLEAR_SPECIAL_BLOCK:
+            doPuClearSpecialBlock();
+            break;
         case BlockType::PU_CLEAR_LINE:
             doPuClearLine();
             break;
         case BlockType::PU_CLEAR_BLOCK_RANDOM:
+            doPuClearBlockRandom();
+            break;
         case BlockType::PU_GRAVITY:
+            doPuGravity();
+            break;
         case BlockType::PU_NUKE_FIELD:
+            doPuNukeField();
+            break;
         case BlockType::PU_BLOCK_BOMB:
-        case BlockType::PU_BLOCK_QUAKE:
+            {
+                break;
+            }
+        case BlockType::PU_COLUMN_SHUFFLE:
+            doPuColumnShuffle();
+            break;
         case BlockType::PU_SWITCH_FIELD:
             break;
         default:
@@ -376,4 +465,17 @@ uint64_t tetriq::Tetris::countBlocks() const
         }
     }
     return count;
+}
+
+std::vector<tetriq::Position> tetriq::Tetris::getBlocks() const
+{
+    std::vector<Position> blocks;
+    for (uint64_t y = 0; y < _height; y++) {
+        for (uint64_t x = 0; x < _width; x++) {
+            if (_blocks[y][x] != BlockType::EMPTY && _blocks[y][x] != BlockType::INDESTRUCTIBLE) {
+                blocks.emplace_back(x, y);
+            }
+        }
+    }
+    return blocks;
 }
