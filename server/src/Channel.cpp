@@ -53,6 +53,15 @@ namespace tetriq {
         return _players;
     }
 
+    Player &Channel::getPlayerById(uint64_t id)
+    {
+        auto it = std::find(_players.begin(), _players.end(), id);
+        if (it == _players.end()) {
+            throw std::out_of_range("Player not found");
+        }
+        return _server.getPlayerById(id);
+    }
+
     void Channel::startGame()
     {
         LogLevel::DEBUG << "starting game" << std::endl;

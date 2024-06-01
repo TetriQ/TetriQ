@@ -30,11 +30,20 @@ namespace tetriq {
             void removePlayer(Player &player);
             const std::vector<uint64_t> &getPlayers() const;
 
+            /**
+             * @brief Get a player by its id (call _server.getPlayerById(id))
+             * @param id of the player
+             * @return the player with the given id if it exists and is in the channel
+             * @throw std::out_of_range if the player is not in the channel
+             */
+            Player &getPlayerById(uint64_t id);
+
             void startGame();
             void stopGame();
             void tick();
 
             void broadcastPacket(const APacket &packet);
+
         private:
             Server &_server;
             std::chrono::steady_clock::duration _next_tick;
