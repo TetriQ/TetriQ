@@ -20,3 +20,6 @@ target_link_libraries(tetriq_client
     PRIVATE ncurses
     PRIVATE enet
 )
+
+install(TARGETS tetriq_client DESTINATION bin)
+install(FILES ../etc/client.toml DESTINATION etc)

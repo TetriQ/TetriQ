@@ -424,6 +424,7 @@ tetriq::NetworkIStream &tetriq::Tetris::operator<<(tetriq::NetworkIStream &os)
 size_t tetriq::Tetris::getNetworkSize() const
 {
     size_t size = sizeof(uint64_t) * 7 + sizeof(uint8_t);
+    size_t size = sizeof(uint64_t) * 6 + sizeof(uint8_t);
     for (const auto &tetro : _nextPieces) {
         size += tetro.getNetworkSize();
     }
