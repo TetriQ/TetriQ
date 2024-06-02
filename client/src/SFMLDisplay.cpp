@@ -18,7 +18,7 @@ tetriq::SFMLDisplay::SFMLDisplay()
     , _event()
 {
     _window.setFramerateLimit(60);
-    _default_font.loadFromFile("assets/fonts/arial.ttf");
+    _default_font.loadFromFile("etc/OpenSans-SemiBold.ttf");
 }
 
 tetriq::SFMLDisplay::~SFMLDisplay()
@@ -103,6 +103,12 @@ bool tetriq::SFMLDisplay::handleEvents(Client &client)
                     continue;
                 case sf::Keyboard::H:
                     _show_help = !_show_help;
+                    continue;
+                case sf::Keyboard::Z:
+                    client.targetId--;
+                    continue;
+                case sf::Keyboard::X:
+                    client.targetId++;
                     continue;
                 default:;
             }

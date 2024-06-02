@@ -79,15 +79,6 @@ namespace tetriq {
         return true;
     }
 
-    bool Player::handle(FullGameRequestPacket &)
-    {
-        // TODO : its possible that this packets is handled in the middle of a
-        // tick, we should wait for the end of the tick before sending info.
-        FullGamePacket{_network_id, _game, _applied_actions}.send(_peer);
-        _applied_actions = 0;
-        return true;
-    }
-
     bool Player::doPuSwitchField(BlockType power_up, Player &target)
     {
         if (power_up == BlockType::PU_SWITCH_FIELD) {
@@ -119,8 +110,8 @@ namespace tetriq {
             Tetris &game = target.getGame();
             game.applyPowerUp(power_up);
             LogLevel::DEBUG << "Player " << _network_id << " applied "
-                            << static_cast<uint64_t>(power_up) << " to player "
-                            << target.getNetworkId() << std::endl;
+                            << blockTypeToString(power_up) << " to player " << target.getNetworkId()
+                            << std::endl;
             _channel.broadcastPacket(
                 FullGamePacket{target.getNetworkId(), target.getGame(), _applied_actions});
         } catch (std::out_of_range &e) {
