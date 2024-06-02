@@ -17,6 +17,8 @@ namespace tetriq {
             ViewerTetris(size_t width, size_t height, uint64_t player_id);
 
             bool handle(FullGamePacket &packet) override;
+            uint64_t getPlayerId() const;
+
         private:
             uint64_t _player_id;
     };

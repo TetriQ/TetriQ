@@ -13,7 +13,7 @@ bool should_exit = false;
 /**
  * @brief Main function of the server
  */
-int main(void)
+int main()
 {
     signal(SIGINT, [](int) {
         if (should_exit)

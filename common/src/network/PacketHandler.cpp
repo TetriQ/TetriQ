@@ -78,4 +78,9 @@ namespace tetriq {
     {
         return false;
     }
+
+    bool PacketHandler::handle(PowerUpPacket &)
+    {
+        return false;
+    }
 }

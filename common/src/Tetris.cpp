@@ -24,18 +24,10 @@ tetriq::Tetris::Tetris(size_t width, size_t height)
     for (size_t i = 0; i < _height; i++)
         _blocks[i].resize(_width);
 
-    for (size_t i = 0; i < _height; i++) {
-        for (size_t j = 0; j < _width; j++) {
-            if (j == 0 || j == _width - 1 || i == _height - 1 || i == 0)
-                _blocks[i][j] = BlockType::INDESTRUCTIBLE;
-            else
-                _blocks[i][j] = BlockType::EMPTY;
-        }
-    }
+    createBorders(_blocks, _width, _height);
 }
 
-tetriq::Tetris::~Tetris()
-{}
+tetriq::Tetris::~Tetris() = default;
 
 uint64_t tetriq::Tetris::getWidth() const
 {
@@ -106,9 +98,211 @@ bool tetriq::Tetris::handleGameAction(tetriq::GameAction action)
     }
 }
 
+tetriq::BlockType tetriq::Tetris::consumePowerUp()
+{
+    if (_powerUps.empty())
+        return BlockType::EMPTY;
+    const BlockType powerUp = _powerUps.front();
+    _powerUps.pop_front();
+    return powerUp;
+}
+
+void tetriq::Tetris::doPuAddLine()
+{
+    __attribute_maybe_unused__ bool has_moved = moveCurrentPiece(0, -1);
+    moveBlocksUp(_height - 2);
+    uint64_t random = rand() % (_width - 2) + 1;
+    for (uint64_t x = 1; x < _width - 1; ++x) {
+        _blocks[_height - 2][x] = BlockType::RED;
+    }
+    _blocks[_height - 2][random] = BlockType::EMPTY;
+}
+
+void tetriq::Tetris::doPuClearLine()
+{
+    clearLine(_height - 2);
+    moveBlocksDown(_height - 2);
+}
+
+void tetriq::Tetris::doPuClearSpecialBlock()
+{
+    for (uint64_t y = 1; y < _height - 1; ++y) {
+        for (uint64_t x = 1; x < _width - 1; ++x) {
+            if (_blocks[y][x] > BlockType::INDESTRUCTIBLE) {
+                _blocks[y][x] = BlockType::EMPTY;
+            }
+        }
+    }
+}
+
+void tetriq::Tetris::doPuClearBlockRandom()
+{
+    auto blocks = getBlocks();
+    if (blocks.empty())
+        return;
+    uint64_t blocks_to_clear = blocks.size() * 0.3;
+    for (uint64_t i = 0; i < blocks_to_clear; i++) {
+        uint64_t random_block = rand() % blocks.size();
+        _blocks[blocks[random_block].y][blocks[random_block].x] = BlockType::EMPTY;
+        blocks.erase(blocks.begin() + random_block);
+    }
+}
+
+void tetriq::Tetris::doPuGravity()
+{
+    for (uint64_t y = _height - 2; y > 0; --y) {
+        for (uint64_t x = 1; x < _width - 1; ++x) {
+            if (_blocks[y][x] != BlockType::EMPTY && _blocks[y][x] != BlockType::INDESTRUCTIBLE) {
+                while (moveBlock({x, y}, {x, y + 1})) {
+                    y = y + 1;
+                }
+            }
+        }
+    }
+}
+
+void tetriq::Tetris::doPuNukeField()
+{
+    for (uint64_t y = 1; y < _height - 1; ++y) {
+        for (uint64_t x = 1; x < _width - 1; ++x) {
+            if (_blocks[y][x] != BlockType::INDESTRUCTIBLE) {
+                _blocks[y][x] = BlockType::EMPTY;
+            }
+        }
+    }
+    while (not _powerUps.empty())
+        _powerUps.pop_front();
+}
+
+void tetriq::Tetris::doPuColumnShuffle()
+{
+    static std::random_device rd;
+    static std::mt19937 g(rd());
+
+    std::vector<uint64_t> columns;
+    for (uint64_t i = 1; i < _width - 1; i++) {
+        columns.push_back(i);
+    }
+    std::ranges::shuffle(columns, g);
+    std::vector new_blocks(_height, std::vector(_width, BlockType::EMPTY));
+    createBorders(new_blocks, _width, _height);
+    for (uint64_t y = 1; y < _height - 1; y++) {
+        for (uint64_t x = 1; x < _width - 1; x++) {
+            new_blocks[y][columns[x - 1]] = _blocks[y][x];
+        }
+    }
+    _blocks = new_blocks;
+}
+
+void tetriq::Tetris::applyPowerUp(BlockType powerUp)
+{
+    switch (powerUp) {
+        case BlockType::EMPTY:
+        case BlockType::RED:
+        case BlockType::BLUE:
+        case BlockType::DARK_BLUE:
+        case BlockType::ORANGE:
+        case BlockType::YELLOW:
+        case BlockType::GREEN:
+        case BlockType::PURPLE:
+        case BlockType::INDESTRUCTIBLE:
+            break;
+        case BlockType::PU_ADD_LINE:
+            doPuAddLine();
+            break;
+        case BlockType::PU_CLEAR_SPECIAL_BLOCK:
+            doPuClearSpecialBlock();
+            break;
+        case BlockType::PU_CLEAR_LINE:
+            doPuClearLine();
+            break;
+        case BlockType::PU_CLEAR_BLOCK_RANDOM:
+            doPuClearBlockRandom();
+            break;
+        case BlockType::PU_GRAVITY:
+            doPuGravity();
+            break;
+        case BlockType::PU_NUKE_FIELD:
+            doPuNukeField();
+            break;
+        case BlockType::PU_BLOCK_BOMB:
+            {
+                break;
+            }
+        case BlockType::PU_COLUMN_SHUFFLE:
+            doPuColumnShuffle();
+            break;
+        case BlockType::PU_SWITCH_FIELD:
+            break;
+        default:
+            LogLevel::WARNING << "Unknown power up" << std::endl;
+            break;
+    }
+}
+
+void tetriq::Tetris::clearLine(uint64_t y)
+{
+    for (uint64_t x = 1; x < _width - 1; ++x) {
+        if (_blocks[y][x] != BlockType::INDESTRUCTIBLE) {
+            if (_blocks[y][x] > BlockType::INDESTRUCTIBLE) {
+                _powerUps.emplace_back(_blocks[y][x]);
+            }
+            _blocks[y][x] = BlockType::EMPTY;
+        }
+    }
+}
+
+void tetriq::Tetris::moveBlocksDown(uint64_t y)
+{
+    for (uint64_t i = y; i > 1; --i) {
+        for (uint64_t x = 1; x < _width - 1; ++x) {
+            moveBlock({x, i}, {x, i + 1});
+        }
+    }
+}
+
+void tetriq::Tetris::moveBlocksUp(uint64_t y)
+{
+    for (uint64_t i = 1; i < y + 1; ++i) {
+        for (uint64_t x = 1; x < _width - 1; ++x) {
+            moveBlock({x, i}, {x, i - 1});
+        }
+    }
+}
+
+void tetriq::Tetris::removeLinesFulls(bool &changed, unsigned int &lines_deleted)
+{
+    for (uint64_t y = 1; y < _height - 1; ++y) {
+        if (isLineFull(y)) {
+            changed = true;
+            lines_deleted++;
+            clearLine(y);
+            moveBlocksDown(y - 1);
+        }
+    }
+}
+
+uint64_t tetriq::Tetris::getMaxHeight() const
+{
+    for (uint64_t y = 0; y < _height; y++) {
+        for (uint64_t x = 0; x < _width; x++) {
+            if (_blocks[y][x] != BlockType::EMPTY && _blocks[y][x] != BlockType::INDESTRUCTIBLE) {
+                return y;
+            }
+        }
+    }
+    return _height;
+}
+
+const std::deque<tetriq::BlockType> &tetriq::Tetris::getPowerUps() const
+{
+    return _powerUps;
+}
+
 bool tetriq::Tetris::tick()
 {
     bool changed = false;
+    unsigned int lines_deleted = 0;
 
     _tick++;
     if (_game_over)
@@ -121,19 +315,29 @@ bool tetriq::Tetris::tick()
         placeTetromino();
         changed = true;
     }
-    for (uint64_t y = 1; y < _height - 1; ++y) {
-        if (isLineFull(y)) {
-            changed = true;
-            for (uint64_t x = 1; x < _width - 1; ++x) {
-                if (_blocks[y][x] != BlockType::INDESTRUCTIBLE)
-                    _blocks[y][x] = BlockType::EMPTY;
-            }
-            for (uint64_t i = y; i > 1; --i) {
-                for (uint64_t x = 1; x < _width - 1; ++x) {
-                    moveBlock({x, i}, {x, i + 1});
-                }
+    removeLinesFulls(changed, lines_deleted);
+    uint64_t block_on_board = countBlocks();
+    if (block_on_board == 0 || lines_deleted == 0)
+        return changed;
+
+    unsigned int max_height = getMaxHeight();
+    std::vector<std::tuple<uint64_t, uint64_t>> blocks_in_4_next_lines;
+    for (uint64_t y = max_height - 1; y < max_height + 4 && y < _height; y++) {
+        for (uint64_t x = 0; x < _width; x++) {
+            if (_blocks[y][x] != BlockType::EMPTY && _blocks[y][x] < BlockType::INDESTRUCTIBLE) {
+                blocks_in_4_next_lines.emplace_back(x, y);
             }
         }
+    }
+    for (unsigned int i = 0; i < lines_deleted; i++) {
+        uint64_t random_block = rand() % blocks_in_4_next_lines.size();
+        uint64_t random_block_x = std::get<0>(blocks_in_4_next_lines[random_block]);
+        uint64_t random_block_y = std::get<1>(blocks_in_4_next_lines[random_block]);
+        _blocks[random_block_y][random_block_x] = WeightedPowerUp::getRandom();
+        changed = true;
+        blocks_in_4_next_lines.erase(blocks_in_4_next_lines.begin() + random_block);
+        if (blocks_in_4_next_lines.empty())
+            break;
     }
     return changed;
 }
@@ -164,8 +368,8 @@ void tetriq::Tetris::placeTetromino()
 
     for (int i = 0; i < 4; i++) {
         auto pos = shape.at(i);
-        int x = currentPiece.getPosition().x + std::get<0>(pos);
-        int y = currentPiece.getPosition().y + std::get<1>(pos);
+        const uint64_t x = currentPiece.getPosition().x + std::get<0>(pos);
+        const uint64_t y = currentPiece.getPosition().y + std::get<1>(pos);
 
         _blocks[y][x] = currentPiece.getType();
     }
@@ -184,6 +388,7 @@ tetriq::NetworkOStream &tetriq::Tetris::operator>>(tetriq::NetworkOStream &os) c
     _blocks >> os;
     _nextPieces >> os;
     _tick >> os;
+    _powerUps >> os;
     return os;
 }
 
@@ -198,13 +403,14 @@ tetriq::NetworkIStream &tetriq::Tetris::operator<<(tetriq::NetworkIStream &os)
     _blocks << os;
     _nextPieces << os;
     _tick << os;
+    _powerUps << os;
     _game_over = game_over;
     return os;
 }
 
 size_t tetriq::Tetris::getNetworkSize() const
 {
-    size_t size = sizeof(uint64_t) * 6 + sizeof(uint8_t);
+    size_t size = sizeof(uint64_t) * 7 + sizeof(uint8_t);
     for (const auto &tetro : _nextPieces) {
         size += tetro.getNetworkSize();
     }
@@ -212,6 +418,7 @@ size_t tetriq::Tetris::getNetworkSize() const
         size += sizeof(uint64_t);
         size += sizeof(BlockType) * type.size();
     }
+    size += sizeof(uint64_t) * _powerUps.size();
     return size;
 }
 
@@ -231,4 +438,43 @@ bool tetriq::Tetris::moveBlock(Position oldPos, Position newPos)
     _blocks[newPos.y][newPos.x] = _blocks[oldPos.y][oldPos.x];
     _blocks[oldPos.y][oldPos.x] = BlockType::EMPTY;
     return true;
+}
+
+uint64_t tetriq::Tetris::countBlocks() const
+{
+    uint64_t count = 0;
+    for (const auto &row : _blocks) {
+        for (const auto &block : row) {
+            if (block != BlockType::EMPTY && block < BlockType::INDESTRUCTIBLE) {
+                count++;
+            }
+        }
+    }
+    return count;
+}
+
+std::vector<tetriq::Position> tetriq::Tetris::getBlocks() const
+{
+    std::vector<Position> blocks;
+    for (uint64_t y = 0; y < _height; y++) {
+        for (uint64_t x = 0; x < _width; x++) {
+            if (_blocks[y][x] != BlockType::EMPTY && _blocks[y][x] != BlockType::INDESTRUCTIBLE) {
+                blocks.emplace_back(x, y);
+            }
+        }
+    }
+    return blocks;
+}
+
+void tetriq::Tetris::createBorders(
+    std::vector<std::vector<BlockType>> &_board, uint64_t width, uint64_t height)
+{
+    for (size_t i = 0; i < height; i++) {
+        for (size_t j = 0; j < width; j++) {
+            if (j == 0 || j == width - 1 || i == height - 1 || i == 0)
+                _board[i][j] = BlockType::INDESTRUCTIBLE;
+            else
+                _board[i][j] = BlockType::EMPTY;
+        }
+    }
 }
