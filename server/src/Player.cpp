@@ -114,6 +114,7 @@ namespace tetriq {
                             << std::endl;
             _channel.broadcastPacket(
                 FullGamePacket{target.getNetworkId(), target.getGame(), _applied_actions});
+            _channel.broadcastPacket(FullGamePacket{_network_id, _game, 0});
         } catch (std::out_of_range &e) {
             LogLevel::ERROR << "Player not in channel" << std::endl;
         }
