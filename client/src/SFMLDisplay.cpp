@@ -42,13 +42,12 @@ bool tetriq::SFMLDisplay::loadGame(const ITetris &game, uint64_t player_count)
 bool tetriq::SFMLDisplay::draw(
     const Client &client, ITetrisIter otherGamesStart, ITetrisIter otherGamesEnd)
 {
+    _window.clear(sf::Color::Black);
     if (_show_help) {
         displayHelp();
-        _window.display();
         return true;
     }
     uint64_t index = 1;
-    _window.clear(sf::Color::Black);
     ITetris &game = client.getGame();
     drawGame(game, {0, 0}, BLOCK_SIZE * 2, client.targetId == 0);
     drawCurrentTetromino(game);
@@ -281,7 +280,6 @@ void tetriq::SFMLDisplay::drawPowerUps(const ITetris &game)
 
 void tetriq::SFMLDisplay::displayHelp()
 {
-    _window.clear(sf::Color::Black);
     uint64_t x = 0;
     uint64_t y = 0;
     for (uint64_t i = 0; i < 16; i++) {
