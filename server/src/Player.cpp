@@ -89,7 +89,8 @@ namespace tetriq {
             }
             target.getGame() = tempBoard;
             _channel.broadcastPacket(FullGamePacket{_network_id, _game, _applied_actions});
-            _channel.broadcastPacket(FullGamePacket{target.getNetworkId(), target.getGame(), 0});
+            _channel.broadcastPacket(
+                FullGamePacket{target.getNetworkId(), target.getGame(), target._applied_actions});
             LogLevel::DEBUG << "Player " << _network_id << " switched board with player "
                             << target.getNetworkId() << std::endl;
             return true;
@@ -114,7 +115,7 @@ namespace tetriq {
                             << std::endl;
             _channel.broadcastPacket(
                 FullGamePacket{target.getNetworkId(), target.getGame(), _applied_actions});
-            _channel.broadcastPacket(FullGamePacket{_network_id, _game, 0});
+            _channel.broadcastPacket(FullGamePacket{_network_id, _game, target._applied_actions});
         } catch (std::out_of_range &e) {
             LogLevel::ERROR << "Player not in channel" << std::endl;
         }
