@@ -60,8 +60,13 @@ namespace tetriq {
     {
         if (packet.getPlayerId() != _player_id)
             return false;
-        for (uint64_t i = 0; i < packet.getAppliedActions(); i++)
+        for (uint64_t i = 0; i < packet.getAppliedActions(); i++) {
+            if (_predicted_actions.empty()) {
+                LogLevel::WARNING << "server applied too many actions" << std::endl;
+                break;
+            }
             _predicted_actions.pop_front();
+        }
         _server_state = packet.getGame();
         _client_state = _server_state;
         for (GameAction action : _predicted_actions) {
@@ -99,5 +104,15 @@ namespace tetriq {
     const Tetromino &RemoteTetris::getNextPiece() const
     {
         return _client_state.getNextPiece();
+    }
+
+    const std::deque<BlockType> &RemoteTetris::getPowerUps() const
+    {
+        return _client_state.getPowerUps();
+    }
+
+    uint64_t RemoteTetris::getPlayerId() const
+    {
+        return _player_id;
     }
 }

@@ -11,6 +11,7 @@
 #include "network/NetworkObject.hpp"
 
 #include <cstdint>
+#include <deque>
 #include <vector>
 
 namespace tetriq {
@@ -27,11 +28,17 @@ namespace tetriq {
             const Tetromino &getNextPiece() const override;
 
             const std::vector<Tetromino> &getNextPieces() const;
+            const std::deque<BlockType> &getPowerUps() const override;
 
             [[nodiscard]] bool moveCurrentPiece(int xOffset, int yOffset);
             [[nodiscard]] bool rotateCurrentPiece();
             void dropCurrentPiece();
             bool handleGameAction(GameAction action) override;
+            BlockType consumePowerUp();
+            void applyPowerUp(BlockType powerUp);
+            void clearLine(uint64_t y);
+            static void createBorders(
+                std::vector<std::vector<BlockType>> &_board, uint64_t _width, uint64_t _height);
 
             /**
              * Advances the game by one tick.
@@ -49,11 +56,41 @@ namespace tetriq {
             NetworkOStream &operator>>(NetworkOStream &os) const override;
             NetworkIStream &operator<<(NetworkIStream &os) override;
             size_t getNetworkSize() const override;
+
         private:
+            void doPuAddLine();
+            void doPuClearLine();
+            void doPuClearSpecialBlock();
+            void doPuClearBlockRandom();
+            void doPuGravity();
+            void doPuNukeField();
+            void doPuColumnShuffle();
+
+            void moveBlocksDown(uint64_t y);
+            void moveBlocksUp(uint64_t y);
+
             bool isLineFull(uint64_t y) const;
+
+            /**
+             *
+             * @return The number of blocks(!= EMPTY / INDESTRUCTIBLE) on the board.
+             */
+            uint64_t countBlocks() const;
+            std::vector<Position> getBlocks() const;
             bool moveBlock(Position oldPos, Position newPos);
             void placeTetromino();
             Tetromino &getCurrentPiece();
+
+            /**
+             * @brief Removes all full lines from the board.
+             * @param changed reference to a boolean that will be set to true if any lines were
+             * removed.
+             * @param lines_deleted reference to an unsigned int that will be incremented by the
+             * number of lines removed.
+             * @return void
+             */
+            void removeLinesFulls(bool &changed, unsigned int &lines_deleted);
+            uint64_t getMaxHeight() const;
 
             /**
              * Prevents the block from being placed on the next n ticks. This is
@@ -66,6 +103,7 @@ namespace tetriq {
             uint64_t _height;
             std::vector<std::vector<BlockType>> _blocks;
             std::vector<Tetromino> _nextPieces;
+            std::deque<BlockType> _powerUps;
 
             uint64_t _tick{0};
     };

@@ -43,6 +43,8 @@ namespace tetriq {
                 return handlePacket<GameActionPacket>(handlers, stream);
             case PacketId::C_FULL_GAME_REQUEST:
                 return handlePacket<FullGameRequestPacket>(handlers, stream);
+            case PacketId::C_POWER_UP:
+                return handlePacket<PowerUpPacket>(handlers, stream);
             default:
                 LogLevel::WARNING << "reveived packet with unknown id '" << id << "'" << std::endl;
                 return false;
@@ -75,6 +77,11 @@ namespace tetriq {
     }
 
     bool PacketHandler::handle(FullGameRequestPacket &)
+    {
+        return false;
+    }
+
+    bool PacketHandler::handle(PowerUpPacket &)
     {
         return false;
     }

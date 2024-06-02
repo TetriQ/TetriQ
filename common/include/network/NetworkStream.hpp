@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <deque>
 #include <exception>
 #include <memory>
 #include <enet/enet.h>
@@ -25,7 +26,8 @@ namespace tetriq {
 
             const uint8_t *getData() const;
             size_t getSize() const;
-         private:
+
+        private:
             friend NetworkOStream &operator>>(uint64_t value, NetworkOStream &stream);
             friend NetworkOStream &operator>>(uint8_t value, NetworkOStream &stream);
 
@@ -45,6 +47,7 @@ namespace tetriq {
 
             const uint8_t *getData() const;
             size_t getSize() const;
+
         private:
             friend NetworkIStream &operator<<(uint64_t &value, NetworkIStream &stream);
             friend NetworkIStream &operator<<(uint8_t &value, NetworkIStream &stream);
@@ -59,25 +62,34 @@ namespace tetriq {
     NetworkIStream &operator<<(uint64_t &value, NetworkIStream &stream);
     NetworkIStream &operator<<(uint8_t &value, NetworkIStream &stream);
 
-
     template<typename T, typename = std::enable_if<std::is_enum<T>::value, bool>::type>
     NetworkOStream &operator>>(T value, NetworkOStream &stream)
     {
         return static_cast<typename std::underlying_type<T>::type>(value) >> stream;
     }
-    
+
     template<typename T>
-    NetworkOStream &operator>>(std::vector<T> value, NetworkOStream &stream)
+    NetworkOStream &operator>>(const std::vector<T> &value, NetworkOStream &stream)
     {
         uint64_t len = value.size();
         len >> stream;
-        for (const T& v : value) {
+        for (const T &v : value) {
             v >> stream;
         }
         return stream;
     }
 
-
+    template<typename T>
+    NetworkOStream &operator>>(const std::deque<T> &value, NetworkOStream &stream)
+    {
+        uint64_t len = value.size();
+        len >> stream;
+        for (const T &v : value) {
+            v >> stream;
+        }
+        return stream;
+    }
+
     template<typename T, typename = std::enable_if<std::is_enum<T>::value, bool>::type>
     NetworkIStream &operator<<(T &value, NetworkIStream &stream)
     {
@@ -94,6 +106,19 @@ namespace tetriq {
         len << stream;
         value.clear();
         value.reserve(len);
+        for (uint64_t i = 0; i < len; i++) {
+            value.emplace_back();
+            value.back() << stream;
+        }
+        return stream;
+    }
+
+    template<typename T>
+    NetworkIStream &operator<<(std::deque<T> &value, NetworkIStream &stream)
+    {
+        uint64_t len;
+        len << stream;
+        value.clear();
         for (uint64_t i = 0; i < len; i++) {
             value.emplace_back();
             value.back() << stream;

@@ -19,7 +19,7 @@ namespace tetriq {
     Server::Server()
         : _address()
         , _server(nullptr)
-        , _channels({ *this })
+        , _channels({*this})
     {
         if (init() == false)
             throw ServerInitException();
@@ -51,11 +51,13 @@ namespace tetriq {
     bool Server::setHost()
     {
         if (enet_address_set_host(&_address, _config.listen_address.c_str()) != 0) {
-            LogLevel::ERROR << "Failed to set host address: " << _config.listen_address << std::endl;
+            LogLevel::ERROR << "Failed to set host address: " << _config.listen_address
+                            << std::endl;
             return false;
         }
         _address.port = _config.listen_port;
-        LogLevel::INFO << "Host set to " << _config.listen_address << ":" << _config.listen_port << std::endl;
+        LogLevel::INFO << "Host set to " << _config.listen_address << ":" << _config.listen_port
+                       << std::endl;
         return true;
     }
 
@@ -79,12 +81,14 @@ namespace tetriq {
 
     void Server::listen()
     {
-        _next_tick = std::chrono::steady_clock::now() + std::chrono::nanoseconds(1'000'000'000 / 60);
+        _next_tick =
+            std::chrono::steady_clock::now() + std::chrono::nanoseconds(1'000'000'000 / 60);
         while (not should_exit && _running) {
             std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
             if (now > _next_tick) {
                 LogLevel::WARNING << "main loop is running behind" << std::endl;
-                _next_tick = std::chrono::steady_clock::now() + std::chrono::nanoseconds(1'000'000'000 / _config.ticks_per_second);
+                _next_tick = std::chrono::steady_clock::now()
+                             + std::chrono::nanoseconds(1'000'000'000 / _config.ticks_per_second);
             } else {
                 std::this_thread::sleep_until(_next_tick);
                 _next_tick += std::chrono::nanoseconds(1'000'000'000 / _config.ticks_per_second);
@@ -143,7 +147,10 @@ namespace tetriq {
     void Server::handleClientPacket(ENetEvent &event)
     {
         uint64_t network_id = *(uint64_t *) event.peer->data;
-        PacketHandler::decodePacket(event, {&_players.at(network_id)});
+        Player &player = _players.at(network_id);
+        /*Channel &channel = player.getChannel();*/
+
+        PacketHandler::decodePacket(event, {&player});
     }
 
     void Server::handleNone([[maybe_unused]] ENetEvent &event) const
