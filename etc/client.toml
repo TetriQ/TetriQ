@@ -4,3 +4,4 @@
 
 max_incoming_bandwidth=0
 max_outgoing_bandwidth=0
+server_timeout=1000
