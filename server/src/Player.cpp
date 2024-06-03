@@ -44,13 +44,17 @@ namespace tetriq {
 
     void Player::tickGame()
     {
-        bool modified = _game.tick();
-        if (modified) {
-            _channel.broadcastPacket(FullGamePacket{_network_id, _game, _applied_actions});
-        } else {
-            TickGamePacket{_applied_actions}.send(_peer);
-        }
+        _game.tick();
+        TickGamePacket{_applied_actions}.send(_peer);
         _applied_actions = 0;
+    }
+
+    void Player::applyPackets()
+    {
+        if (_game.isChanged()) {
+            _channel.broadcastPacket(FullGamePacket{_network_id, _game, _applied_actions});
+            _applied_actions = 0;
+        }
     }
 
     uint64_t Player::getNetworkId() const
@@ -82,15 +86,19 @@ namespace tetriq {
     bool Player::doPuSwitchField(BlockType power_up, Player &target)
     {
         if (power_up == BlockType::PU_SWITCH_FIELD) {
+            Tetris &targetgame = target.getGame();
+            // Don't Swap powerups
+            std::deque<BlockType> tempPowerUps = _game.getPowerUps();
+            _game.setPowerUps(targetgame.getPowerUps());
+            targetgame.setPowerUps(tempPowerUps);
+            // Swap boards
             Tetris tempBoard = _game;
-            _game = target.getGame();
+            _game = targetgame;
+            // Clear lines to make it fair
             for (uint64_t i = 0; i < 8; i++) {
                 tempBoard.clearLine(i);
             }
-            target.getGame() = tempBoard;
-            _channel.broadcastPacket(FullGamePacket{_network_id, _game, _applied_actions});
-            _channel.broadcastPacket(
-                FullGamePacket{target.getNetworkId(), target.getGame(), target._applied_actions});
+            targetgame = tempBoard;
             LogLevel::DEBUG << "Player " << _network_id << " switched board with player "
                             << target.getNetworkId() << std::endl;
             return true;
@@ -101,21 +109,21 @@ namespace tetriq {
     bool Player::handle(PowerUpPacket &packet)
     {
         BlockType power_up = _game.consumePowerUp();
-        if (power_up == BlockType::EMPTY) {
+        if (power_up == BlockType::EMPTY || _game.isOver()) {
             return true;
         }
         try {
             Player &target = _channel.getPlayerById(packet.getTarget());
+            Tetris &target_game = target.getGame();
+            if (target_game.isOver()) {
+                return true;
+            }
             if (doPuSwitchField(power_up, target))
                 return true;
-            Tetris &game = target.getGame();
-            game.applyPowerUp(power_up);
+            target_game.applyPowerUp(power_up);
             LogLevel::DEBUG << "Player " << _network_id << " applied "
                             << blockTypeToString(power_up) << " to player " << target.getNetworkId()
                             << std::endl;
-            _channel.broadcastPacket(
-                FullGamePacket{target.getNetworkId(), target.getGame(), _applied_actions});
-            _channel.broadcastPacket(FullGamePacket{_network_id, _game, target._applied_actions});
         } catch (std::out_of_range &e) {
             LogLevel::ERROR << "Player not in channel" << std::endl;
         }

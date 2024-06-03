@@ -39,12 +39,14 @@ namespace tetriq {
             void clearLine(uint64_t y);
             static void createBorders(
                 std::vector<std::vector<BlockType>> &_board, uint64_t _width, uint64_t _height);
+            bool isChanged();
+            void setPowerUps(const std::deque<BlockType> &powerUps);
 
             /**
              * Advances the game by one tick.
              * @returns true if a block was placed.
              */
-            bool tick();
+            void tick();
             void addGraceTicks(uint64_t n);
             uint64_t getCurrentTick() const;
 
@@ -106,5 +108,6 @@ namespace tetriq {
             std::deque<BlockType> _powerUps;
 
             uint64_t _tick{0};
+            bool _changed{false};
     };
 }

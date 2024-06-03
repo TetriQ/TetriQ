@@ -100,6 +100,8 @@ bool tetriq::Tetris::handleGameAction(tetriq::GameAction action)
 
 tetriq::BlockType tetriq::Tetris::consumePowerUp()
 {
+    // todo: noé
+    _changed = true;
     if (_powerUps.empty())
         return BlockType::EMPTY;
     const BlockType powerUp = _powerUps.front();
@@ -197,16 +199,6 @@ void tetriq::Tetris::doPuColumnShuffle()
 void tetriq::Tetris::applyPowerUp(BlockType powerUp)
 {
     switch (powerUp) {
-        case BlockType::EMPTY:
-        case BlockType::RED:
-        case BlockType::BLUE:
-        case BlockType::DARK_BLUE:
-        case BlockType::ORANGE:
-        case BlockType::YELLOW:
-        case BlockType::GREEN:
-        case BlockType::PURPLE:
-        case BlockType::INDESTRUCTIBLE:
-            break;
         case BlockType::PU_ADD_LINE:
             doPuAddLine();
             break;
@@ -236,8 +228,9 @@ void tetriq::Tetris::applyPowerUp(BlockType powerUp)
             break;
         default:
             LogLevel::WARNING << "Unknown power up" << std::endl;
-            break;
+            return;
     }
+    _changed = true;
 }
 
 void tetriq::Tetris::clearLine(uint64_t y)
@@ -294,34 +287,47 @@ uint64_t tetriq::Tetris::getMaxHeight() const
     return _height;
 }
 
+bool tetriq::Tetris::isChanged()
+{
+    bool changed = _changed;
+    _changed = false;
+    return changed;
+}
+
+void tetriq::Tetris::setPowerUps(const std::deque<BlockType> &powerUps)
+{
+    _powerUps = powerUps;
+}
+
 const std::deque<tetriq::BlockType> &tetriq::Tetris::getPowerUps() const
 {
     return _powerUps;
 }
 
-bool tetriq::Tetris::tick()
+void tetriq::Tetris::tick()
 {
-    bool changed = false;
     unsigned int lines_deleted = 0;
+    unsigned int max_height = 0;
+    std::vector<std::tuple<uint64_t, uint64_t>> blocks_in_4_next_lines;
+    uint64_t block_on_board = 0;
 
     _tick++;
     if (_game_over)
-        return changed;
+        return;
     if (_grace_ticks != 0) {
         _grace_ticks--;
-        return changed;
+        return;
     }
     if (!moveCurrentPiece(0, 1)) {
         placeTetromino();
-        changed = true;
+        _changed = true;
     }
-    removeLinesFulls(changed, lines_deleted);
-    uint64_t block_on_board = countBlocks();
+    removeLinesFulls(_changed, lines_deleted);
+    block_on_board = countBlocks();
     if (block_on_board == 0 || lines_deleted == 0)
-        return changed;
+        return;
 
-    unsigned int max_height = getMaxHeight();
-    std::vector<std::tuple<uint64_t, uint64_t>> blocks_in_4_next_lines;
+    max_height = getMaxHeight();
     for (uint64_t y = max_height - 1; y < max_height + 4 && y < _height; y++) {
         for (uint64_t x = 0; x < _width; x++) {
             if (_blocks[y][x] != BlockType::EMPTY && _blocks[y][x] < BlockType::INDESTRUCTIBLE) {
@@ -334,12 +340,11 @@ bool tetriq::Tetris::tick()
         uint64_t random_block_x = std::get<0>(blocks_in_4_next_lines[random_block]);
         uint64_t random_block_y = std::get<1>(blocks_in_4_next_lines[random_block]);
         _blocks[random_block_y][random_block_x] = WeightedPowerUp::getRandom();
-        changed = true;
+        _changed = true;
         blocks_in_4_next_lines.erase(blocks_in_4_next_lines.begin() + random_block);
         if (blocks_in_4_next_lines.empty())
             break;
     }
-    return changed;
 }
 
 void tetriq::Tetris::addGraceTicks(uint64_t n)

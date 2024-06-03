@@ -88,16 +88,21 @@ namespace tetriq {
             return;
         }
 
+        if (_players.empty()) {
+            stopGame();
+            return;
+        }
+
+        for (uint64_t id : _players) {
+            Player &player = _server.getPlayerById(id);
+            player.applyPackets();
+        }
+
         std::chrono::steady_clock::duration now =
             std::chrono::steady_clock::now().time_since_epoch();
         if (now < _next_tick)
             return;
         _next_tick = now + std::chrono::nanoseconds(1'000'000'000 / 3);
-
-        if (_players.empty()) {
-            stopGame();
-            return;
-        }
 
         bool game_over = true;
         for (uint64_t id : _players) {

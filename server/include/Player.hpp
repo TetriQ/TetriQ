@@ -23,6 +23,7 @@ namespace tetriq {
 
             void startGame(const GameConfig &config);
             void tickGame();
+            void applyPackets();
             bool isGameOver() const;
             Tetris &getGame();
 
