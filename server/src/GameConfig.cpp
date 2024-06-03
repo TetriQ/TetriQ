@@ -7,8 +7,9 @@
 namespace tetriq {
     GameConfig::GameConfig(toml::table &config)
     {
-        ticks_per_second = config["ticks_per_second"].value<int64_t>().value_or(5);
-        width = config["width"].value<int64_t>().value_or(12);
-        height = config["height"].value<int64_t>().value_or(12);
+        ticks_per_second =
+            config["ticks_per_second"].value<int64_t>().value_or(this->ticks_per_second);
+        width = config["width"].value<int64_t>().value_or(this->width);
+        height = config["height"].value<int64_t>().value_or(this->height);
     }
 }
