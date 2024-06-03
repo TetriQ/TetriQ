@@ -299,6 +299,11 @@ void tetriq::Tetris::setPowerUps(const std::deque<BlockType> &powerUps)
     _powerUps = powerUps;
 }
 
+void tetriq::Tetris::setChanged(bool changed)
+{
+    _changed = changed;
+}
+
 const std::deque<tetriq::BlockType> &tetriq::Tetris::getPowerUps() const
 {
     return _powerUps;
@@ -380,7 +385,7 @@ void tetriq::Tetris::placeTetromino()
     }
     _nextPieces.erase(_nextPieces.begin());
     _nextPieces.emplace_back();
-    if (_nextPieces.back().collides(*this))
+    if (getCurrentPiece().collides(*this))
         _game_over = true;
 }
 

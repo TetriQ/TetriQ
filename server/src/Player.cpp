@@ -108,8 +108,12 @@ namespace tetriq {
 
     bool Player::handle(PowerUpPacket &packet)
     {
+        if (_game.isOver()) {
+            return true;
+        }
         BlockType power_up = _game.consumePowerUp();
-        if (power_up == BlockType::EMPTY || _game.isOver()) {
+        _game.setChanged(true);
+        if (power_up == BlockType::EMPTY) {
             return true;
         }
         try {
@@ -121,6 +125,7 @@ namespace tetriq {
             if (doPuSwitchField(power_up, target))
                 return true;
             target_game.applyPowerUp(power_up);
+            target_game.setChanged(true);
             LogLevel::DEBUG << "Player " << _network_id << " applied "
                             << blockTypeToString(power_up) << " to player " << target.getNetworkId()
                             << std::endl;

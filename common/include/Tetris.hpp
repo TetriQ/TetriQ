@@ -41,6 +41,7 @@ namespace tetriq {
                 std::vector<std::vector<BlockType>> &_board, uint64_t _width, uint64_t _height);
             bool isChanged();
             void setPowerUps(const std::deque<BlockType> &powerUps);
+            void setChanged(bool changed);
 
             /**
              * Advances the game by one tick.
