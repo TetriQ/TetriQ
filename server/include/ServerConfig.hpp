@@ -6,6 +6,8 @@
 
 #include "AConfig.hpp"
 #include "GameConfig.hpp"
+#include <RconConfig.hpp>
+
 #include <cstdint>
 
 namespace tetriq {
@@ -21,5 +23,6 @@ namespace tetriq {
             uint16_t listen_port = 31457;
             uint32_t ticks_per_second = 60;
             GameConfig game;
+            RconConfig rcon;
     };
 }

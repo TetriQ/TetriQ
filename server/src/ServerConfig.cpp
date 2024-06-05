@@ -19,4 +19,6 @@ tetriq::ServerConfig::ServerConfig(const std::string &config_name)
     ticks_per_second = _table["ticks_per_second"].value<int64_t>().value_or(this->ticks_per_second);
     if (_table["game"].is_table())
         game = GameConfig{*_table["game"].as_table()};
+    if (_table["rcon"].is_table())
+        rcon = RconConfig{*_table["rcon"].as_table()};
 }

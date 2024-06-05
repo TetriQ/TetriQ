@@ -7,6 +7,7 @@
 #include "Channel.hpp"
 #include "Player.hpp"
 #include "ServerConfig.hpp"
+#include "Rcon.hpp"
 
 #include <chrono>
 #include <csignal>
@@ -24,7 +25,7 @@ namespace tetriq {
             /**
              * @brief Base exception class for the server
              */
-            class ServerException: public std::exception {
+            class ServerException : public std::exception {
                 public:
                     explicit ServerException(std::string message);
 
@@ -37,7 +38,7 @@ namespace tetriq {
             /**
              * @brief Exception thrown when the server failed to initialize
              */
-            class ServerInitException final: public ServerException {
+            class ServerInitException final : public ServerException {
                 public:
                     explicit ServerInitException();
             };
@@ -67,6 +68,7 @@ namespace tetriq {
              * @returns the server's config.
              */
             const ServerConfig &getConfig() const;
+
         private:
             /**
              * @brief Initialize the server
@@ -121,9 +123,10 @@ namespace tetriq {
             ENetHost *_server;
 
             std::chrono::steady_clock::time_point _next_tick;
-            bool _running {true};
+            bool _running{true};
             uint64_t _network_id_counter{0};
             std::unordered_map<uint64_t, Player> _players;
             std::vector<Channel> _channels;
+            Rcon _rcon;
     };
 }

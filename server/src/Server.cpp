@@ -20,6 +20,7 @@ namespace tetriq {
         : _address()
         , _server(nullptr)
         , _channels({*this})
+        , _rcon(*this)
     {
         if (init() == false)
             throw ServerInitException();
@@ -45,6 +46,9 @@ namespace tetriq {
         Logger::log(LogLevel::INFO, ENET_INIT_SUCCESS);
         if (not setHost() or not createHost())
             return false;
+        if (_config.rcon.enabled) {
+            _rcon.init();
+        }
         return true;
     }
 
@@ -104,6 +108,7 @@ namespace tetriq {
     bool Server::handleENetEvents()
     {
         ENetEvent event;
+        _rcon.listen();
         while (enet_host_service(_server, &event, 0) > 0) {
             switch (event.type) {
                 case ENET_EVENT_TYPE_CONNECT:
