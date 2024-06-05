@@ -33,6 +33,7 @@ namespace tetriq {
         PU_BLOCK_BOMB,
         PU_COLUMN_SHUFFLE,
         PU_SWITCH_FIELD,
+        BLOCKTYPE_COUNT
     };
 
     std::string blockTypeToString(BlockType block);

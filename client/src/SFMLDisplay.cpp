@@ -282,7 +282,7 @@ void tetriq::SFMLDisplay::displayHelp()
 {
     uint64_t x = 0;
     uint64_t y = 0;
-    for (uint64_t i = 0; i < 16; i++) {
+    for (uint64_t i = 0; i < static_cast<uint64_t>(BlockType::BLOCKTYPE_COUNT); i++) {
         auto block = static_cast<BlockType>(i);
         drawBlock(sf::Vector2u(x, y), block, BLOCK_SIZE, false);
         sf::Text text;
