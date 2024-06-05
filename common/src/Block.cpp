@@ -32,15 +32,15 @@ namespace tetriq {
     };
 
     static constexpr std::array<WeightedPowerUp, 9> powerUps = {{
-        {BlockType::PU_ADD_LINE, 100},
-        {BlockType::PU_CLEAR_SPECIAL_BLOCK, 100},
-        {BlockType::PU_CLEAR_LINE, 100},
-        {BlockType::PU_CLEAR_BLOCK_RANDOM, 100},
-        {BlockType::PU_GRAVITY, 100},
-        {BlockType::PU_NUKE_FIELD, 100},
+        {BlockType::PU_ADD_LINE, 20},
+        {BlockType::PU_CLEAR_SPECIAL_BLOCK, 14},
+        {BlockType::PU_CLEAR_LINE, 18},
+        {BlockType::PU_CLEAR_BLOCK_RANDOM, 11},
+        {BlockType::PU_GRAVITY, 2},
+        {BlockType::PU_NUKE_FIELD, 1},
         {BlockType::PU_BLOCK_BOMB, 1},
-        {BlockType::PU_COLUMN_SHUFFLE, 100},
-        {BlockType::PU_SWITCH_FIELD, 100},
+        {BlockType::PU_COLUMN_SHUFFLE, 6},
+        {BlockType::PU_SWITCH_FIELD, 3},
     }};
 
     static constexpr uint64_t TOTAL_POWERUPS_WEIGHT = std::accumulate(powerUps.begin(),
