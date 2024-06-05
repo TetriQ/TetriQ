@@ -81,8 +81,8 @@ namespace tetriq {
 
     void Server::listen()
     {
-        _next_tick =
-            std::chrono::steady_clock::now() + std::chrono::nanoseconds(1'000'000'000 / 60);
+        _next_tick = std::chrono::steady_clock::now()
+                     + std::chrono::nanoseconds(1'000'000'000 / _config.ticks_per_second);
         while (not should_exit && _running) {
             std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
             if (now > _next_tick) {
