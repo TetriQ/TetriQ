@@ -13,6 +13,18 @@
 namespace tetriq {
     class Server;
 
+    class RconClient {
+        public:
+            RconClient(int socket, sockaddr_in address);
+            ~RconClient();
+            int getSocket() const;
+
+        private:
+            bool _is_authenticated{false};
+            int _socket;
+            sockaddr_in _address;
+    };
+
     class Rcon {
         public:
             Rcon(Server &server);
@@ -30,5 +42,12 @@ namespace tetriq {
 
             bool setHost();
             bool createHost();
+
+            std::unique_ptr<RconClient> _client{nullptr};
+            timeval _timeout{};
+            fd_set _readfds{};
+            fd_set _writefds{};
+
+            // std::vector<int> _connections;
     };
 }

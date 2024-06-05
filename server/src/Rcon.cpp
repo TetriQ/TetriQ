@@ -7,6 +7,21 @@
 #include <Logger.hpp>
 #include <Server.hpp>
 
+tetriq::RconClient::RconClient(int socket, sockaddr_in address)
+    : _socket(socket)
+    , _address(address)
+{}
+
+tetriq::RconClient::~RconClient()
+{
+    close(_socket);
+}
+
+int tetriq::RconClient::getSocket() const
+{
+    return _socket;
+}
+
 tetriq::Rcon::Rcon(Server &server)
     : _server(server)
     , _config(_server.getConfig().rcon)
@@ -18,6 +33,7 @@ tetriq::Rcon::Rcon(Server &server)
         LogLevel::INFO << "Rcon disabled" << std::endl;
         return;
     }
+    _readfds = {};
     LogLevel::INFO << "Rcon enabled" << std::endl;
 }
 
@@ -36,9 +52,52 @@ void tetriq::Rcon::listen()
     if (_is_running == false) {
         return;
     }
+    FD_ZERO(&_readfds);
+    FD_SET(_rcon_socket, &_readfds);
+    if (_client != nullptr) {
+        FD_SET(_client->getSocket(), &_readfds);
+    }
+    int activity = select(FD_SETSIZE, &_readfds, nullptr, nullptr, &_timeout);
+    if (activity < 0) {
+        LogLevel::ERROR << "[RCON] Select error" << std::endl;
+        return;
+    }
+    if (FD_ISSET(_rcon_socket, &_readfds)) {
+        sockaddr_in new_client_addr{};
+        socklen_t addrlen = sizeof(new_client_addr);
+        int new_client_socket =
+            accept(_rcon_socket, (struct sockaddr *) &new_client_addr, &addrlen);
+        if (new_client_socket < 0) {
+            LogLevel::ERROR << "[RCON] Accept error" << std::endl;
+            return;
+        }
+        if (_client != nullptr) {
+            std::string msg = "Maximum connections reached";
+            send(new_client_socket, msg.c_str(), msg.size(), 0);
+            close(new_client_socket);
+            return;
+        }
+        _client = std::make_unique<RconClient>(new_client_socket, new_client_addr);
+        LogLevel::INFO << "[RCON] New connection" << std::endl;
+    }
+    if (_client != nullptr and FD_ISSET(_client->getSocket(), &_readfds)) {
+        char buffer[1024] = {0};
+        const long int valread = recv(_client->getSocket(), buffer, 1024, 0);
+        if (valread == 0) {
+            close(_client->getSocket());
+            _client = nullptr;
+            LogLevel::INFO << "[RCON] Connection closed" << std::endl;
+            return;
+        }
+        if (valread < 0) {
+            close(_client->getSocket());
+            _client = nullptr;
+            LogLevel::ERROR << "[RCON] Read error" << std::endl;
+            return;
+        }
+        LogLevel::INFO << "[RCON] Received: " << buffer;
+    }
     /*TODO: Implement Rcon listen*/
-    // accept new connections
-    // read data from connections
     // handle commands
 }
 
