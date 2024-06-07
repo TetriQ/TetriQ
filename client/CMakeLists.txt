@@ -12,6 +12,7 @@ add_executable(tetriq_client ${CLIENT_SRC})
 
 target_include_directories(tetriq_client
     PRIVATE "${TetriQ_SOURCE_DIR}/client/include"
+    PRIVATE "${TetriQ_SOURCE_DIR}/client/include/displays"
 )
 
 target_link_libraries(tetriq_client

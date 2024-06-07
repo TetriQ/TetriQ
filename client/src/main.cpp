@@ -6,6 +6,7 @@
 #include "IDisplay.hpp"
 #include "Logger.hpp"
 #include "SFMLDisplay.hpp"
+#include "NcursesDisplay.hpp"
 #include "Arguments.hpp"
 #include <cstdlib>
 #include <iostream>
@@ -23,7 +24,8 @@ int main(int argc, char *argv[])
     srand(time(nullptr));
 
     try {
-        std::unique_ptr<tetriq::IDisplay> display{new tetriq::SFMLDisplay{}};
+        // std::unique_ptr<tetriq::IDisplay> display{new tetriq::SFMLDisplay{}};
+        std::unique_ptr<tetriq::IDisplay> display{new tetriq::NcursesDisplay{}};
         tetriq::Client client(args.ip, args.port, *display);
         client.loop();
     } catch (const tetriq::Client::ClientInitException &e) {
