@@ -4,6 +4,7 @@
 
 *.o
 .idea
+.vscode
 vgcore.*
 tetriq_client
 tetriq_server

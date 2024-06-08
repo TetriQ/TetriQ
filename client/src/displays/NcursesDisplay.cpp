@@ -17,15 +17,13 @@ tetriq::NcursesDisplay::NcursesDisplay()
     curs_set(0);
     keypad(stdscr, TRUE);
     nodelay(stdscr, TRUE);
-    start_color();
     _scr_width = getmaxx(stdscr);
     _scr_height = getmaxy(stdscr);
-    _win_height = _scr_height / 10 * 9 >= 3 ? _scr_height / 10 * 9 : 3;
+    _win_height = _scr_height - 5;
     _win_width = _scr_width;
-    _window = newwin(_win_height, _win_width, 10, 10);
-    box(_window, 0, 0);
-    mvwprintw(_window, 0, 2, "TetriQ");
+    _window = newwin(_win_height, _win_width, 0, 0);
 
+    start_color();
     init_pair(COLOR_WHITE, COLOR_WHITE, COLOR_BLACK);
     init_pair(COLOR_RED, COLOR_RED, COLOR_BLACK);
     init_pair(COLOR_BLUE, COLOR_BLUE, COLOR_BLACK);
@@ -49,7 +47,8 @@ bool tetriq::NcursesDisplay::loadGame(const ITetris &game, uint64_t player_count
     uint64_t width = board_width + other_boards_width;
     uint64_t height = board_height;
 
-    // if (width > static_cast<uint64_t>(_win_width) || height > static_cast<uint64_t>(_win_height)) {
+    // if (width > static_cast<uint64_t>(_win_width) || height > static_cast<uint64_t>(_win_height))
+    // {
     //     Logger::log(LogLevel::ERROR, "Screen too small to display game");
     //     return false;
     // }
@@ -60,14 +59,17 @@ bool tetriq::NcursesDisplay::loadGame(const ITetris &game, uint64_t player_count
 bool tetriq::NcursesDisplay::draw(
     const Client &client, ITetrisIter otherGamesStart, ITetrisIter otherGamesEnd)
 {
-    erase();
+    // erase();
     werase(_window);
+
+    box(_window, 0, 0);
+    mvwprintw(_window, 0, 2, "TetriQ");
 
     if (_show_help)
         displayHelp();
 
     ITetris &game = client.getGame();
-    drawGame(game, {0, 0}, BLOCK_SIZE * 2, client.targetId == 0);
+    drawGame(game, {2, 1}, BLOCK_SIZE * 2, client.targetId == 0);
     drawCurrentTetromino(game);
     drawNextTetromino(game);
     drawPrediction(game);
@@ -76,7 +78,7 @@ bool tetriq::NcursesDisplay::draw(
     uint64_t index = 1;
     uint64_t x = (game.getWidth() + SIDEBAR_SIZE) * BLOCK_SIZE * 2;
     while (otherGamesStart != otherGamesEnd) {
-        drawGame(**otherGamesStart, {x, 0}, BLOCK_SIZE, client.targetId == index);
+        drawGame(**otherGamesStart, {x, 1}, BLOCK_SIZE, client.targetId == index);
         x += (*otherGamesStart)->getWidth() * BLOCK_SIZE;
         ++otherGamesStart;
         index++;
@@ -228,13 +230,13 @@ void tetriq::NcursesDisplay::drawBlock(
             break;
     }
 
-    attron(COLOR_PAIR(color));
+    wattron(_window, COLOR_PAIR(color));
     for (uint64_t i = 0; i < block_size; i++) {
         for (uint64_t j = 0; j < block_size; j++) {
-            mvaddch(pos.y + j, pos.x + i, blockChar);
+            mvwaddch(_window, pos.y + j, pos.x + i, blockChar);
         }
     }
-    attroff(COLOR_PAIR(color));
+    wattroff(_window, COLOR_PAIR(color));
 }
 
 void tetriq::NcursesDisplay::drawTetromino(
@@ -244,8 +246,8 @@ void tetriq::NcursesDisplay::drawTetromino(
 
     for (int i = 0; i < 4; i++) {
         std::tuple<char, char> local_pos = shape.at(i);
-        unsigned int x = (position.x + std::get<0>(local_pos)) * block_size;
-        unsigned int y = (position.y + std::get<1>(local_pos)) * block_size;
+        unsigned int x = (position.x + std::get<0>(local_pos)) * block_size + 2;
+        unsigned int y = (position.y + std::get<1>(local_pos)) * block_size + 1;
         drawBlock({x, y}, tetromino.getType(), block_size, false);
     }
 }
@@ -264,19 +266,22 @@ void tetriq::NcursesDisplay::drawNextTetromino(const ITetris &game)
 
 void tetriq::NcursesDisplay::drawPrediction(const ITetris &game)
 {
-    const Tetromino &current = game.getCurrentPiece();
-    Position pos = current.getPosition();
-    const TetroRotation &shape = current.getTetroRotation();
+    // const Tetromino &current = game.getCurrentPiece();
+    // Position pos = current.getPosition();
+    // const TetroRotation &shape = current.getTetroRotation();
 
-    for (int i = 0; i < 4; i++) {
-        std::tuple<char, char> local_pos = shape.at(i);
-        unsigned int tempx = pos.x + std::get<0>(local_pos);
-        unsigned int tempy = pos.y + std::get<1>(local_pos);
-        while (tempy < game.getHeight() && game.getBlockAt(tempx, tempy) == BlockType::EMPTY) {
-            mvaddch(tempy, tempx, '.');
-            tempy++;
-        }
-    }
+    // for (int i = 0; i < 4; i++) {
+    //     std::tuple<char, char> local_pos = shape.at(i);
+    //     unsigned int tempx = pos.x + std::get<0>(local_pos);
+    //     unsigned int tempy = pos.y + std::get<1>(local_pos);
+    //     while (tempy < game.getHeight() && game.getBlockAt(tempx, tempy) == BlockType::EMPTY) {
+    //         mvwaddch(_window,
+    //             tempy * BLOCK_SIZE * 2 + BLOCK_SIZE,
+    //             tempx * BLOCK_SIZE * 2 + BLOCK_SIZE,
+    //             '.');
+    //         tempy++;
+    //     }
+    // }
 }
 
 void tetriq::NcursesDisplay::drawPowerUps(const ITetris &game)
