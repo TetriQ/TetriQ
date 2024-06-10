@@ -18,4 +18,4 @@ target_link_libraries(tetriq_server
 )
 
 install(TARGETS tetriq_server DESTINATION bin)
-install(FILES ../etc/server.toml DESTINATION etc)
+install(FILES ../etc/tetriq/server.toml DESTINATION etc)
