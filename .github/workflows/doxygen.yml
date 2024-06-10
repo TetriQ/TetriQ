@@ -1,0 +1,37 @@
+# SPDX-FileCopyrightText: 2024 The TetriQ authors
+#
+# SPDX-License-Identifier: CC0-1.0
+
+name: Doxygen deployment
+
+on:
+  push:
+    paths:
+      - "common/**"
+      - "client/**"
+      - "server/**"
+    branches:
+      - main
+
+jobs:
+  deploy-manual:
+    name: Deploy Doxygen
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Doxygen
+        uses: mattnotmitt/doxygen-action@1.9.8
+        with:
+          doxyfile-path: etc/Doxyfile
+
+      - name: Deploy with rsync
+        uses: up9cloud/action-rsync@v1.2
+        env:
+          HOST: ${{secrets.DEPLOY_SSH_HOST}}
+          USER: ${{secrets.DEPLOY_SSH_USER}}
+          KEY: ${{secrets.DEPLOY_SSH_KEY}}
+          SOURCE: doxygen/html
+          TARGET: tetriq/doxygen
+          ARGS: -avz --delete
