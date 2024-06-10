@@ -22,4 +22,4 @@ target_link_libraries(tetriq_client
 )
 
 install(TARGETS tetriq_client DESTINATION bin)
-install(FILES ../etc/client.toml DESTINATION etc/tetriq/)
+install(FILES ../etc/client.toml DESTINATION /etc/tetriq/)
