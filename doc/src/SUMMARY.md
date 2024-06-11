@@ -11,6 +11,7 @@ SPDX-License-Identifier: GFDL-1.3-or-later
  - [Introduction](./introduction.md)
  - [Building from source](./building.md)
  - [Server configuration](./server_configuration.md)
+ - [Client configuration](./client_configuration.md)
  - [Protocol](./protocol.md)
 
 ---
