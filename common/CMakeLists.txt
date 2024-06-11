@@ -16,3 +16,7 @@ target_include_directories(tetriq_common
 
 target_link_libraries(tetriq_common
     PUBLIC tomlplusplus)
+
+if (DEFINED TETRIQ_CONFIG_PATH)
+    target_compile_definitions(tetriq_common PRIVATE CONFIG_PATH=${TETRIQ_CONFIG_PATH})
+endif()

@@ -27,6 +27,12 @@ tetriq::AConfig::AConfig(const std::string &config_name)
         return;
     if (tryParse("/etc/tetriq/" + config_name))
         return;
+#ifdef CONFIG_PATH
+#define xstr(s) str(s)
+#define str(s) #s
+    if (tryParse(xstr(CONFIG_PATH) + std::string("/") + config_name))
+        return;
+#endif
     throw ConfigNotFoundException();
 }
 
