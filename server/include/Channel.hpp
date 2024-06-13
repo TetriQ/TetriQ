@@ -16,7 +16,7 @@ namespace tetriq {
 
     class Channel {
         public:
-            Channel(Server &server);
+            Channel(Server *server, uint64_t channel_id);
 
             /**
              * @returns true if the game is started
@@ -44,10 +44,13 @@ namespace tetriq {
 
             void broadcastPacket(const APacket &packet);
 
+            uint64_t getChannelId() const;
+
         private:
-            Server &_server;
+            Server *_server;
             std::chrono::steady_clock::duration _next_tick;
             bool _game_started;
             std::vector<uint64_t> _players;
+            uint64_t _channel_id;
     };
 }

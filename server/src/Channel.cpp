@@ -12,11 +12,12 @@
 #include <cstdint>
 
 namespace tetriq {
-    Channel::Channel(Server &server)
+    Channel::Channel(Server *server, uint64_t channel_id)
         : _server(server)
         , _next_tick()
         , _game_started(false)
         , _players()
+        , _channel_id(channel_id)
     {}
 
     bool Channel::hasGameStarted() const
@@ -59,17 +60,17 @@ namespace tetriq {
         if (it == _players.end()) {
             throw std::out_of_range("Player not found");
         }
-        return _server.getPlayerById(id);
+        return _server->getPlayerById(id);
     }
 
     void Channel::startGame()
     {
         LogLevel::DEBUG << "starting game" << std::endl;
         for (uint64_t id : _players) {
-            Player &player = _server.getPlayerById(id);
+            Player &player = _server->getPlayerById(id);
             Tetris &game = player.getGame();
-            game = Tetris(_server.getConfig().game.width, _server.getConfig().game.height);
-            player.startGame(_server.getConfig().game);
+            game = Tetris(_server->getConfig().game.width, _server->getConfig().game.height);
+            player.startGame(_server->getConfig().game);
         }
         _game_started = true;
     }
@@ -92,7 +93,7 @@ namespace tetriq {
         }
 
         for (uint64_t id : _players) {
-            Player &player = _server.getPlayerById(id);
+            Player &player = _server->getPlayerById(id);
             player.applyPackets();
         }
 
@@ -104,7 +105,7 @@ namespace tetriq {
 
         bool game_over = true;
         for (uint64_t id : _players) {
-            Player &player = _server.getPlayerById(id);
+            Player &player = _server->getPlayerById(id);
             player.tickGame();
             game_over &= player.isGameOver();
         }
@@ -116,7 +117,12 @@ namespace tetriq {
     void Channel::broadcastPacket(const APacket &packet)
     {
         for (uint64_t id : _players) {
-            _server.getPlayerById(id).sendPacket(packet);
+            _server->getPlayerById(id).sendPacket(packet);
         }
+    }
+
+    uint64_t Channel::getChannelId() const
+    {
+        return _channel_id;
     }
 }
