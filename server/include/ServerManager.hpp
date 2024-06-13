@@ -11,9 +11,10 @@ namespace tetriq {
     class Server;
     class Channel;
 
-#define ASSERTS_ARGS(args) \
+#define ASSERTS_ARGS(args, res_queue) \
     if (args.empty()) { \
         LogLevel::ERROR << "No arguments provided" << std::endl; \
+        res_queue.emplace("RCON: No arguments provided\n"); \
         return; \
     }
 
@@ -24,9 +25,13 @@ namespace tetriq {
             ServerManager(Server &server);
             ~ServerManager();
 
-            void startGame(_args, std::queue<std::string> &res_queue);
-            void get(_args, std::queue<std::string> &res_queue);
-            void set(_args, std::queue<std::string> &res_queue);
+            void _startGame(_args, std::queue<std::string> &res_queue);
+            void _stopGame(_args, std::queue<std::string> &res_queue);
+            void _get(_args, std::queue<std::string> &res_queue);
+            void _set(_args, std::queue<std::string> &res_queue);
+            void _list(_args, std::queue<std::string> &res_queue);
+            void _create(_args, std::queue<std::string> &res_queue);
+            void _delete(_args, std::queue<std::string> &res_queue);
 
         private:
             Server &_server;
