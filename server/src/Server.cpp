@@ -36,6 +36,11 @@ namespace tetriq {
         return _config;
     }
 
+    std::vector<Channel> &Server::getChannels()
+    {
+        return _channels;
+    }
+
     bool Server::init()
     {
         Logger::log(LogLevel::INFO, "Server started");

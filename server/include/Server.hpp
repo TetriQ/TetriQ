@@ -7,7 +7,7 @@
 #include "Channel.hpp"
 #include "Player.hpp"
 #include "ServerConfig.hpp"
-#include "Rcon.hpp"
+#include "rcon/Rcon.hpp"
 
 #include <chrono>
 #include <csignal>
@@ -68,6 +68,8 @@ namespace tetriq {
              * @returns the server's config.
              */
             const ServerConfig &getConfig() const;
+
+            std::vector<Channel> &getChannels();
 
         private:
             /**

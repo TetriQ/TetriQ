@@ -83,8 +83,6 @@ namespace tetriq {
     void Channel::tick()
     {
         if (!hasGameStarted()) {
-            if (_players.size() > 1)
-                startGame();
             return;
         }
 

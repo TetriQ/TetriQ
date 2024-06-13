@@ -9,6 +9,12 @@
 #include <arpa/inet.h>
 
 #include "RconConfig.hpp"
+#include "rcon/CommandHandler.hpp"
+#include "ServerManager.hpp"
+
+#include <queue>
+
+#define RCONLOG(level) LogLevel::level << "[Rcon] "
 
 namespace tetriq {
     class Server;
@@ -18,19 +24,26 @@ namespace tetriq {
             RconClient(int socket, sockaddr_in address);
             ~RconClient();
             int getSocket() const;
+            RconClient &operator<<(const std::string &response);
+            std::queue<std::string> _res_queue;
+            bool _is_authenticated{false};
 
         private:
-            bool _is_authenticated{false};
             int _socket;
             sockaddr_in _address;
     };
 
     class Rcon {
         public:
+            void addCommands();
             Rcon(Server &server);
             ~Rcon();
             void listen();
             bool init();
+
+            void registerCommand(const std::string &commandName,
+                void (ServerManager::*func)(
+                    const std::vector<std::string> &, std::queue<std::string> &));
 
         private:
             bool _is_running{false};
@@ -48,6 +61,10 @@ namespace tetriq {
             fd_set _readfds{};
             fd_set _writefds{};
 
-            // std::vector<int> _connections;
+            void handleNewClient();
+            void handleClient();
+
+            ServerManager _server_manager{_server};
+            command::CommandHandler _command_handler;
     };
 }
