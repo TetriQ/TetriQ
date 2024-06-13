@@ -71,6 +71,9 @@ namespace tetriq {
 
             std::vector<Channel> &getChannels();
 
+            bool createChannel();
+            bool deleteChannel(uint64_t id);
+
         private:
             /**
              * @brief Initialize the server
@@ -89,6 +92,11 @@ namespace tetriq {
              * @return true if the server host was successfully created, false otherwise
              */
             bool createHost();
+
+            /**
+             * @brief Handle all rcon events.
+             */
+            bool handleRconEvents();
 
             /**
              * @brief Listen for all enet events.
@@ -128,6 +136,7 @@ namespace tetriq {
             bool _running{true};
             uint64_t _network_id_counter{0};
             std::unordered_map<uint64_t, Player> _players;
+            uint64_t _channel_id_counter{0};
             std::vector<Channel> _channels;
             Rcon _rcon;
     };

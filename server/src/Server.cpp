@@ -19,7 +19,7 @@ namespace tetriq {
     Server::Server()
         : _address()
         , _server(nullptr)
-        , _channels({*this})
+        , _channels({Channel(this, _channel_id_counter)})
         , _rcon(*this)
     {
         if (init() == false)
@@ -39,6 +39,27 @@ namespace tetriq {
     std::vector<Channel> &Server::getChannels()
     {
         return _channels;
+    }
+
+    bool Server::createChannel()
+    {
+        _channel_id_counter++;
+        _channels.emplace_back(this, _channel_id_counter);
+        return true;
+    }
+
+    bool Server::deleteChannel(uint64_t id)
+    {
+        if (id == 0) {
+            return false;
+        }
+        for (size_t i = 0; i < _channels.size(); i++) {
+            if (_channels[i].getChannelId() == id) {
+                _channels.erase(_channels.begin() + i);
+                return true;
+            }
+        }
+        return false;
     }
 
     bool Server::init()
@@ -104,16 +125,25 @@ namespace tetriq {
             }
             if (!handleENetEvents())
                 break;
+            if (!handleRconEvents())
+                break;
             for (Channel &channel : _channels) {
                 channel.tick();
             }
         }
     }
 
+    bool Server::handleRconEvents()
+    {
+        if (_config.rcon.enabled) {
+            _rcon.listen();
+        }
+        return true;
+    }
+
     bool Server::handleENetEvents()
     {
         ENetEvent event;
-        _rcon.listen();
         while (enet_host_service(_server, &event, 0) > 0) {
             switch (event.type) {
                 case ENET_EVENT_TYPE_CONNECT:
