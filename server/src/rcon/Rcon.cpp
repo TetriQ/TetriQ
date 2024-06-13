@@ -30,9 +30,13 @@ tetriq::RconClient &tetriq::RconClient::operator<<(const std::string &response)
 
 void tetriq::Rcon::addCommands()
 {
-    this->registerCommand("startgame", &ServerManager::startGame);
-    this->registerCommand("get", &ServerManager::get);
-    this->registerCommand("set", &ServerManager::set);
+    this->registerCommand("startgame", &ServerManager::_startGame);
+    this->registerCommand("stopgame", &ServerManager::_stopGame);
+    this->registerCommand("get", &ServerManager::_get);
+    this->registerCommand("set", &ServerManager::_set);
+    this->registerCommand("list", &ServerManager::_list);
+    this->registerCommand("create", &ServerManager::_create);
+    this->registerCommand("delete", &ServerManager::_delete);
     _command_handler.registerCommand("help",
         std::make_unique<
             std::function<void(const std::vector<std::string> &, std::queue<std::string> &)>>(
@@ -77,18 +81,66 @@ void tetriq::Rcon::handleNewClient()
         sockaddr_in new_client_addr{};
         socklen_t addrlen = sizeof(new_client_addr);
         int new_client_socket =
-            accept(_rcon_socket, (struct sockaddr *) &new_client_addr, &addrlen);
+            ::accept(_rcon_socket, (struct sockaddr *) &new_client_addr, &addrlen);
         if (new_client_socket < 0) {
             RCONLOG(ERROR) << "Accept error" << std::endl;
         }
         if (_client != nullptr) {
             std::string msg = "Maximum connections reached";
             send(new_client_socket, msg.c_str(), msg.size(), 0);
-            close(new_client_socket);
+            ::close(new_client_socket);
         }
         _client = std::make_unique<RconClient>(new_client_socket, new_client_addr);
         *_client << "RCON: Enter password\n";
         RCONLOG(INFO) << "New connection" << std::endl;
+    }
+}
+
+void tetriq::Rcon::disconnectClient()
+{
+    ::close(_client->getSocket());
+    _client = nullptr;
+    RCONLOG(INFO) << "Connection closed" << std::endl;
+}
+
+void tetriq::Rcon::parseCmd(
+    std::istringstream &iss, std::string command, std::vector<std::string> &arguments)
+{
+    std::getline(iss, command, ' ');
+
+    std::string arg;
+    while (std::getline(iss, arg, ' ')) {
+        arguments.push_back(arg);
+    }
+}
+
+bool tetriq::Rcon::checkAuth(std::string command)
+{
+    if (_client->_is_authenticated == false) {
+        if (command == _config.password) {
+            _client->_is_authenticated = true;
+            *_client << "RCON: Authenticated\n";
+            return true;
+        }
+        *_client << "RCON: Not authenticated\n";
+        return true;
+    }
+    return false;
+}
+
+void tetriq::Rcon::sendRes()
+{
+    if (FD_ISSET(_client->getSocket(), &_writefds)) {
+        while (not _client->_res_queue.empty()) {
+            std::string response = _client->_res_queue.front();
+            _client->_res_queue.pop();
+            ::send(_client->getSocket(), response.c_str(), response.size(), 0);
+        }
+        FD_CLR(_client->getSocket(), &_writefds);
+        ::send(_client->getSocket(), "~$ ", 3, 0);
+    }
+    if (not _client->_res_queue.empty()) {
+        FD_SET(_client->getSocket(), &_writefds);
     }
 }
 
@@ -99,17 +151,9 @@ void tetriq::Rcon::handleClient()
     }
     if (FD_ISSET(_client->getSocket(), &_readfds)) {
         char buffer[1024] = {0};
-        const long int valread = recv(_client->getSocket(), buffer, 1024, 0);
-        if (valread == 0) {
-            close(_client->getSocket());
-            _client = nullptr;
-            RCONLOG(ERROR) << "Connection closed" << std::endl;
-            return;
-        }
-        if (valread < 0) {
-            close(_client->getSocket());
-            _client = nullptr;
-            RCONLOG(ERROR) << "Read error" << std::endl;
+        const long int valread = ::recv(_client->getSocket(), buffer, 1024, 0);
+        if (valread <= 0) {
+            disconnectClient();
             return;
         }
         buffer[valread] = '\0';
@@ -120,38 +164,19 @@ void tetriq::Rcon::handleClient()
         std::string full_command = buffer;
         std::istringstream iss(full_command);
         std::string command;
-        std::getline(iss, command, ' ');
-
         std::vector<std::string> arguments;
-        std::string arg;
-        while (std::getline(iss, arg, ' ')) {
-            arguments.push_back(arg);
-        }
-        if (_client->_is_authenticated == false) {
-            if (command == _config.password) {
-                _client->_is_authenticated = true;
-                RCONLOG(INFO) << "Client authenticated" << std::endl;
-                *_client << "RCON: Authenticated\n";
-                return;
-            }
-            RCONLOG(ERROR) << "Client not authenticated" << std::endl;
-            *_client << "RCON: Not authenticated\n";
+
+        parseCmd(iss, command, arguments);
+        if (command == "quit") {
+            disconnectClient();
             return;
         }
+        if (checkAuth(command))
+            return;
 
         _command_handler.executeCommand(command, arguments, _client->_res_queue);
     }
-    if (FD_ISSET(_client->getSocket(), &_writefds)) {
-        while (not _client->_res_queue.empty()) {
-            std::string response = _client->_res_queue.front();
-            _client->_res_queue.pop();
-            send(_client->getSocket(), response.c_str(), response.size(), 0);
-        }
-        FD_CLR(_client->getSocket(), &_writefds);
-    }
-    if (not _client->_res_queue.empty()) {
-        FD_SET(_client->getSocket(), &_writefds);
-    }
+    sendRes();
 }
 
 void tetriq::Rcon::listen()

@@ -63,6 +63,11 @@ namespace tetriq {
             fd_set _writefds{};
 
             void handleNewClient();
+            void disconnectClient();
+            void parseCmd(
+                std::istringstream &iss, std::string command, std::vector<std::string> &arguments);
+            bool checkAuth(std::string command);
+            void sendRes();
             void handleClient();
 
             ServerManager _server_manager{_server};
