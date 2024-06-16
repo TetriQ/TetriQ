@@ -11,6 +11,13 @@
 namespace tetriq {
     class IDisplay {
         public:
+            enum class TabType {
+                GAME,
+                CHAT,
+                SCOREBOARD,
+                HELP,
+            };
+
             virtual ~IDisplay() = default;
 
             using ITetrisIter = std::vector<std::unique_ptr<ViewerTetris>>::const_iterator;
