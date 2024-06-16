@@ -277,7 +277,20 @@ void tetriq::NcursesDisplay::drawPrediction(ITetris &game)
 }
 
 void tetriq::NcursesDisplay::drawPowerUps(const ITetris &game)
-{}
+{
+    const auto it = game.getPowerUps().begin();
+    const auto end = game.getPowerUps().end();
+
+    mvwprintw(_game_window, (game.getHeight() + 1) * 2, 2,"Powerups: ");
+    Position pos = {12, game.getHeight() + 1};
+    for (auto i = it; i != end; ++i) {
+        drawBlock({pos.x * BLOCK_SIZE, pos.y * BLOCK_SIZE * 2},
+            *i,
+            BLOCK_SIZE,
+            false);
+        pos.x += 1;
+    }
+}
 
 void tetriq::NcursesDisplay::rescaleGame()
 {
