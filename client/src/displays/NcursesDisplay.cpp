@@ -10,6 +10,7 @@
 #include "Utils.hpp"
 
 tetriq::NcursesDisplay::NcursesDisplay()
+    : _tab(TabType::GAME)
 {
     initscr();
     cbreak();
@@ -20,23 +21,24 @@ tetriq::NcursesDisplay::NcursesDisplay()
 
     _scr_width = getmaxx(stdscr);
     _scr_height = getmaxy(stdscr);
-    int game_height = _scr_height - 5;
-    _game_window = newwin(game_height, _scr_width, 0, 0);
-    _menu_window = newwin(5, _scr_width, game_height, 0);
+    int main_height = _scr_height - 5;
+    _main_window = newwin(main_height, _scr_width, 0, 0);
+    _menu_window = newwin(5, _scr_width, main_height, 0);
 
     start_color();
-    init_pair(COLOR_WHITE, COLOR_WHITE, COLOR_BLACK);
+    init_pair(COLOR_BLACK, COLOR_BLACK, COLOR_WHITE);
     init_pair(COLOR_RED, COLOR_RED, COLOR_BLACK);
-    init_pair(COLOR_BLUE, COLOR_BLUE, COLOR_BLACK);
-    init_pair(COLOR_YELLOW, COLOR_YELLOW, COLOR_BLACK);
     init_pair(COLOR_GREEN, COLOR_GREEN, COLOR_BLACK);
+    init_pair(COLOR_YELLOW, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(COLOR_BLUE, COLOR_BLUE, COLOR_BLACK);
     init_pair(COLOR_MAGENTA, COLOR_MAGENTA, COLOR_BLACK);
     init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_BLACK);
+    init_pair(COLOR_WHITE, COLOR_WHITE, COLOR_BLACK);
 }
 
 tetriq::NcursesDisplay::~NcursesDisplay()
 {
-    delwin(_game_window);
+    delwin(_main_window);
     delwin(_menu_window);
     endwin();
 }
@@ -55,33 +57,16 @@ bool tetriq::NcursesDisplay::loadGame(const ITetris &, uint64_t)
 bool tetriq::NcursesDisplay::draw(
     const Client &client, ITetrisIter otherGamesStart, ITetrisIter otherGamesEnd)
 {
-    werase(_game_window);
+    werase(_main_window);
     werase(_menu_window);
 
-    box(_game_window, 0, 0);
+    box(_main_window, 0, 0);
     box(_menu_window, 0, 0);
-    mvwprintw(_game_window, 0, 2, "TetriQ");
+    mvwprintw(_main_window, 0, 2, "TetriQ");
 
-    if (_show_help)
-        displayHelp();
+    drawTab(client, otherGamesStart, otherGamesEnd);
 
-    ITetris &game = client.getGame();
-    drawGame(game, {2, 1}, BLOCK_SIZE * 2, client.targetId == 0);
-    drawNextTetromino(game);
-    drawPrediction(game);
-    drawCurrentTetromino(game);
-    drawPowerUps(game);
-
-    uint64_t index = 1;
-    uint64_t x = (game.getWidth() + SIDEBAR_SIZE) * BLOCK_SIZE * 2 + 2;
-    while (otherGamesStart != otherGamesEnd) {
-        drawGame(**otherGamesStart, {x, 1}, BLOCK_SIZE, client.targetId == index);
-        x += (*otherGamesStart)->getWidth() * BLOCK_SIZE;
-        ++otherGamesStart;
-        index++;
-    }
-
-    wrefresh(_game_window);
+    wrefresh(_main_window);
     wrefresh(_menu_window);
     return true;
 }
@@ -115,11 +100,23 @@ bool tetriq::NcursesDisplay::handleEvents(Client &client)
             case 'Q':
                 client.sendPowerUp();
                 continue;
-            case 'H':
-                _show_help = !_show_help;
-                continue;
             case KEY_RESIZE:
-                rescaleGame();
+                resizeWindow();
+                continue;
+            case KEY_F(1):
+                _tab = TabType::GAME;
+                continue;
+            case KEY_F(2):
+                _tab = TabType::CHAT;
+                continue;
+            case KEY_F(3):
+                _tab = TabType::SCOREBOARD;
+                continue;
+            case KEY_F(4):
+                _tab = TabType::HELP;
+                continue;
+            case 'H':
+                _tab = TabType::HELP;
                 continue;
             default:
                 if (is_shift_pressed && ch >= '0' && ch <= '9') {
@@ -231,13 +228,13 @@ void tetriq::NcursesDisplay::drawBlock(Position pos, BlockType blockType, uint64
     if (charOverride != ERR)
         blockChar = charOverride;
 
-    wattron(_game_window, COLOR_PAIR(blockColor));
+    wattron(_main_window, COLOR_PAIR(blockColor));
     for (uint64_t i = 0; i < block_size; i++) {
         for (uint64_t j = 0; j < block_size; j++) {
-            mvwaddch(_game_window, pos.y + j, pos.x + i, blockChar);
+            mvwaddch(_main_window, pos.y + j, pos.x + i, blockChar);
         }
     }
-    wattroff(_game_window, A_COLOR);
+    wattroff(_main_window, A_COLOR);
 }
 
 void tetriq::NcursesDisplay::drawTetromino(const Tetromino &tetromino, Position position,
@@ -271,9 +268,9 @@ void tetriq::NcursesDisplay::drawPrediction(ITetris &game)
 
     predictedPiece.drop(game);
 
-    wattron(_game_window, COLOR_PAIR(COLOR_WHITE));
+    wattron(_main_window, COLOR_PAIR(COLOR_WHITE));
     drawTetromino(predictedPiece, predictedPiece.getPosition(), BLOCK_SIZE * 2, COLOR_WHITE, '.');
-    wattroff(_game_window, COLOR_PAIR(COLOR_WHITE));
+    wattroff(_main_window, COLOR_PAIR(COLOR_WHITE));
 }
 
 void tetriq::NcursesDisplay::drawPowerUps(const ITetris &game)
@@ -281,7 +278,7 @@ void tetriq::NcursesDisplay::drawPowerUps(const ITetris &game)
     const auto it = game.getPowerUps().begin();
     const auto end = game.getPowerUps().end();
 
-    mvwprintw(_game_window, (game.getHeight() + 1) * 2, 2,"Powerups: ");
+    mvwprintw(_main_window, (game.getHeight() + 1) * 2, 2,"Powerups: ");
     Position pos = {12, game.getHeight() + 1};
     for (auto i = it; i != end; ++i) {
         drawBlock({pos.x * BLOCK_SIZE, pos.y * BLOCK_SIZE * 2},
@@ -292,17 +289,61 @@ void tetriq::NcursesDisplay::drawPowerUps(const ITetris &game)
     }
 }
 
-void tetriq::NcursesDisplay::rescaleGame()
+void tetriq::NcursesDisplay::drawTab(const Client &client, ITetrisIter otherGamesStart,
+    ITetrisIter otherGamesEnd)
+{
+    switch (_tab) {
+        case TabType::GAME: {
+            wattron(_menu_window, COLOR_PAIR(COLOR_WHITE));
+            mvwprintw(_menu_window, 0, 2, "Game");
+            wattroff(_menu_window, COLOR_PAIR(COLOR_WHITE));
+
+            ITetris &game = client.getGame();
+            drawGame(game, {2, 1}, BLOCK_SIZE * 2, client.targetId == 0);
+            drawNextTetromino(game);
+            drawPrediction(game);
+            drawCurrentTetromino(game);
+            drawPowerUps(game);
+
+            uint64_t index = 1;
+            uint64_t x = (game.getWidth() + SIDEBAR_SIZE) * BLOCK_SIZE * 2 + 2;
+            while (otherGamesStart != otherGamesEnd) {
+                drawGame(**otherGamesStart, {x, 1}, BLOCK_SIZE, client.targetId == index);
+                x += (*otherGamesStart)->getWidth() * BLOCK_SIZE;
+                ++otherGamesStart;
+                index++;
+            }
+            break;
+        }
+        case TabType::CHAT: {
+            wattron(_menu_window, COLOR_PAIR(COLOR_BLACK));
+            mvwprintw(_menu_window, 0, 2, "Chat");
+            wattroff(_menu_window, COLOR_PAIR(COLOR_BLACK));
+            break;
+        }
+        case TabType::SCOREBOARD: {
+            wattron(_menu_window, COLOR_PAIR(COLOR_BLACK));
+            mvwprintw(_menu_window, 0, 2, "Scoreboard");
+            wattroff(_menu_window, COLOR_PAIR(COLOR_BLACK));
+            break;
+        }
+        case TabType::HELP: {
+            wattron(_menu_window, COLOR_PAIR(COLOR_BLACK));
+            mvwprintw(_menu_window, 0, 2, "Help");
+            wattroff(_menu_window, COLOR_PAIR(COLOR_BLACK));
+            break;
+        }
+    }
+}
+
+void tetriq::NcursesDisplay::resizeWindow()
 {
     endwin();
     refresh();
     clear();
     _scr_width = getmaxx(stdscr);
     _scr_height = getmaxy(stdscr);
-    int game_height = _scr_height - 5;
-    _game_window = newwin(game_height, _scr_width, 0, 0);
-    _menu_window = newwin(5, _scr_width, game_height, 0);
+    int main_height = _scr_height - 5;
+    _main_window = newwin(main_height, _scr_width, 0, 0);
+    _menu_window = newwin(5, _scr_width, main_height, 0);
 }
-
-void tetriq::NcursesDisplay::displayHelp()
-{}
