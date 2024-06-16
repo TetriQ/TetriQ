@@ -24,9 +24,7 @@ int main(int argc, char *argv[])
     srand(time(nullptr));
 
     try {
-        // std::unique_ptr<tetriq::IDisplay> display{new tetriq::SFMLDisplay{}};
-        std::unique_ptr<tetriq::IDisplay> display{new tetriq::NcursesDisplay{}};
-        tetriq::Client client(args.ip, args.port, *display);
+        tetriq::Client client(args.ip, args.port, std::move(args.display));
         client.loop();
     } catch (const tetriq::Client::ClientInitException &e) {
         std::cerr << e.what() << std::endl;

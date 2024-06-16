@@ -9,8 +9,8 @@
 namespace tetriq {
     bool Arguments::parse(int argc, char *argv[])
     {
-        if (argc != 3) {
-            LogLevel::ERROR << "invalid number of arguments" << std::endl;
+        if (argc != 4) {
+            LogLevel::ERROR << "Invalid number of arguments" << std::endl;
             return false;
         }
         ip = argv[1];
@@ -21,7 +21,12 @@ namespace tetriq {
             }
             port = n;
         } catch (std::logic_error &) {
-            LogLevel::ERROR << "invalid port number" << std::endl;
+            LogLevel::ERROR << "Invalid port number" << std::endl;
+            return false;
+        }
+        display = DisplayFactory::createFromName(argv[3]);
+        if (!display) {
+            LogLevel::ERROR << "Invalid display name" << std::endl;
             return false;
         }
         return true;

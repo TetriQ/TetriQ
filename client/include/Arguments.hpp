@@ -6,6 +6,9 @@
 
 #include <cstdint>
 #include <string>
+#include <memory>
+
+#include "DisplayFactory.hpp"
 
 namespace tetriq {
     class Arguments {
@@ -14,5 +17,6 @@ namespace tetriq {
 
             std::string ip;
             uint16_t port;
+            std::unique_ptr<IDisplay> display;
     };
 }

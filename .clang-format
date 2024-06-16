@@ -80,7 +80,7 @@ IntegerLiteralSeparator:
   DecimalMinDigits: 7
 KeepEmptyLinesAtEOF: false
 KeepEmptyLinesAtTheStartOfBlocks: false
-LambdaBodyIndentation: Signature
+AllowShortLambdasOnASingleLine: All
 Language: Cpp
 LineEnding: LF
 MaxEmptyLinesToKeep: 1
