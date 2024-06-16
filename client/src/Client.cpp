@@ -19,14 +19,14 @@
 #include <utility>
 
 namespace tetriq {
-    Client::Client(std::string ip, uint16_t port, IDisplay &display)
+    Client::Client(std::string ip, uint16_t port, std::unique_ptr<IDisplay> display)
         : targetId(0)
         , _username("Unknown")
         , _server_ip(std::move(ip))
         , _server_port(port)
         , _game_started(false)
         , _game(nullptr)
-        , _display(display)
+        , _display(std::move(display))
     {
         if (init() == false)
             throw ClientInitException();
@@ -55,9 +55,9 @@ namespace tetriq {
         ENetEvent _event;
         while (true) {
             if (_game_started) {
-                if (!_display.draw(*this, _external_games.begin(), _external_games.end()))
+                if (!_display->draw(*this, _external_games.begin(), _external_games.end()))
                     return;
-                if (!_display.handleEvents(*this))
+                if (!_display->handleEvents(*this))
                     return;
             }
             while (enet_host_service(_client, &_event, 0) > 0) {
@@ -150,7 +150,7 @@ namespace tetriq {
                 packet.getGameWidth(), packet.getGameHeight(), player_id));
         }
 
-        if (_display.loadGame(*_game, packet.getPlayerIds().size())) {
+        if (_display->loadGame(*_game, packet.getPlayerIds().size())) {
             _game_started = true;
         } else {
             LogLevel::ERROR << "failed loading game in display" << std::endl;

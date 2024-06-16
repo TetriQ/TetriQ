@@ -46,7 +46,7 @@ namespace tetriq {
              * @param ip The server IP address
              * @param port The server port
              */
-            Client(std::string ip, uint16_t port, IDisplay &display);
+            Client(std::string ip, uint16_t port, std::unique_ptr<IDisplay> display);
 
             /**
              * @brief Client destructor
@@ -102,6 +102,6 @@ namespace tetriq {
             bool _game_started;
             std::unique_ptr<RemoteTetris> _game;
             std::vector<std::unique_ptr<ViewerTetris>> _external_games;
-            IDisplay &_display;
+            std::unique_ptr<IDisplay> _display;
     };
 }
