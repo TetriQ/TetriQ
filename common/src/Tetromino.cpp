@@ -54,7 +54,7 @@ const tetriq::TetroRotation &tetriq::Tetromino::getTetroRotation() const
     return BLOCK_ROTATIONS.at(getType()).at(getRotation());
 }
 
-bool tetriq::Tetromino::move(int xOffset, int yOffset, const Tetris &game)
+bool tetriq::Tetromino::move(int xOffset, int yOffset, const ITetris &game)
 {
     Tetromino next = *this;
     next._position.x += xOffset;
@@ -66,7 +66,7 @@ bool tetriq::Tetromino::move(int xOffset, int yOffset, const Tetris &game)
     return true;
 }
 
-bool tetriq::Tetromino::rotate(const Tetris &game)
+bool tetriq::Tetromino::rotate(const ITetris &game)
 {
     Tetromino next = *this;
     next._rotation = (_rotation + 1) % BLOCK_ROTATIONS.at(_type).size();
@@ -77,13 +77,13 @@ bool tetriq::Tetromino::rotate(const Tetris &game)
     return true;
 }
 
-void tetriq::Tetromino::drop(Tetris &game)
+void tetriq::Tetromino::drop(ITetris &game)
 {
     while (move(0, 1, game)) {}
     // game.addGraceTicks(1);
 }
 
-bool tetriq::Tetromino::collides(const Tetris &game) const
+bool tetriq::Tetromino::collides(const ITetris &game) const
 {
     const TetroRotation &shape = getTetroRotation();
     for (int i = 0; i < 4; i++) {
