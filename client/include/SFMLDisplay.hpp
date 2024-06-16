@@ -28,6 +28,8 @@ namespace tetriq {
             void drawTetromino(const Tetromino &tetromino, Position position, uint64_t block_size);
             void drawCurrentTetromino(const ITetris &game);
             void drawNextTetromino(const ITetris &game);
+            bool skipOverlap(
+                Position pos, const TetroRotation &shape, unsigned int tempx, unsigned int &tempy);
             void drawPrediction(const ITetris &game);
             void drawPowerUps(const ITetris &game);
             void displayHelp();

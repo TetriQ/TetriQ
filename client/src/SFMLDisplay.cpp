@@ -240,6 +240,24 @@ void tetriq::SFMLDisplay::drawNextTetromino(const ITetris &game)
     drawTetromino(game.getNextPiece(), pos, BLOCK_SIZE * 2);
 }
 
+bool tetriq::SFMLDisplay::skipOverlap(
+    Position pos, const TetroRotation &shape, unsigned int tempx, unsigned int &tempy)
+{
+    bool is_current = false;
+    for (int j = 0; j < 4; j++) {
+        std::tuple<char, char> local_pos = shape.at(j);
+        if (tempx == pos.x + std::get<0>(local_pos) && tempy == pos.y + std::get<1>(local_pos)) {
+            is_current = true;
+            break;
+        }
+    }
+    if (is_current) {
+        tempy++;
+        return true;
+    }
+    return false;
+}
+
 void tetriq::SFMLDisplay::drawPrediction(const ITetris &game)
 {
     const Tetromino &current = game.getCurrentPiece();
@@ -251,7 +269,9 @@ void tetriq::SFMLDisplay::drawPrediction(const ITetris &game)
         unsigned int tempx = pos.x + std::get<0>(local_pos);
         unsigned int tempy = pos.y + std::get<1>(local_pos);
         while (tempy < game.getHeight() && game.getBlockAt(tempx, tempy) == BlockType::EMPTY) {
-            float radius = 1;
+            if (tempy > 4 && skipOverlap(pos, shape, tempx, tempy))
+                continue;
+            constexpr float radius = 1;
             sf::RectangleShape point(sf::Vector2f(radius, radius));
             point.setFillColor(sf::Color::White);
             point.setPosition(sf::Vector2f(
