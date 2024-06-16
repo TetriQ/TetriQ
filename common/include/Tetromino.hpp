@@ -10,6 +10,7 @@
 #include <cstdint>
 
 namespace tetriq {
+    class ITetris;
     class Tetromino : public NetworkObject {
         public:
             Tetromino();
@@ -23,10 +24,10 @@ namespace tetriq {
             void setRotation(int rotation);
             void setPosition(pos position);
             const TetroRotation &getTetroRotation() const;
-            [[nodiscard]] bool move(int x, int y, const Tetris &game);
-            [[nodiscard]] bool rotate(const Tetris &game);
-            void drop(Tetris &game);
-            bool collides(const Tetris &game) const;
+            [[nodiscard]] bool move(int x, int y, const ITetris &game);
+            [[nodiscard]] bool rotate(const ITetris &game);
+            void drop(ITetris &game);
+            bool collides(const ITetris &game) const;
 
             NetworkOStream &operator>>(NetworkOStream &os) const override;
             NetworkIStream &operator<<(NetworkIStream &os) override;

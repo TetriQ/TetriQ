@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 {
     tetriq::Arguments args;
     if (!args.parse(argc, argv)) {
-        tetriq::LogLevel::INFO << "usage: ./tetriq_client ip port" << std::endl;
+        tetriq::LogLevel::INFO << "USAGE: ./tetriq_client ip port" << std::endl;
         return EXIT_FAILURE;
     }
 
