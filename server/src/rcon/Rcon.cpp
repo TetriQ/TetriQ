@@ -62,6 +62,7 @@ tetriq::Rcon::Rcon(Server &server)
     }
     _readfds = {};
     RCONLOG(INFO) << "Rcon created" << std::endl;
+    RCONLOG(INFO) << "Password: " << _config.password << std::endl;
     addCommands();
 }
 
@@ -104,7 +105,7 @@ void tetriq::Rcon::disconnectClient()
 }
 
 void tetriq::Rcon::parseCmd(
-    std::istringstream &iss, std::string command, std::vector<std::string> &arguments)
+    std::istringstream &iss, std::string &command, std::vector<std::string> &arguments)
 {
     std::getline(iss, command, ' ');
 
