@@ -268,8 +268,9 @@ void tetriq::SFMLDisplay::drawPrediction(const ITetris &game)
         std::tuple<char, char> local_pos = shape.at(i);
         unsigned int tempx = pos.x + std::get<0>(local_pos);
         unsigned int tempy = pos.y + std::get<1>(local_pos);
+        unsigned int offset = 0;
         while (tempy < game.getHeight() && game.getBlockAt(tempx, tempy) == BlockType::EMPTY) {
-            if (tempy > 4 && skipOverlap(pos, shape, tempx, tempy))
+            if (offset < 4 && skipOverlap(pos, shape, tempx, tempy))
                 continue;
             constexpr float radius = 1;
             sf::RectangleShape point(sf::Vector2f(radius, radius));
@@ -278,6 +279,7 @@ void tetriq::SFMLDisplay::drawPrediction(const ITetris &game)
                 static_cast<float>(tempx * BLOCK_SIZE * 2) + static_cast<float>(BLOCK_SIZE),
                 static_cast<float>(tempy * BLOCK_SIZE * 2) + static_cast<float>(BLOCK_SIZE)));
             tempy++;
+            offset++;
             _window.draw(point);
         }
     }

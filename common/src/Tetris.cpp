@@ -325,6 +325,9 @@ void tetriq::Tetris::tick()
     }
     if (!moveCurrentPiece(0, 1)) {
         placeTetromino();
+        if (_game_over) {
+            return;
+        }
         _changed = true;
     }
     removeLinesFulls(_changed, lines_deleted);
@@ -385,8 +388,9 @@ void tetriq::Tetris::placeTetromino()
     }
     _nextPieces.erase(_nextPieces.begin());
     _nextPieces.emplace_back();
-    if (getCurrentPiece().collides(*this))
+    if (getCurrentPiece().collides(*this)) {
         _game_over = true;
+    }
 }
 
 tetriq::NetworkOStream &tetriq::Tetris::operator>>(tetriq::NetworkOStream &os) const
