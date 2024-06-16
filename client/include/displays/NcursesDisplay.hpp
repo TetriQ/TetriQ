@@ -32,17 +32,18 @@ namespace tetriq {
             void drawNextTetromino(const ITetris &game);
             void drawPrediction(ITetris &game);
             void drawPowerUps(const ITetris &game);
-            void rescaleGame();
-            void displayHelp();
+            void drawTab(const Client &client, ITetrisIter otherGamesStart,
+                ITetrisIter otherGamesEnd);
+            void resizeWindow();
 
             const uint64_t BLOCK_SIZE = 1;
             const uint64_t SIDEBAR_SIZE = 6;
 
-            WINDOW *_game_window;
+            WINDOW *_main_window;
             WINDOW *_menu_window;
             int _scr_width;
             int _scr_height;
 
-            bool _show_help = false;
+            TabType _tab;
     };
 }
