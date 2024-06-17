@@ -73,6 +73,8 @@ namespace tetriq {
             player.startGame(_server->getConfig().game);
         }
         _game_started = true;
+        _game_speed = 333'333'333;
+        _base_game_speed = _game_speed;
     }
 
     void Channel::stopGame()
@@ -101,7 +103,12 @@ namespace tetriq {
             std::chrono::steady_clock::now().time_since_epoch();
         if (now < _next_tick)
             return;
-        _next_tick = now + std::chrono::nanoseconds(1'000'000'000 / 3);
+        _next_tick = now + std::chrono::nanoseconds(_game_speed);
+        constexpr uint64_t max_game_speed = _base_game_speed / 2;
+        if (_game_speed > max_game_speed)
+            _game_speed -= 100000;
+
+        LogLevel::DEBUG << std::to_string(_game_speed) << std::endl;
 
         bool game_over = true;
         for (uint64_t id : _players) {
