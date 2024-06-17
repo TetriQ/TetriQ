@@ -18,7 +18,7 @@ SPDX-License-Identifier: GFDL-1.3-or-later
 
 **displayMode** : Choose between `sfml` or `ncurses`
 
-### Keybinds
+### Ncurses Keybinds
 
 **Left Arrow** : Move left
 
@@ -32,6 +32,14 @@ SPDX-License-Identifier: GFDL-1.3-or-later
 
 **Q** : Send powerup
 
-**S** : Target player (HOLD)
+**S** : Target player
 
-**0-9** : Target player id
+**0-9** : Target player id (need "select target mode": `S`)
+
+**Z** : Target next player
+
+**X** : Target previous player
+
+Note that when targeting players with `S`, on press you have a 2 seconds delay to
+enter a player ID (1 - 999) refreshed every time you add a digit.
+Press any non-numerical key or wait the 2 seconds to save the target ID.

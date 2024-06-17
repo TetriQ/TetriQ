@@ -202,7 +202,7 @@ void tetriq::NcursesDisplay::drawBlock(Position pos, BlockType blockType, uint64
             blockColor = is_target ? COLOR_RED : COLOR_WHITE;
             break;
         case BlockType::PU_ADD_LINE:
-            blockColor = COLOR_GREEN;
+            blockColor = COLOR_RED;
             blockChar = 'a'; // "al"
             break;
         case BlockType::PU_GRAVITY:
@@ -230,11 +230,11 @@ void tetriq::NcursesDisplay::drawBlock(Position pos, BlockType blockType, uint64
             blockChar = 's'; // "sw"
             break;
         case BlockType::PU_CLEAR_BLOCK_RANDOM:
-            blockColor = COLOR_WHITE;
+            blockColor = COLOR_YELLOW;
             blockChar = '?'; // "c?"
             break;
         case BlockType::PU_CLEAR_SPECIAL_BLOCK:
-            blockColor = COLOR_YELLOW;
+            blockColor = COLOR_GREEN;
             blockChar = 'o'; // "cs"
             break;
         default:
@@ -372,12 +372,12 @@ void tetriq::NcursesDisplay::drawTab(
                 wattron(_main_window, COLOR_PAIR(COLOR_YELLOW));
                 mvwprintw(_main_window, y += 2, 2, "CONTROLS:");
                 wattroff(_main_window, COLOR_PAIR(COLOR_YELLOW));
-                mvwprintw(_main_window, y += 2, 2, "Arrow keys: Move");
-                mvwprintw(_main_window, y += 1, 2, "Up Arrow: Rotate");
-                mvwprintw(_main_window, y += 1, 2, "Space: Drop");
-                mvwprintw(_main_window, y += 2, 2, "Q: Send powerup");
-                mvwprintw(_main_window, y += 1, 2, "S: Target player");
-                mvwprintw(_main_window, y += 1, 2, "0-9: Target player id");
+                mvwprintw(_main_window, y += 2, 2, "Arrow keys:\tMove");
+                mvwprintw(_main_window, y += 1, 2, "Up Arrow:\tRotate");
+                mvwprintw(_main_window, y += 1, 2, "Space:\tDrop");
+                mvwprintw(_main_window, y += 2, 2, "Q:\t\tSend powerup");
+                mvwprintw(_main_window, y += 1, 2, "S:\t\tTarget player");
+                mvwprintw(_main_window, y += 1, 2, "0-9:\t\tTarget player id");
                 break;
             }
         default:
