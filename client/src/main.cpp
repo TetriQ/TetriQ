@@ -16,7 +16,15 @@ int main(int argc, char *argv[])
 {
     tetriq::Arguments args;
     if (!args.parse(argc, argv)) {
-        tetriq::LogLevel::INFO << "USAGE: ./tetriq_client ip port" << std::endl;
+        std::cerr << "USAGE: ./tetriq_client <ip> <port> <displayMode>\n\n"
+                  << "  ip\t\tIP address of the server\n"
+                  << "  port\t\tPort of the server\n"
+                  << "  displayMode\tDisplay mode ('sfml' or 'ncurses')\n\n"
+                  << "This program is free software: you can redistribute it and/or modify\n"
+                  << "it under the terms of the GNU Affero General Public License as\n"
+                  << "published by the Free Software Foundation, either version 3 of the\n"
+                  << "License, or (at your option) any later version.\n\n"
+                  << "Full documentation: <https://tetriq.noé.eu/>" << std::endl;
         return EXIT_FAILURE;
     }
 
