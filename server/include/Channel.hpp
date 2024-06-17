@@ -52,5 +52,7 @@ namespace tetriq {
             bool _game_started;
             std::vector<uint64_t> _players;
             uint64_t _channel_id;
+            uint64_t _game_speed;
+            uint64_t _base_game_speed;
     };
 }
