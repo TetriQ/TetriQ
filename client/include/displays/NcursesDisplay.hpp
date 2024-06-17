@@ -32,8 +32,8 @@ namespace tetriq {
             void drawNextTetromino(const ITetris &game);
             void drawPrediction(ITetris &game);
             void drawPowerUps(const ITetris &game);
-            void drawTab(const Client &client, ITetrisIter otherGamesStart,
-                ITetrisIter otherGamesEnd);
+            void drawTab(
+                const Client &client, ITetrisIter otherGamesStart, ITetrisIter otherGamesEnd);
             void resizeWindow();
 
             const uint64_t BLOCK_SIZE = 1;

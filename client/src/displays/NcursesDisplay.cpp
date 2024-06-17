@@ -64,6 +64,11 @@ bool tetriq::NcursesDisplay::draw(
     box(_menu_window, 0, 0);
     mvwprintw(_main_window, 0, 2, "TetriQ");
 
+    mvwprintw(_menu_window, 1, 2, "F1: Game");
+    mvwprintw(_menu_window, 2, 2, "F2: Chat");
+    mvwprintw(_menu_window, 3, 2, "F3: Scoreboard");
+    mvwprintw(_menu_window, 1, 20, "F4: Help");
+
     drawTab(client, otherGamesStart, otherGamesEnd);
 
     wrefresh(_main_window);
@@ -178,7 +183,7 @@ void tetriq::NcursesDisplay::drawBlock(Position pos, BlockType blockType, uint64
             blockColor = COLOR_MAGENTA;
             break;
         case BlockType::INDESTRUCTIBLE:
-            blockColor = is_target ? COLOR_WHITE : COLOR_BLACK;
+            blockColor = is_target ? COLOR_WHITE : A_REVERSE;
             blockColor = COLOR_WHITE;
             break;
         case BlockType::PU_ADD_LINE:
@@ -278,61 +283,76 @@ void tetriq::NcursesDisplay::drawPowerUps(const ITetris &game)
     const auto it = game.getPowerUps().begin();
     const auto end = game.getPowerUps().end();
 
-    mvwprintw(_main_window, (game.getHeight() + 1) * 2, 2,"Powerups: ");
+    mvwprintw(_main_window, (game.getHeight() + 1) * 2, 2, "Powerups: ");
     Position pos = {12, game.getHeight() + 1};
     for (auto i = it; i != end; ++i) {
-        drawBlock({pos.x * BLOCK_SIZE, pos.y * BLOCK_SIZE * 2},
-            *i,
-            BLOCK_SIZE,
-            false);
+        drawBlock({pos.x * BLOCK_SIZE, pos.y * BLOCK_SIZE * 2}, *i, BLOCK_SIZE, false);
         pos.x += 1;
     }
 }
 
-void tetriq::NcursesDisplay::drawTab(const Client &client, ITetrisIter otherGamesStart,
-    ITetrisIter otherGamesEnd)
+void tetriq::NcursesDisplay::drawTab(
+    const Client &client, ITetrisIter otherGamesStart, ITetrisIter otherGamesEnd)
 {
     switch (_tab) {
-        case TabType::GAME: {
-            wattron(_menu_window, COLOR_PAIR(COLOR_WHITE));
-            mvwprintw(_menu_window, 0, 2, "Game");
-            wattroff(_menu_window, COLOR_PAIR(COLOR_WHITE));
+        case TabType::GAME:
+            {
+                mvwprintw(_menu_window, 0, 2, "Game");
 
-            ITetris &game = client.getGame();
-            drawGame(game, {2, 1}, BLOCK_SIZE * 2, client.targetId == 0);
-            drawNextTetromino(game);
-            drawPrediction(game);
-            drawCurrentTetromino(game);
-            drawPowerUps(game);
+                ITetris &game = client.getGame();
+                drawGame(game, {2, 1}, BLOCK_SIZE * 2, client.targetId == 0);
+                drawNextTetromino(game);
+                drawPrediction(game);
+                drawCurrentTetromino(game);
+                drawPowerUps(game);
 
-            uint64_t index = 1;
-            uint64_t x = (game.getWidth() + SIDEBAR_SIZE) * BLOCK_SIZE * 2 + 2;
-            while (otherGamesStart != otherGamesEnd) {
-                drawGame(**otherGamesStart, {x, 1}, BLOCK_SIZE, client.targetId == index);
-                x += (*otherGamesStart)->getWidth() * BLOCK_SIZE;
-                ++otherGamesStart;
-                index++;
+                uint64_t index = 1;
+                uint64_t x = (game.getWidth() + SIDEBAR_SIZE) * BLOCK_SIZE * 2 + 2;
+                while (otherGamesStart != otherGamesEnd) {
+                    drawGame(**otherGamesStart, {x, 1}, BLOCK_SIZE, client.targetId == index);
+                    x += (*otherGamesStart)->getWidth() * BLOCK_SIZE;
+                    ++otherGamesStart;
+                    index++;
+                }
+                break;
             }
-            break;
-        }
-        case TabType::CHAT: {
-            wattron(_menu_window, COLOR_PAIR(COLOR_BLACK));
-            mvwprintw(_menu_window, 0, 2, "Chat");
-            wattroff(_menu_window, COLOR_PAIR(COLOR_BLACK));
-            break;
-        }
-        case TabType::SCOREBOARD: {
-            wattron(_menu_window, COLOR_PAIR(COLOR_BLACK));
-            mvwprintw(_menu_window, 0, 2, "Scoreboard");
-            wattroff(_menu_window, COLOR_PAIR(COLOR_BLACK));
-            break;
-        }
-        case TabType::HELP: {
-            wattron(_menu_window, COLOR_PAIR(COLOR_BLACK));
-            mvwprintw(_menu_window, 0, 2, "Help");
-            wattroff(_menu_window, COLOR_PAIR(COLOR_BLACK));
-            break;
-        }
+        case TabType::CHAT:
+            {
+                mvwprintw(_menu_window, 0, 2, "Chat");
+                break;
+            }
+        case TabType::SCOREBOARD:
+            {
+                mvwprintw(_menu_window, 0, 2, "Scoreboard");
+                break;
+            }
+        case TabType::HELP:
+            {
+                mvwprintw(_menu_window, 0, 2, "Help");
+
+                unsigned int y = 2;
+                wattron(_main_window, COLOR_PAIR(COLOR_YELLOW));
+                mvwprintw(_main_window, y, 2, "SPECIAL BLOCKS:");
+                wattroff(_main_window, COLOR_PAIR(COLOR_YELLOW));
+                y += 2;
+                for (BlockType i = BlockType::PU_ADD_LINE; i != BlockType::PU_SWITCH_FIELD;
+                     i = static_cast<BlockType>(static_cast<int>(i) + 1)) {
+                    drawBlock({2, y}, i, BLOCK_SIZE, false);
+                    mvwprintw(_main_window, y, 3, ": %s", blockTypeToString(i).c_str());
+                    y++;
+                }
+                wattron(_main_window, COLOR_PAIR(COLOR_YELLOW));
+                mvwprintw(_main_window, y += 2, 2, "CONTROLS:");
+                wattroff(_main_window, COLOR_PAIR(COLOR_YELLOW));
+                mvwprintw(_main_window, y += 2, 2, "Arrow keys: Move");
+                mvwprintw(_main_window, y += 1, 2, "Up Arrow: Rotate");
+                mvwprintw(_main_window, y += 1, 2, "Space: Drop");
+                mvwprintw(_main_window, y += 2, 2, "Q: Send powerup");
+                mvwprintw(_main_window, y += 1, 2, "S: Target player (HOLD)");
+                mvwprintw(_main_window, y += 1, 2, "0-9: Target player id");
+
+                break;
+            }
     }
 }
 
