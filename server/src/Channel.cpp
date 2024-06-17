@@ -104,7 +104,7 @@ namespace tetriq {
         if (now < _next_tick)
             return;
         _next_tick = now + std::chrono::nanoseconds(_game_speed);
-        constexpr uint64_t max_game_speed = _base_game_speed / 2;
+        const uint64_t max_game_speed = _base_game_speed / 2;
         if (_game_speed > max_game_speed)
             _game_speed -= 100000;
 
