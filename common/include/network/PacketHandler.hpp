@@ -11,6 +11,8 @@
 #include "network/packets/FullGamePacket.hpp"
 #include "network/packets/TickGamePacket.hpp"
 #include "network/packets/PowerUpPacket.hpp"
+#include "network/packets/DisconnectPacket.hpp"
+#include "network/packets/ConnectPacket.hpp"
 
 namespace tetriq {
     class PacketHandler {
@@ -29,5 +31,7 @@ namespace tetriq {
             virtual bool handle(GameActionPacket &p);
             virtual bool handle(FullGameRequestPacket &p);
             virtual bool handle(PowerUpPacket &p);
+            virtual bool handle(DisconnectPacket &p);
+            virtual bool handle(ConnectPacket &);
     };
 }

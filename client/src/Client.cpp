@@ -166,4 +166,26 @@ namespace tetriq {
         }
         return false;
     }
+
+    bool Client::handle(DisconnectPacket &packet)
+    {
+        for (std::unique_ptr<ViewerTetris> &tetris : _external_games) {
+            if (tetris->getPlayerId() == packet.getPlayerId()) {
+                _external_games.erase(
+                    std::remove(_external_games.begin(), _external_games.end(), tetris),
+                    _external_games.end());
+                _display->loadGame(*_game, _external_games.size());
+                return true;
+            }
+        }
+        return false;
+    }
+
+    bool Client::handle(ConnectPacket &packet)
+    {
+        _external_games.emplace_back(std::make_unique<ViewerTetris>(
+            packet.getGameWidth(), packet.getGameHeight(), packet.getPlayerId()));
+        _display->loadGame(*_game, _external_games.size());
+        return true;
+    }
 }

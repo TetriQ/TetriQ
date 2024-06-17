@@ -166,6 +166,8 @@ namespace tetriq {
     bool Server::handleNewClient(ENetEvent &event)
     {
         event.peer->data = new uint64_t(_network_id_counter);
+        _channels.front().broadcastPacket(
+            ConnectPacket(_network_id_counter, _config.game.width, _config.game.height));
         _players.emplace(std::piecewise_construct,
             std::forward_as_tuple(_network_id_counter),
             std::forward_as_tuple(_network_id_counter, event.peer, _channels.front()));
@@ -181,10 +183,12 @@ namespace tetriq {
     {
         uint64_t network_id = *(uint64_t *) event.peer->data;
         Player &player = _players.at(network_id);
+        Channel &channel = player.getChannel();
         player.disconnect();
         _players.erase(network_id);
         delete (uint64_t *) event.peer->data;
         event.peer->data = nullptr;
+        channel.broadcastPacket(DisconnectPacket(network_id));
     }
 
     void Server::handleClientPacket(ENetEvent &event)
