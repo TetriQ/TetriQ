@@ -108,8 +108,6 @@ namespace tetriq {
         if (_game_speed > max_game_speed)
             _game_speed -= 100000;
 
-        LogLevel::DEBUG << std::to_string(_game_speed) << std::endl;
-
         bool game_over = true;
         for (uint64_t id : _players) {
             Player &player = _server->getPlayerById(id);
