@@ -179,6 +179,8 @@ namespace tetriq {
     void Server::handleClientDisconnect(ENetEvent &event)
     {
         uint64_t network_id = *(uint64_t *) event.peer->data;
+        Player &player = _players.at(network_id);
+        player.disconnect();
         _players.erase(network_id);
         delete (uint64_t *) event.peer->data;
         event.peer->data = nullptr;

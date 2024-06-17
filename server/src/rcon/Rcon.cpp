@@ -90,6 +90,7 @@ void tetriq::Rcon::handleNewClient()
             std::string msg = "Maximum connections reached";
             send(new_client_socket, msg.c_str(), msg.size(), 0);
             ::close(new_client_socket);
+            return;
         }
         _client = std::make_unique<RconClient>(new_client_socket, new_client_addr);
         *_client << "RCON: Enter password\n";
@@ -99,6 +100,8 @@ void tetriq::Rcon::handleNewClient()
 
 void tetriq::Rcon::disconnectClient()
 {
+    constexpr char msg[] = "RCON: Connection closed\n";
+    ::send(_client->getSocket(), msg, sizeof(msg), 0);
     ::close(_client->getSocket());
     _client = nullptr;
     RCONLOG(INFO) << "Connection closed" << std::endl;
