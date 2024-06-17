@@ -6,6 +6,8 @@
 
 #include <iostream>
 
+bool tetriq::Logger::_visible = true;
+
 void tetriq::Logger::log(const LogLevel level, const std::string &message)
 {
     level << message << std::endl;
@@ -54,8 +56,7 @@ const char *tetriq::Logger::levelToColor(LogLevel level)
     return "\033[38;5;255m";
 }
 
-bool tetriq::Logger::setLogVisibility(bool visibility)
+void tetriq::Logger::setLogVisibility(bool visibility)
 {
     _visible = visibility;
-    return !(visibility == _visible);
 }

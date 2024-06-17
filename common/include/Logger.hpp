@@ -49,25 +49,19 @@ namespace tetriq {
 
             /**
              * @brief Disable logs
-             * @return True if logs weren't already disabled, false otherwise
              */
-            static bool setLogVisibility(bool visibility);
+            static void setLogVisibility(bool visibility);
 
         private:
             static bool _visible;
     };
 
     template<typename T>
-    std::ostream &operator<<(const LogLevel &level, const T& msg)
+    std::ostream &operator<<(const LogLevel &level, const T &msg)
     {
-        std::ostream &stream = (level == LogLevel::ERROR || level == LogLevel::CRITICAL)
-            ? std::cerr : std::cout;
-        return stream
-            << Logger::getTimestamp()
-            << " ["
-            << Logger::levelToColor(level)
-            << Logger::levelToString(level)
-            << "\033[0m] "
-            << msg;
+        std::ostream &stream =
+            (level == LogLevel::ERROR || level == LogLevel::CRITICAL) ? std::cerr : std::cout;
+        return stream << Logger::getTimestamp() << " [" << Logger::levelToColor(level)
+                      << Logger::levelToString(level) << "\033[0m] " << msg;
     }
 }
