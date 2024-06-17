@@ -41,6 +41,9 @@ namespace tetriq {
 
     void Player::tickGame()
     {
+        if (_game.isOver()) {
+            return;
+        }
         _game.tick();
         TickGamePacket{_applied_actions}.send(_peer);
         _applied_actions = 0;
@@ -155,6 +158,11 @@ namespace tetriq {
     bool Player::isGameOver() const
     {
         return _game.isOver();
+    }
+
+    void Player::setGameOver(bool game_over)
+    {
+        _game.setGameOver(game_over);
     }
 
     Tetris &Player::getGame()

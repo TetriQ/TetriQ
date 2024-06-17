@@ -169,9 +169,10 @@ namespace tetriq {
         _players.emplace(std::piecewise_construct,
             std::forward_as_tuple(_network_id_counter),
             std::forward_as_tuple(_network_id_counter, event.peer, _channels.front()));
+        Player &player = _players.at(_network_id_counter);
+        player.sendInitGamePacket(_config.game);
+        player.setGameOver(true);
         // TODO : choose a channel intelligently and dont start game instantly
-        if (_channels.front().hasGameStarted())
-            _players.at(_network_id_counter).startGame(_config.game);
         _network_id_counter++;
         return true;
     }

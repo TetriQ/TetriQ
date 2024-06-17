@@ -25,6 +25,7 @@ namespace tetriq {
             void tickGame();
             void applyPackets();
             bool isGameOver() const;
+            void setGameOver(bool game_over);
             Tetris &getGame();
 
             uint64_t getNetworkId() const;

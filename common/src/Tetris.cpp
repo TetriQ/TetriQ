@@ -304,6 +304,11 @@ void tetriq::Tetris::setChanged(bool changed)
     _changed = changed;
 }
 
+void tetriq::Tetris::setGameOver(bool game_over)
+{
+    _game_over = game_over;
+}
+
 const std::deque<tetriq::BlockType> &tetriq::Tetris::getPowerUps() const
 {
     return _powerUps;

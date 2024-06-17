@@ -42,6 +42,7 @@ namespace tetriq {
             bool isChanged();
             void setPowerUps(const std::deque<BlockType> &powerUps);
             void setChanged(bool changed);
+            void setGameOver(bool game_over);
 
             /**
              * Advances the game by one tick.

@@ -157,7 +157,9 @@ void tetriq::Rcon::handleClient()
         char buffer[1024] = {0};
         const long int valread = ::recv(_client->getSocket(), buffer, 1024, 0);
         if (valread <= 0) {
-            disconnectClient();
+            ::close(_client->getSocket());
+            _client = nullptr;
+            RCONLOG(INFO) << "Connection closed" << std::endl;
             return;
         }
         buffer[valread] = '\0';
