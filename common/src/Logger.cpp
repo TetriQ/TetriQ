@@ -10,6 +10,8 @@ bool tetriq::Logger::_visible = true;
 
 void tetriq::Logger::log(const LogLevel level, const std::string &message)
 {
+    if (!_visible)
+        return;
     level << message << std::endl;
 }
 

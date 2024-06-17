@@ -12,6 +12,8 @@
 tetriq::NcursesDisplay::NcursesDisplay()
     : _tab(TabType::GAME)
 {
+    tetriq::Logger::setLogVisibility(false);
+
     initscr();
     cbreak();
     noecho();
@@ -51,7 +53,6 @@ bool tetriq::NcursesDisplay::loadGame(const ITetris &, uint64_t)
     // uint64_t width = board_width + other_boards_width;
     // uint64_t height = board_height;
 
-    tetriq::Logger::setLogVisibility(false);
 
     return true;
 }
@@ -186,7 +187,6 @@ void tetriq::NcursesDisplay::drawBlock(Position pos, BlockType blockType, uint64
             break;
         case BlockType::INDESTRUCTIBLE:
             blockColor = is_target ? COLOR_WHITE : A_REVERSE;
-            blockColor = COLOR_WHITE;
             break;
         case BlockType::PU_ADD_LINE:
             blockColor = COLOR_GREEN;
