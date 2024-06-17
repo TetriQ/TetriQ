@@ -53,3 +53,9 @@ const char *tetriq::Logger::levelToColor(LogLevel level)
     }
     return "\033[38;5;255m";
 }
+
+bool tetriq::Logger::setLogVisibility(bool visibility)
+{
+    _visible = visibility;
+    return !(visibility == _visible);
+}

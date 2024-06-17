@@ -46,6 +46,15 @@ namespace tetriq {
              * @return Log level as a color
              */
             static const char *levelToColor(LogLevel level);
+
+            /**
+             * @brief Disable logs
+             * @return True if logs weren't already disabled, false otherwise
+             */
+            static bool setLogVisibility(bool visibility);
+
+        private:
+            static bool _visible;
     };
 
     template<typename T>

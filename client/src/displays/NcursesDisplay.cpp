@@ -51,6 +51,8 @@ bool tetriq::NcursesDisplay::loadGame(const ITetris &, uint64_t)
     // uint64_t width = board_width + other_boards_width;
     // uint64_t height = board_height;
 
+    tetriq::Logger::setLogVisibility(false);
+
     return true;
 }
 
