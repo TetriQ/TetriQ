@@ -37,6 +37,7 @@ namespace tetriq {
             bool handle(PowerUpPacket &packet) override;
 
             Channel &getChannel();
+            bool disconnect();
 
         private:
             const uint64_t _network_id;

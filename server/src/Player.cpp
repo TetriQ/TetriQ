@@ -140,6 +140,13 @@ namespace tetriq {
         return _channel;
     }
 
+    bool Player::disconnect()
+    {
+        enet_peer_disconnect(_peer, 0);
+        _channel.removePlayer(*this);
+        return true;
+    }
+
     bool Player::isGameOver() const
     {
         return _game.isOver();
