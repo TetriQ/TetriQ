@@ -16,6 +16,7 @@ namespace tetriq {
                 CHAT,
                 SCOREBOARD,
                 HELP,
+                TABTYPE_COUNT
             };
 
             virtual ~IDisplay() = default;

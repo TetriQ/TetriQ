@@ -35,6 +35,7 @@ namespace tetriq {
             void drawTab(
                 const Client &client, ITetrisIter otherGamesStart, ITetrisIter otherGamesEnd);
             void resizeWindow();
+            std::string tabTypeToString(tetriq::IDisplay::TabType tabType);
 
             const uint64_t BLOCK_SIZE = 1;
             const uint64_t SIDEBAR_SIZE = 6;

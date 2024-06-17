@@ -67,11 +67,6 @@ bool tetriq::NcursesDisplay::draw(
     box(_menu_window, 0, 0);
     mvwprintw(_main_window, 0, 2, "TetriQ");
 
-    mvwprintw(_menu_window, 1, 2, "F1: Game");
-    mvwprintw(_menu_window, 2, 2, "F2: Chat");
-    mvwprintw(_menu_window, 3, 2, "F3: Scoreboard");
-    mvwprintw(_menu_window, 1, 20, "F4: Help");
-
     drawTab(client, otherGamesStart, otherGamesEnd);
 
     wrefresh(_main_window);
@@ -114,6 +109,12 @@ bool tetriq::NcursesDisplay::handleEvents(Client &client)
                 continue;
             case 'q':
                 client.sendPowerUp();
+                continue;
+            case 'z':
+                client.targetId++;
+                continue;
+            case 'x':
+                client.targetId--;
                 continue;
             case KEY_RESIZE:
                 resizeWindow();
@@ -198,7 +199,7 @@ void tetriq::NcursesDisplay::drawBlock(Position pos, BlockType blockType, uint64
             blockColor = COLOR_MAGENTA;
             break;
         case BlockType::INDESTRUCTIBLE:
-            blockColor = is_target ? A_REVERSE : COLOR_WHITE;
+            blockColor = is_target ? COLOR_RED : COLOR_WHITE;
             break;
         case BlockType::PU_ADD_LINE:
             blockColor = COLOR_GREEN;
@@ -247,13 +248,15 @@ void tetriq::NcursesDisplay::drawBlock(Position pos, BlockType blockType, uint64
     if (charOverride != ERR)
         blockChar = charOverride;
 
+    // wattron(_main_window, (is_target && blockType == BlockType::INDESTRUCTIBLE ? A_REVERSE : COLOR_PAIR(blockColor)));
     wattron(_main_window, COLOR_PAIR(blockColor));
     for (uint64_t i = 0; i < block_size; i++) {
         for (uint64_t j = 0; j < block_size; j++) {
             mvwaddch(_main_window, pos.y + j, pos.x + i, blockChar);
         }
     }
-    wattroff(_main_window, A_COLOR);
+    wattroff(_main_window, COLOR_PAIR(blockColor));
+    // wattroff(_main_window, (is_target && blockType == BlockType::INDESTRUCTIBLE ? A_REVERSE : A_COLOR));
 }
 
 void tetriq::NcursesDisplay::drawTetromino(const Tetromino &tetromino, Position position,
@@ -308,11 +311,21 @@ void tetriq::NcursesDisplay::drawPowerUps(const ITetris &game)
 void tetriq::NcursesDisplay::drawTab(
     const Client &client, ITetrisIter otherGamesStart, ITetrisIter otherGamesEnd)
 {
+    int offset = 2;
+    for (int i = static_cast<int>(TabType::GAME); i <= static_cast<int>(TabType::HELP); i++) {
+        TabType tab = static_cast<TabType>(i);
+        if (tab == _tab)
+            wattron(_menu_window, A_REVERSE);
+        offset += tabTypeToString(static_cast<TabType>(i - 1)).size()
+                  + (i == 0 ? 0 : _scr_width / static_cast<int>(TabType::TABTYPE_COUNT) - 1);
+        mvwprintw(_menu_window, 2, offset, "F%i:%s", i + 1, tabTypeToString(tab).c_str());
+        wattroff(_menu_window, A_REVERSE);
+    }
+
     switch (_tab) {
         case TabType::GAME:
             {
                 mvwprintw(_menu_window, 0, 2, "Game");
-                mvwprintw(_main_window, 0, 10, "%li", client.targetId);
 
                 ITetris &game = client.getGame();
                 drawGame(game, {2, 1}, BLOCK_SIZE * 2, client.targetId == 0);
@@ -363,11 +376,12 @@ void tetriq::NcursesDisplay::drawTab(
                 mvwprintw(_main_window, y += 1, 2, "Up Arrow: Rotate");
                 mvwprintw(_main_window, y += 1, 2, "Space: Drop");
                 mvwprintw(_main_window, y += 2, 2, "Q: Send powerup");
-                mvwprintw(_main_window, y += 1, 2, "S: Target player (HOLD)");
+                mvwprintw(_main_window, y += 1, 2, "S: Target player");
                 mvwprintw(_main_window, y += 1, 2, "0-9: Target player id");
-
                 break;
             }
+        default:
+            break;
     }
 }
 
@@ -381,4 +395,20 @@ void tetriq::NcursesDisplay::resizeWindow()
     int main_height = _scr_height - 5;
     _main_window = newwin(main_height, _scr_width, 0, 0);
     _menu_window = newwin(5, _scr_width, main_height, 0);
+}
+
+std::string tetriq::NcursesDisplay::tabTypeToString(TabType tabType)
+{
+    switch (tabType) {
+        case TabType::GAME:
+            return "Game";
+        case TabType::CHAT:
+            return "Chat";
+        case TabType::SCOREBOARD:
+            return "Scoreboard";
+        case TabType::HELP:
+            return "Help";
+        default:
+            return "";
+    }
 }
