@@ -39,6 +39,8 @@ namespace tetriq {
             Channel &getChannel();
             bool disconnect();
 
+            void sendInitGamePacket(const GameConfig &config);
+
         private:
             const uint64_t _network_id;
             ENetPeer *const _peer;

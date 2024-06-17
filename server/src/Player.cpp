@@ -35,10 +35,7 @@ namespace tetriq {
 
     void Player::startGame(const GameConfig &config)
     {
-        std::vector<uint64_t> other_players = _channel.getPlayers();
-        other_players.erase(std::remove(other_players.begin(), other_players.end(), _network_id),
-            other_players.end());
-        InitGamePacket{config.width, config.height, _network_id, other_players}.send(_peer);
+        sendInitGamePacket(config);
         FullGamePacket{_network_id, _game, 0}.send(_peer);
     }
 
@@ -145,6 +142,14 @@ namespace tetriq {
         enet_peer_disconnect(_peer, 0);
         _channel.removePlayer(*this);
         return true;
+    }
+
+    void Player::sendInitGamePacket(const GameConfig &config)
+    {
+        std::vector<uint64_t> other_players = _channel.getPlayers();
+        other_players.erase(std::remove(other_players.begin(), other_players.end(), _network_id),
+            other_players.end());
+        InitGamePacket{config.width, config.height, _network_id, other_players}.send(_peer);
     }
 
     bool Player::isGameOver() const
