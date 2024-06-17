@@ -62,3 +62,8 @@ void tetriq::Logger::setLogVisibility(bool visibility)
 {
     _visible = visibility;
 }
+
+bool tetriq::Logger::isVisible()
+{
+    return _visible;
+}

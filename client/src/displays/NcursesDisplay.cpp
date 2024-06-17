@@ -9,11 +9,12 @@
 #include "Logger.hpp"
 #include "Utils.hpp"
 
+#include <chrono>
+#include <thread>
+
 tetriq::NcursesDisplay::NcursesDisplay()
     : _tab(TabType::GAME)
 {
-    tetriq::Logger::setLogVisibility(false);
-
     initscr();
     cbreak();
     noecho();
@@ -53,7 +54,6 @@ bool tetriq::NcursesDisplay::loadGame(const ITetris &, uint64_t)
     // uint64_t width = board_width + other_boards_width;
     // uint64_t height = board_height;
 
-
     return true;
 }
 
@@ -83,10 +83,17 @@ bool tetriq::NcursesDisplay::handleEvents(Client &client)
 {
     static bool is_shift_pressed = false;
     static std::string target;
+    static auto start_time = std::chrono::steady_clock::now();
     ITetris &game = client.getGame();
     int ch;
 
     while ((ch = getch()) != ERR) {
+        if (is_shift_pressed
+            && std::chrono::duration_cast<std::chrono::seconds>(
+                   std::chrono::steady_clock::now() - start_time)
+                       .count()
+                   >= 2)
+            is_shift_pressed = false;
         switch (ch) {
             case 27:
                 return false;
@@ -105,7 +112,7 @@ bool tetriq::NcursesDisplay::handleEvents(Client &client)
             case ' ':
                 game.handleGameAction(GameAction::DROP);
                 continue;
-            case 'Q':
+            case 'q':
                 client.sendPowerUp();
                 continue;
             case KEY_RESIZE:
@@ -123,23 +130,27 @@ bool tetriq::NcursesDisplay::handleEvents(Client &client)
             case KEY_F(4):
                 _tab = TabType::HELP;
                 continue;
-            case 'H':
+            case 'h':
                 _tab = TabType::HELP;
+                continue;
+            case 's':
+                {
+                    is_shift_pressed = true;
+                    target.clear();
+                    client.targetId = 0;
+                    start_time = std::chrono::steady_clock::now();
+                }
                 continue;
             default:
                 if (is_shift_pressed && ch >= '0' && ch <= '9') {
+                    start_time = std::chrono::steady_clock::now();
                     if (target.size() >= 3)
                         target.clear();
                     target += ch;
                     client.targetId = std::stoul(target);
+                } else if (is_shift_pressed) {
+                    is_shift_pressed = false;
                 }
-        }
-        if (ch == 'S') {
-            is_shift_pressed = !is_shift_pressed;
-            if (is_shift_pressed) {
-                target.clear();
-                client.targetId = 0;
-            }
         }
     }
     return true;
@@ -165,6 +176,7 @@ void tetriq::NcursesDisplay::drawBlock(Position pos, BlockType blockType, uint64
 {
     short blockColor;
     char blockChar = '#';
+
     switch (blockType) {
         case BlockType::EMPTY:
             return;
@@ -186,7 +198,7 @@ void tetriq::NcursesDisplay::drawBlock(Position pos, BlockType blockType, uint64
             blockColor = COLOR_MAGENTA;
             break;
         case BlockType::INDESTRUCTIBLE:
-            blockColor = is_target ? COLOR_WHITE : A_REVERSE;
+            blockColor = is_target ? A_REVERSE : COLOR_WHITE;
             break;
         case BlockType::PU_ADD_LINE:
             blockColor = COLOR_GREEN;
@@ -300,6 +312,7 @@ void tetriq::NcursesDisplay::drawTab(
         case TabType::GAME:
             {
                 mvwprintw(_menu_window, 0, 2, "Game");
+                mvwprintw(_main_window, 0, 10, "%li", client.targetId);
 
                 ITetris &game = client.getGame();
                 drawGame(game, {2, 1}, BLOCK_SIZE * 2, client.targetId == 0);

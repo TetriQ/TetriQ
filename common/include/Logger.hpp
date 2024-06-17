@@ -52,6 +52,12 @@ namespace tetriq {
              */
             static void setLogVisibility(bool visibility);
 
+            /**
+             * @brief Check if logs are visible
+             * @return True if logs are visible, false otherwise
+             */
+            static bool isVisible();
+
         private:
             static bool _visible;
     };
@@ -59,6 +65,10 @@ namespace tetriq {
     template<typename T>
     std::ostream &operator<<(const LogLevel &level, const T &msg)
     {
+        if (!Logger::isVisible()) {
+            static std::ostream nullstream(0);
+            return nullstream;
+        }
         std::ostream &stream =
             (level == LogLevel::ERROR || level == LogLevel::CRITICAL) ? std::cerr : std::cout;
         return stream << Logger::getTimestamp() << " [" << Logger::levelToColor(level)

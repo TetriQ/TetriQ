@@ -29,6 +29,8 @@ namespace tetriq {
             LogLevel::ERROR << "Invalid display name" << std::endl;
             return false;
         }
+        if (!strcmp(argv[3], "ncurses"))
+            Logger::setLogVisibility(false);
         return true;
     }
 }
