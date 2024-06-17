@@ -8,6 +8,8 @@
 #include "network/PacketId.hpp"
 #include <cstdint>
 
+tetriq::TestPacket::TestPacket() = default;
+
 tetriq::PacketId tetriq::TestPacket::getId() const
 {
     return PacketId::TEST;

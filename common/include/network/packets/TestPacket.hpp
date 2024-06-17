@@ -10,13 +10,15 @@
 #include <cstdint>
 
 namespace tetriq {
-    struct TestPacket : public APacket {
+    class TestPacket : public APacket {
         public:
+            TestPacket();
             PacketId getId() const override;
-            
+
             NetworkOStream &operator>>(NetworkOStream &ns) const override;
             NetworkIStream &operator<<(NetworkIStream &ns) override;
             size_t getNetworkSize() const override;
+
         private:
             uint64_t _magic = 0x737819;
     };
