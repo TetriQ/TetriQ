@@ -65,7 +65,7 @@ your peers. Here are a few example values:
 | Address      | Usage                                                                                                         |
 |--------------|---------------------------------------------------------------------------------------------------------------|
 | `127.0.0.1`  | The loopback address. Will only accept connections from your computer                                         |
-| `0.0.0.0`    | Special. Will accept connections on any address                                                                        |
+| `0.0.0.0`    | Special. Will accept connections on any address                                                               |
 | `192.0.0.20` | Local ip address. Will accept connections from your local network. Yours will probably have a different value |
 
 When connecting with a client, make sure the address you use matches
@@ -107,3 +107,41 @@ unbreakable border.
 
 The height of the game area in blocks. This includes the game's
 unbreakable border.
+
+### RCON configuration
+
+The server can be controlled remotely using the RCON protocol.
+The RCON is using simple TCP sockets. This means that you can use
+`telnet` or `netcat` to connect to the RCON server and send commands to it.
+
+Notes:
+- every command must be terminated by a newline character. Beware telnet users.
+- for now, the RCON is not secured. It is recommended to use a firewall 
+to restrict access to the RCON port.
+- the RCON is also not encrypted. It uses plain text.
+- there can be only one RCON connection at a time.
+
+The RCON configuration can be found in the `[rcon]` section of the
+server's configuration file. Here are the available configuration
+fields, along with their default value and description. If any field
+is missing from the configuration file, its default value will be
+used.
+
+- **enabled** = false
+
+Whether the RCON server is enabled or not.
+
+- **password** = "root"
+
+The password required to authenticate with the RCON server.
+It's the first thing you should change when enabling the RCON server.
+
+- **listen_address** = "0.0.0.0"
+
+The address on which the RCON server will listen for incoming connections.
+
+- **listen_port** = 31458
+
+The port on which the RCON server will listen for incoming connections (TCP)
+
+
