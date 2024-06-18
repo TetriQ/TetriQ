@@ -15,6 +15,7 @@ To build TetriQ, you will need the following dependencies:
  - CMake
  - ENet
  - tomlplusplus
+
 Additionally for the client:
  - SFML
  - ncurses
