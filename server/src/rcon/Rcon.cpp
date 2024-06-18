@@ -134,6 +134,7 @@ bool tetriq::Rcon::checkAuth(std::string command)
 
 void tetriq::Rcon::sendRes()
 {
+    constexpr char PROMPT[] = "~$ ";
     if (FD_ISSET(_client->getSocket(), &_writefds)) {
         while (not _client->_res_queue.empty()) {
             std::string response = _client->_res_queue.front();
@@ -141,7 +142,7 @@ void tetriq::Rcon::sendRes()
             ::send(_client->getSocket(), response.c_str(), response.size(), 0);
         }
         FD_CLR(_client->getSocket(), &_writefds);
-        ::send(_client->getSocket(), "~$ ", 3, 0);
+        ::send(_client->getSocket(), PROMPT, sizeof(PROMPT) - 1, 0);
     }
     if (not _client->_res_queue.empty()) {
         FD_SET(_client->getSocket(), &_writefds);
