@@ -19,6 +19,27 @@ tetriq::SFMLDisplay::SFMLDisplay()
 {
     _window.setFramerateLimit(60);
     _default_font.loadFromFile("etc/OpenSans-SemiBold.ttf");
+    _block_textures[BlockType::RED].loadFromFile("etc/textures/red.png");
+    _block_textures[BlockType::BLUE].loadFromFile("etc/textures/blue.png");
+    _block_textures[BlockType::DARK_BLUE].loadFromFile("etc/textures/dark_blue.png");
+    _block_textures[BlockType::ORANGE].loadFromFile("etc/textures/orange.png");
+    _block_textures[BlockType::YELLOW].loadFromFile("etc/textures/yellow.png");
+    _block_textures[BlockType::GREEN].loadFromFile("etc/textures/green.png");
+    _block_textures[BlockType::PURPLE].loadFromFile("etc/textures/purple.png");
+    _block_textures[BlockType::INDESTRUCTIBLE].loadFromFile("etc/textures/indestructible.png");
+    //_block_textures[BlockType::EMPTY].loadFromFile("etc/textures/empty.png");
+    _indesctructible_selected_texture.loadFromFile("etc/textures/indestructible2.png");
+    _block_textures[BlockType::PU_ADD_LINE].loadFromFile("etc/textures/add_line.png");
+    _block_textures[BlockType::PU_CLEAR_SPECIAL_BLOCK].loadFromFile(
+        "etc/textures/clear_special_block.png");
+    _block_textures[BlockType::PU_CLEAR_LINE].loadFromFile("etc/textures/clear_line.png");
+    _block_textures[BlockType::PU_CLEAR_BLOCK_RANDOM].loadFromFile(
+        "etc/textures/clear_block_random.png");
+    _block_textures[BlockType::PU_GRAVITY].loadFromFile("etc/textures/gravity.png");
+    _block_textures[BlockType::PU_NUKE_FIELD].loadFromFile("etc/textures/nuke_field.png");
+    _block_textures[BlockType::PU_BLOCK_BOMB].loadFromFile("etc/textures/block_bomb.png");
+    _block_textures[BlockType::PU_COLUMN_SHUFFLE].loadFromFile("etc/textures/column_shuffle.png");
+    _block_textures[BlockType::PU_SWITCH_FIELD].loadFromFile("etc/textures/switch_field.png");
 }
 
 tetriq::SFMLDisplay::~SFMLDisplay()
@@ -155,57 +176,59 @@ void tetriq::SFMLDisplay::drawBlock(
     rec.setPosition(sf::Vector2f(pos));
     switch (block) {
         case BlockType::RED:
-            rec.setFillColor(sf::Color::Red);
+    // use texture
+            rec.setTexture(&_block_textures[BlockType::RED]);
             break;
         case BlockType::BLUE:
-            rec.setFillColor(sf::Color::Blue);
+            rec.setTexture(&_block_textures[BlockType::BLUE]);
             break;
         case BlockType::DARK_BLUE:
-            rec.setFillColor(sf::Color(0, 0, 139));
+            rec.setTexture(&_block_textures[BlockType::DARK_BLUE]);
             break;
         case BlockType::ORANGE:
-            rec.setFillColor(sf::Color(255, 165, 0));
+            rec.setTexture(&_block_textures[BlockType::ORANGE]);
             break;
         case BlockType::YELLOW:
-            rec.setFillColor(sf::Color::Yellow);
+            rec.setTexture(&_block_textures[BlockType::YELLOW]);
             break;
         case BlockType::GREEN:
-            rec.setFillColor(sf::Color::Green);
+            rec.setTexture(&_block_textures[BlockType::GREEN]);
             break;
         case BlockType::PURPLE:
-            rec.setFillColor(sf::Color::Magenta);
+            rec.setTexture(&_block_textures[BlockType::PURPLE]);
             break;
         case BlockType::INDESTRUCTIBLE:
-            rec.setFillColor(is_target ? sf::Color(158, 114, 114) : sf::Color(59, 59, 59));
+            rec.setTexture(is_target ? &_indesctructible_selected_texture
+                                     : &_block_textures[BlockType::INDESTRUCTIBLE]);
             break;
         case BlockType::EMPTY:
             return;
         case BlockType::PU_ADD_LINE:
-            rec.setFillColor(sf::Color::Cyan);
+            rec.setTexture(&_block_textures[BlockType::PU_ADD_LINE]);
             break;
         case BlockType::PU_GRAVITY:
-            rec.setFillColor(sf::Color(70, 70, 165));
+            rec.setTexture(&_block_textures[BlockType::PU_GRAVITY]);
             break;
         case BlockType::PU_BLOCK_BOMB:
-            rec.setFillColor(sf::Color(80, 175, 162));
+            rec.setTexture(&_block_textures[BlockType::PU_BLOCK_BOMB]);
             break;
         case BlockType::PU_CLEAR_LINE:
-            rec.setFillColor(sf::Color(152, 129, 53));
+            rec.setTexture(&_block_textures[BlockType::PU_CLEAR_LINE]);
             break;
         case BlockType::PU_NUKE_FIELD:
-            rec.setFillColor(sf::Color(142, 184, 202));
+            rec.setTexture(&_block_textures[BlockType::PU_NUKE_FIELD]);
             break;
         case BlockType::PU_COLUMN_SHUFFLE:
-            rec.setFillColor(sf::Color(83, 137, 36));
+            rec.setTexture(&_block_textures[BlockType::PU_COLUMN_SHUFFLE]);
             break;
         case BlockType::PU_SWITCH_FIELD:
-            rec.setFillColor(sf::Color(158, 80, 111));
+            rec.setTexture(&_block_textures[BlockType::PU_SWITCH_FIELD]);
             break;
         case BlockType::PU_CLEAR_BLOCK_RANDOM:
-            rec.setFillColor(sf::Color(139, 5, 59));
+            rec.setTexture(&_block_textures[BlockType::PU_CLEAR_BLOCK_RANDOM]);
             break;
         case BlockType::PU_CLEAR_SPECIAL_BLOCK:
-            rec.setFillColor(sf::Color(5, 90, 139));
+            rec.setTexture(&_block_textures[BlockType::PU_CLEAR_SPECIAL_BLOCK]);
             break;
         default:
             rec.setFillColor(sf::Color::White);
