@@ -95,7 +95,7 @@ namespace tetriq {
             Tetris tempBoard = _game;
             _game = targetgame;
             // Clear lines to make it fair
-            for (uint64_t i = 0; i < 8; i++) {
+            for (uint64_t i = 0; i < 10; i++) {
                 tempBoard.clearLine(i);
             }
             targetgame = tempBoard;
@@ -122,10 +122,10 @@ namespace tetriq {
             if (target_game.isOver()) {
                 return true;
             }
-            if (doPuSwitchField(power_up, target))
-                return true;
+            doPuSwitchField(power_up, target);
             target_game.applyPowerUp(power_up);
             target_game.setChanged(true);
+            _game.setChanged(true);
             LogLevel::DEBUG << "Player " << _network_id << " applied "
                             << blockTypeToString(power_up) << " to player " << target.getNetworkId()
                             << std::endl;
