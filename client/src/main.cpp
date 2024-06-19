@@ -3,14 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 #include "Client.hpp"
-#include "IDisplay.hpp"
-#include "Logger.hpp"
-#include "SFMLDisplay.hpp"
-#include "NcursesDisplay.hpp"
 #include "Arguments.hpp"
 #include <cstdlib>
 #include <iostream>
-#include <memory>
 
 int main(int argc, char *argv[])
 {
