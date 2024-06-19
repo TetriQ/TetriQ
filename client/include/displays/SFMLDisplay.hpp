@@ -42,5 +42,8 @@ namespace tetriq {
 
             bool _show_help = false;
             sf::Font _default_font;
+
+            std::map<BlockType, sf::Texture> _block_textures;
+            sf::Texture _indesctructible_selected_texture;
     };
 }
