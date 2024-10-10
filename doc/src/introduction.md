@@ -11,6 +11,8 @@ SPDX-License-Identifier: GFDL-1.3-or-later
 This manual documents how to use and configure the game's server and
 client as well as the underlying network protocol and technical details.
 
+Current version: 4.1
+
 ---
 
 Copyright © 2024 The TetriQ authors.
