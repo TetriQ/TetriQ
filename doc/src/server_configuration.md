@@ -127,7 +127,7 @@ fields, along with their default value and description. If any field
 is missing from the configuration file, its default value will be
 used.
 
-- **enabled** = false
+- **enabled** = true
 
 Whether the RCON server is enabled or not.
 
